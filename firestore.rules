@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Top-level user-doc fields only the server sets (the Admin SDK bypasses these rules).
+    // `entitlement` holds the premium plan; the PayPal flags gate the check-in routes.
+    function serverOnlyFields() {
+      return ['entitlement', 'paypalConnected', 'paypalConnectedAt'];
+    }
+
+    match /users/{userId} {
+      allow read, delete: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && !request.resource.data.keys().hasAny(serverOnlyFields());
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(serverOnlyFields());
+
+      // Subcollections only. Do NOT use `match /{document=**}` here: in rules_version 2 a recursive
+      // wildcard matches zero or more segments, so it would also match /users/{userId} itself. Rules
+      // are OR-ed, so that blanket owner write would override the server-only field checks above.
+      match /{subcollection}/{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Server-only collections (Admin SDK). No rule matches them, so every client read/write is denied:
+    //  - usage/{uid}: Free vs Premium quota counters (server/usage.ts, KOVA-072). Clients must never reset them.
+    //  - aiReports/{id}: reported AI replies, for review (KOVA-092). Deleted with the account.
+  }
+}

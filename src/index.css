@@ -1,0 +1,298 @@
+@import "tailwindcss";
+
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+/* Safe area padding utilities */
+.pt-safe {
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+}
+
+.pb-safe {
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Device adaptation (KOVA-083) ---------- */
+
+/* Height of the visible screen under the app header. --app-header-h is measured by Header.tsx.
+   dvh follows the phone browser's address bar; the vh line is the fallback for older browsers. */
+.h-app {
+  height: calc(100vh - var(--app-header-h, 60px));
+  height: calc(100dvh - var(--app-header-h, 60px));
+}
+.min-h-app {
+  min-height: calc(100vh - var(--app-header-h, 60px));
+  min-height: calc(100dvh - var(--app-header-h, 60px));
+}
+
+/* Taps: no double-tap zoom delay, no grey flash on Android. */
+a, button, [role="button"], [role="tab"], label, summary, select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch screens: iOS Safari zooms into any field under 16px when it gets focus. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Keyboard users (PC): show where focus is. Mouse and touch clicks don't trigger :focus-visible. */
+@layer base {
+  :where(a, button, [role="button"], [role="tab"], summary, select):focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 2px;
+  }
+}
+
+/* Modals: scroll when taller than the screen instead of cutting off the top and bottom. */
+.kova-modal {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.kova-modal > * {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Phones: form modals open as bottom sheets, within thumb reach. */
+@media (max-width: 639.98px) {
+  .kova-modal.kova-sheet {
+    align-items: flex-end;
+    padding: 2.5rem 0 0;
+  }
+  .kova-modal.kova-sheet > * {
+    margin-bottom: 0;
+    max-width: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+    animation: kovaSheetUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+@keyframes kovaSheetUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kova-modal.kova-sheet > * { animation: none; }
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+  }
+}
+
+.font-serif-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-fraunces {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+/* Custom scrollbar hiding for clean app feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glass card styling */
+.glass-card {
+  background: rgba(26, 26, 28, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  background: rgba(36, 36, 38, 0.92);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Glowing ring for Kova avatar */
+.kova-glow-ring {
+  box-shadow: 0 0 16px 2px rgba(255, 255, 255, 0.25), inset 0 0 8px 1px rgba(255, 255, 255, 0.3);
+}
+
+.kova-pulse {
+  animation: kovaPulse 3s infinite ease-in-out;
+}
+
+@keyframes kovaPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px 2px rgba(255, 255, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 24px 6px rgba(255, 255, 255, 0.45);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+/* Endless Driving Loop Parallax Animations */
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes carBobSmooth {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+.animate-scroll-clouds {
+  animation: scrollLeft 75s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-treeline {
+  animation: scrollLeft 22s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-road {
+  animation: scrollLeft 7s linear infinite;
+  will-change: transform;
+}
+
+.animate-car-bob {
+  animation: carBobSmooth 2.2s ease-in-out infinite;
+}
+
+/* About Kova - Bank Scene Coin Bobs and Doorway Pulse */
+@keyframes coinBob1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes coinBob2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6.5px);
+  }
+}
+
+@keyframes coinBob3 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4.5px);
+  }
+}
+
+@keyframes coinBob4 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes doorwayGlowPulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+.animate-coin-1 {
+  animation: coinBob1 3.8s ease-in-out infinite;
+  animation-delay: 0s;
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.animate-coin-2 {
+  animation: coinBob2 4.6s ease-in-out infinite;
+  animation-delay: 1.1s;
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.animate-coin-3 {
+  animation: coinBob3 5.2s ease-in-out infinite;
+  animation-delay: 2.2s;
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.animate-coin-4 {
+  animation: coinBob4 4.1s ease-in-out infinite;
+  animation-delay: 0.6s;
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.animate-doorway-glow {
+  animation: doorwayGlowPulse 4.5s ease-in-out infinite;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+
+/* Controls that appear on hover with a mouse, but stay visible on touch screens (no hover there). */
+@media (hover: hover) and (pointer: fine) {
+  .group:not(:hover) .reveal-on-hover:not(:focus-visible) {
+    opacity: 0;
+  }
+}
+.reveal-on-hover {
+  transition: opacity 0.15s ease;
+}

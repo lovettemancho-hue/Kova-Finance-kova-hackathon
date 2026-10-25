@@ -1,0 +1,3 @@
+# Keep the Gradle wrapper runnable on Linux/CI regardless of core.autocrlf on Windows.
+android/gradlew text eol=lf
+*.bat text eol=crlf

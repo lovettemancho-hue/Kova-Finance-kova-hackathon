@@ -1,0 +1,26 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# secrets & keys
+service-account*.json
+*-key.json
+*.jks
+*.keystore
+keystore.properties
+
+# firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# local diffs / review scratch
+*.diff
+
+android/.idea/

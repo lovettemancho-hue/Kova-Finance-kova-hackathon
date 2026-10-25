@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "220138461991",
+    "project_id": "kova-98d67",
+    "storage_bucket": "kova-98d67.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220138461991:android:21a32b2d1a911ff2896702",
+        "android_client_info": {
+          "package_name": "com.kovafinance.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220138461991-9n8bs3kred05fs0gqvpt6h7lfp4g7ohp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kovafinance.app",
+            "certificate_hash": "1c7447caadcded5357e620098f2fd121d7ea74f1"
+          }
+        },
+        {
+          "client_id": "220138461991-8ta69s4mrm0pu9apirnpe69kt8j5blau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaG1I42wnOHMoo5Y973BEave_h-PYRSOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220138461991-8ta69s4mrm0pu9apirnpe69kt8j5blau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

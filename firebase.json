@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-kova-f30aae12-0bf9-4314-9e74-d6bc2a94c9ed",
+      "rules": "firestore.rules"
+    }
+  ]
+}

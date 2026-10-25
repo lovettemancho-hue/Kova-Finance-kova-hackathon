@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Firebase web config is public by design; protected by Security Rules and App Check"
+paths = ['''firebase-applet-config\.json''', '''android/app/google-services\.json''']

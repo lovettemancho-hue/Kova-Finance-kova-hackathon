@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.github
+android
+.env
+.env.*
+*.log
+.firebase
+coverage
+service-account*.json
+*-key.json
