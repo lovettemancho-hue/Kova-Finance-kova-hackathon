@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeFacts, factsSentence, finalizeFlags, gentleLine, subscriptionCost } from './checkin';
+import { calmExplanation, computeFacts, factsSentence, finalizeFlags, gentleLine, subscriptionCost, subscriptionLine } from './checkin';
 import type { PayPalSubscription, PayPalTransaction } from './types';
 
 const money = (a: number, c: string) => `${a.toFixed(2)} ${c}`;
@@ -80,4 +80,46 @@ test('summary facts come from the server; the AI only adds one clean line', () =
   assert.equal(gentleLine('Want to look at these together? More text here.'), 'Want to look at these together?');
   assert.equal(gentleLine('You have three ongoing subscriptions.'), ''); // counts in words are dropped too
   assert.equal(gentleLine('You spent 99.62 this month.'), ''); // numbers are dropped
+});
+
+test('no lectures in the check-in (KOVA-099)', () => {
+  // The exact line a judge would have seen on Oct 26.
+  assert.equal(gentleLine("Let's review these recent transactions together to ensure your monthly outflows align with your current priorities."), '');
+  assert.equal(gentleLine('Here is your activity.'), ''); // only a calm question is added
+  assert.equal(gentleLine('Want to look at these together?'), 'Want to look at these together?');
+  assert.equal(calmExplanation('Does this service still serve a purpose in your digital life?'), '');
+  assert.equal(calmExplanation('Are you still enjoying the content provided by this subscription?'), '');
+  assert.equal(calmExplanation('A one-off charge from this store. Does it look familiar?'), 'A one-off charge from this store. Does it look familiar?');
+  assert.equal(calmExplanation('Charged 14.99. Does it look familiar?'), ''); // numbers come from the server
+});
+
+test('subscriptions use server wording with the yearly cost, whatever the AI wrote', () => {
+  const flags = finalizeFlags(
+    [{ subscriptionId: 'S1', suggestedAction: 'cancel_subscription', gentleExplanation: 'Does this service still serve a purpose in your digital life?' }],
+    active,
+    txs,
+    money,
+    'f'
+  );
+  const stream = flags.find((f) => f.title === 'StreamPlus')!;
+  assert.equal(stream.gentleExplanation, 'Renews every month, 155.88 USD a year. Still using it?');
+});
+
+test('check-in wording follows the tone, with the same figures (KOVA-100)', () => {
+  const stream = active.find((x) => x.merchant === 'StreamPlus')!;
+  assert.equal(subscriptionLine(stream, false, money, 'gentle'), 'Renews every month, 155.88 USD a year. Still using it?');
+  assert.equal(subscriptionLine(stream, false, money, 'straight'), '155.88 USD a year. Keep it or cancel it?');
+  assert.equal(subscriptionLine(stream, false, money, 'analytic'), '12.99 USD a month × 12 = 155.88 USD a year. Still using it?');
+  assert.match(subscriptionLine(stream, false, money, 'mentor'), /155\.88 USD a year\. Worth a quiet check/);
+  const flags = finalizeFlags([], active, txs, money, 'f', 'straight');
+  assert.match(flags[0].gentleExplanation, /^Unclear name\./);
+});
+
+test('the AI line under the facts follows the tone', () => {
+  const reflective = 'Small regular costs are often the easiest to rethink.';
+  assert.equal(gentleLine('Want to look at these together?', 'straight'), ''); // facts only
+  assert.equal(gentleLine('Want to look at these together?', 'analytic'), '');
+  assert.equal(gentleLine(reflective, 'gentle'), ''); // gentle: questions only
+  assert.equal(gentleLine(reflective, 'mentor'), reflective); // mentor: one reflective line
+  assert.equal(gentleLine('You should cancel the ones you forgot.', 'mentor'), ''); // never an order
 });

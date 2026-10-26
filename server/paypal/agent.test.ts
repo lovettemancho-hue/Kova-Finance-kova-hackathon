@@ -125,3 +125,11 @@ test('"anything to cancel?" always offers the unfamiliar subscription', () => {
   autoProposals(c); // no duplicates
   assert.equal(c.proposals.length, 1);
 });
+
+test('mentor keeps one reflective sentence; other tones keep none (KOVA-100)', () => {
+  const a = 'You paid 199.24 USD through PayPal this month. Small recurring costs are where long-term habits form. Keeping habits simple helps over the long term.';
+  assert.equal(dropLectures(a, 'gentle'), 'You paid 199.24 USD through PayPal this month.');
+  assert.equal(dropLectures(a, 'mentor'), 'You paid 199.24 USD through PayPal this month. Small recurring costs are where long-term habits form.');
+  assert.equal(dropLectures('You paid 20 USD. You should build better habits.', 'mentor'), 'You paid 20 USD.'); // orders never pass
+  assert.equal(dropLectures('Great job staying on track!', 'mentor'), ''); // no reflection without an answer
+});

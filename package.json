@@ -14,7 +14,7 @@
     "paypal:seed": "tsx --env-file=.env scripts/paypal-sandbox.ts seed",
     "paypal:capture": "tsx --env-file=.env scripts/paypal-sandbox.ts capture",
     "account:delete": "tsx scripts/delete-account.ts",
-    "test": "tsx --test server/account.test.ts server/plans.test.ts server/aiBudget.test.ts src/utils/growthMarks.test.ts server/billing.test.ts server/paypal/checkin.test.ts server/paypal/paypalService.test.ts server/paypal/agent.test.ts src/utils/chatIntents.test.ts src/utils/affordability.test.ts src/utils/subscriptionRadar.test.ts src/lib/statementImport/statementImport.test.ts"
+    "test": "tsx --test server/account.test.ts server/plans.test.ts server/tone.test.ts server/channel3.test.ts server/priceWatch.test.ts server/aiBudget.test.ts src/utils/growthMarks.test.ts server/billing.test.ts server/paypal/checkin.test.ts server/paypal/paypalService.test.ts server/paypal/agent.test.ts src/utils/paypalIntent.test.ts src/utils/chatIntents.test.ts src/utils/affordability.test.ts src/utils/subscriptionRadar.test.ts src/lib/statementImport/statementImport.test.ts"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.5.1",

@@ -114,6 +114,11 @@ export interface AffordCardData {
   leftAfter: number | null; // usual income − spent so far − price; null with no income logged
   goal: { title: string; kind: GoalKind; delayDays: number | null } | null; // delayDays null: no recent deposits
   otherGoals: number;
+  // Where the price came from when the user didn't type one (KOVA-101). Absent when they typed it.
+  // productId and title let "I'll wait" start a price watch (KOVA-102).
+  priceSource?: { provider: 'Channel3'; domain: string; stores: number; quotedPrice: number; quotedCurrency: string; productId?: string; title?: string;
+    // KOVA-103: photo, and on a price-drop card the earlier price and Channel3's 30-day low.
+    imageUrl?: string; previousPrice?: number; lowestIn30Days?: boolean };
 }
 
 /** What the user told Kova about one subscription (KOVA-086), keyed by merchant key in `subscriptionNotes`. */
@@ -160,6 +165,8 @@ export interface ChatMessage {
   inlineGoalCard?: GoalCardData;
   categoryBreakdown?: CategoryBreakdownCardData;
   affordCard?: AffordCardData;
+  // "I'll wait" confirmation: the product Kova is now watching (KOVA-103). Prices in the quoted currency.
+  priceWatch?: { title: string; price: number; currency: string; domain: string; imageUrl?: string; until: string };
   radarCard?: SubscriptionRadarCardData;
   paypalBasis?: string; // "Based on 12 PayPal payments, Sep 22 – Oct 22"
   paypalProposals?: PayPalProposal[];

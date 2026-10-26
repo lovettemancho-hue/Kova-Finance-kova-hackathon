@@ -7,7 +7,8 @@ import {
   Mail, 
   Settings, 
   ChevronRight,
-  BookOpen
+  BookOpen,
+  ShoppingBag
 } from 'lucide-react';
 import { KovaAvatar } from './KovaAvatar';
 
@@ -154,14 +155,31 @@ export const HowToUseScreen: React.FC<HowToUseScreenProps> = ({ onBack, onSelect
           </p>
         </section>
 
-        {/* Section 5: Make it yours */}
+        {/* Section 5: Ask before you buy (KOVA-104) */}
+        <section className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] space-y-3.5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center text-emerald-300 shrink-0">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] font-semibold text-[#8A8A8E] uppercase tracking-wider">Step 05</span>
+              <h3 className="text-base font-semibold text-white">Ask before you buy</h3>
+            </div>
+          </div>
+
+          <p className="text-xs sm:text-sm text-[#D1D1D6] leading-relaxed">
+            Ask <span className="text-white font-medium">"Can I afford the Sony WH-1000XM6?"</span> and Kova finds today's price across stores, then shows how it fits your month and your goals. Not sure yet? Tap <span className="text-white font-semibold">"I'll wait"</span> and Kova watches the price for 30 days, telling you only if it drops. You can also type your own price with <span className="text-white font-semibold">"Use a different price"</span>.
+          </p>
+        </section>
+
+        {/* Section 6: Make it yours */}
         <section className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] space-y-3.5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-[#8A8A8E] uppercase tracking-wider">Step 05</span>
+              <span className="text-[10px] font-semibold text-[#8A8A8E] uppercase tracking-wider">Step 06</span>
               <h3 className="text-base font-semibold text-white">Make it yours</h3>
             </div>
           </div>

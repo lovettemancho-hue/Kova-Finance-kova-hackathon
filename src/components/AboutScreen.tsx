@@ -5,7 +5,8 @@ import {
   MessageSquare, 
   BookOpen, 
   Compass, 
-  Heart
+  Heart,
+  ShoppingBag
 } from 'lucide-react';
 import { ViewMode } from '../types';
 import { AboutBankScene } from './AboutBankScene';
@@ -79,7 +80,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
               <span>How Kova Works</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-serif-headline font-semibold text-white">
-              Three pillars of mindful wealth.
+              Four ways Kova helps.
             </h2>
           </div>
 
@@ -119,6 +120,19 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
                 <h3 className="text-base font-semibold text-white">A letter, every month</h3>
                 <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
                   A personalized, written debrief analyzing your real patterns and pairing your month with curated book recommendations.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 4: Ask before you buy (KOVA-101) */}
+            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] flex items-start gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-white">Ask before you buy</h3>
+                <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
+                  Ask "Can I afford the Sony WH-1000XM5?" and Kova finds today's price across stores, then shows how it fits your month and your goals. Tap "I'll wait" and Kova watches the price, telling you only if it drops. Product prices come from Channel3. The choice stays yours.
                 </p>
               </div>
             </div>

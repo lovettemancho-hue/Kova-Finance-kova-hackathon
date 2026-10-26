@@ -9,6 +9,8 @@ import {
   periodKey,
   isPlainLogCommand,
   parsePlainLog,
+  plainLogFeeling,
+  plainLogReply,
   amountsInText,
   UsageDoc,
 } from './plans';
@@ -130,4 +132,26 @@ test('amountsInText (KOVA-064) still reads amounts correctly', () => {
   assert.deepEqual(amountsInText('paid $1,250.50 for flights'), [1250.5]);
   assert.deepEqual(amountsInText('lunch at 12:30 cost 22'), [22]);
   assert.deepEqual(amountsInText('paid 5k rent'), [5000]);
+});
+
+test('plain logs with a feeling: clean label, calm reply (KOVA-099)', () => {
+  assert.deepEqual(parsePlainLog('spent 12 on lunch today feeling a bit guilty'), { label: 'Lunch', category: 'Dining out', amount: 12, type: 'outcome' });
+  assert.deepEqual(parsePlainLog('Spent 12 on lunch, feeling abit guilty'), { label: 'Lunch', category: 'Dining out', amount: 12, type: 'outcome' });
+  assert.deepEqual(parsePlainLog('spent 40 on shoes and I feel bad'), { label: 'Shoes', category: 'Shopping', amount: 40, type: 'outcome' });
+  assert.deepEqual(parsePlainLog("paid 15 for pizza yesterday, i'm so stressed"), { label: 'Pizza', category: 'Dining out', amount: 15, type: 'outcome' });
+  assert.equal(parsePlainLog('spent 30 on lunch and drinks')?.label, 'Lunch and drinks'); // no feeling, nothing cut
+  assert.equal(plainLogFeeling('spent 12 on lunch feeling guilty'), true);
+  assert.equal(plainLogFeeling('spent 12 on lunch'), false);
+  assert.equal(plainLogReply('Lunch', '$12', false), 'Logged lunch, $12.');
+  const calm = plainLogReply('Lunch', '$12', true);
+  assert.match(calm, /^Logged lunch, \$12\. /);
+  assert.doesNotMatch(calm, /\d.*\d.*\d/); // only the logged amount
+});
+
+test('the feeling line follows the tone; the log line is the same in every tone (KOVA-100)', () => {
+  const tones = ['gentle', 'straight', 'analytic', 'mentor'] as const;
+  const replies = tones.map((t) => plainLogReply('Lunch', '$12', true, t));
+  assert.equal(new Set(replies).size, 4);
+  for (const r of replies) assert.match(r, /^Logged lunch, \$12\. /);
+  for (const t of tones) assert.equal(plainLogReply('Lunch', '$12', false, t), 'Logged lunch, $12.');
 });

@@ -58,10 +58,8 @@ export interface PayPalAskResult {
   usage?: { used: number; limit: number; resetsAt: string };
 }
 
-/** Messages that go to the PayPal agent instead of the normal chat (only for invited, connected accounts). */
-export function isPayPalQuestion(text: string): boolean {
-  return /\bpay ?pal\b/i.test(text) && text.trim().length <= 500;
-}
+// Which messages go to the PayPal agent: one typo allowed (KOVA-099).
+export { isPayPalQuestion } from './paypalIntent';
 
 async function request<T>(endpoint: string, init?: RequestInit): Promise<T> {
   const res = await fetchWithAuth(endpoint, init);

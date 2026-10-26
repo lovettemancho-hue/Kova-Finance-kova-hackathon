@@ -5,6 +5,7 @@ import { KovaAvatar } from './KovaAvatar';
 import { GoalCard } from './GoalCard';
 import { CategoryBreakdownCard } from './CategoryBreakdownCard';
 import { AffordCard } from './AffordCard';
+import { PriceWatchCard } from './PriceWatchCard';
 import { SubscriptionRadarCard } from './SubscriptionRadarCard';
 import { PayPalProposalCard } from './PayPalProposalCard';
 import { ArrowUp, Mic, FileSpreadsheet, ArrowRight, Sparkles, Plus, Wallet } from 'lucide-react';
@@ -237,6 +238,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
                   )}
 
                   {msg.affordCard && <AffordCard data={msg.affordCard} />}
+
+                  {msg.priceWatch && <PriceWatchCard data={msg.priceWatch} />}
 
                   {msg.radarCard && msg.radarCard.rows.length > 0 && <SubscriptionRadarCard data={msg.radarCard} />}
 

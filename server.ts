@@ -11,7 +11,10 @@ import { getAuth, DecodedIdToken } from 'firebase-admin/auth';
 import { getMessaging } from 'firebase-admin/messaging';
 import { registerPayPalRoutes } from './server/paypal/routes';
 import { checkRateLimit } from './server/rateLimit';
-import { PLAN_LIMITS, amountsInText, parsePlainLog, periodKey } from './server/plans';
+import { PLAN_LIMITS, amountsInText, parsePlainLog, periodKey, plainLogFeeling, plainLogReply } from './server/plans';
+import { chatToneStyle, longformToneStyle, resolveTone, type Plan } from './server/tone';
+import { createChannel3Client, isSpecificItem } from './server/channel3';
+import { MAX_ACTIVE_WATCHES, priceDrop, simulatedDrop, watchAction, watchDocId, watchRecord, type PriceDrop, type PriceWatch } from './server/priceWatch';
 import { createUsageService, limitMessage } from './server/usage';
 import { AiRoute, budgetFor, isInvalidArgumentError, THINKING_LEVEL, usageLine } from './server/aiBudget';
 import { candidateUids, createBillingService, isPremiumEntitlement, webhookAuthorized } from './server/billing';
@@ -126,6 +129,8 @@ const adminAuth = getAuth(adminApp);
 const usage = createUsageService(adminDb);
 // Server-verified purchases (KOVA-026). Off until REVENUECAT_SECRET_KEY is set.
 const billing = createBillingService(adminDb, { secretKey: process.env.REVENUECAT_SECRET_KEY });
+// Product prices for "Can I afford this?" (KOVA-101). Off unless CHANNEL3_API_KEY is set (Secret Manager channel3-api-key).
+const channel3 = createChannel3Client({ apiKey: process.env.CHANNEL3_API_KEY });
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -598,13 +603,13 @@ const KOVA_CHAT_VOICE = `How to reply:
    - Question -> answer it directly in the first sentence (figures only from the snapshot), then stop or add one useful line.
    - The user shares a feeling or worry -> acknowledge it in a few plain words, then help with what they asked.
    - The user asks what you think, for your view, or to explain their spending -> give 2-3 calm observations from the snapshot: the biggest category and what's in it, recurring costs, money in vs out. Observations, not verdicts. Never say you don't have an opinion; that reads as cold. End with one gentle question.
-2. Default to 1-2 sentences. Never more than 3 (4 when giving observations).
+2. Default to 1-2 sentences. Never more than 3 (4 when giving observations). The Analytic tone may use up to 4 short "label: value" lines instead.
 3. Plain, everyday words. Talk like a calm friend who is good with money.
 
 Never:
 - Give orders or "shoulds": no "stop…", "you need to…", "you must…", "make sure you…", "stay focused".
 - Judge or grade the user, good or bad: no "great discipline", "intentional", "powerful", "a sign of…", "you still have a long way to go".
-- Add a moral, life lesson or wealth-mindset line the user didn't ask for ("tracking builds clarity", "consistency is found in our actions").
+- Add a moral, life lesson or wealth-mindset line the user didn't ask for ("tracking builds clarity", "consistency is found in our actions"). Only exception: the Warm mentor tone may end with ONE short reflective line offered as an idea.
 - Mention stress, triggers, impulses, emotions, breathing or "steadying focus" unless the user raised them in their current message.
 - Use filler openers like "Remember that…", "It's important to…", "I hear you" (unless they shared a feeling), "Let's take a breath".
 
@@ -615,42 +620,15 @@ Examples (bad -> good):
 - User: "What's my remaining balance?" | Bad: "Your remaining balance is ¥1,300. You still have a long way to go, so stop the impulse spending and stay focused." | Good: "You've paid off ¥300 of ¥2,000, so ¥1,700 is left."
 - User: "how much did I spend this month" | Bad: "You have spent $0. It is a sign of great discipline to start the month with such intentional focus." | Good: "Nothing logged as spending yet this October."`;
 
-/** Style only: how Kova sounds for each onboarding tone. Content rules live in KOVA_CHAT_VOICE. */
-function getChatStyleInstruction(tone: string): string {
-  const t = (tone || '').toLowerCase();
-  if (t.includes('analytic') || t.includes('numbers') || t.includes('data')) {
-    return 'Style: analytic. Lead with the relevant figures from the snapshot (amounts, percentages, comparisons with last month). Compact, factual, no adjectives.';
-  }
-  if (t.includes('straight') || t.includes('truth') || t.includes('direct')) {
-    return 'Style: straight. Short and direct, no padding or softening. State facts plainly, still without judging or giving orders.';
-  }
-  if (t.includes('warm') || t.includes('mentor') || t.includes('wise')) {
-    return 'Style: warm mentor. Friendly and encouraging in wording. Only explain a money concept when the user asks a question about one, and keep it to one short sentence.';
-  }
-  return 'Style: gentle. Soft, reassuring wording and low pressure. Keep numbers simple.';
+/** Style only: how Kova sounds for each tone (server/tone.ts). Content rules live in KOVA_CHAT_VOICE. */
+function getChatStyleInstruction(tone: string, plan?: Plan): string {
+  return chatToneStyle(resolveTone(tone, plan));
 }
 
-// Helper to generate explicit behavioral system instructions based on tone preference
-function getToneInstruction(tone: string): string {
-  const t = (tone || '').toLowerCase();
-
-  if (t.includes('analytic') || t.includes('numbers') || t.includes('data')) {
-    return `CRITICAL TONE DIRECTIVE — Analytic ("Analytic, show me the numbers"):
-The user has selected "Analytic, show me the numbers" as their preferred tone. Respond with precise figures, percentages, monetary metrics, and data-driven structure in every message. Focus on calculated rates, spending totals, and structured quantitative analysis. Avoid vague, emotional, or decorative language.`;
-  }
-
-  if (t.includes('straight') || t.includes('truth') || t.includes('direct')) {
-    return `CRITICAL TONE DIRECTIVE — Straight ("Straight, tell me the truth"):
-The user has selected "Straight, tell me the truth" as their preferred tone. Respond with direct, unfiltered, and concise honesty. Do not use soft padding, fluff, or sugarcoating. Point out financial realities directly and give clear, no-nonsense observations.`;
-  }
-
-  if (t.includes('warm') || t.includes('mentor') || t.includes('wise')) {
-    return `CRITICAL TONE DIRECTIVE — Wise Mentor ("Warm, like a wise mentor"):
-The user has selected "Warm, like a wise mentor" as their preferred tone. Respond with encouraging, reflective, and deeply thoughtful guidance focused on long-term habits, perspective, mental models, and steady growth. Frame observations like an experienced, caring mentor giving thoughtful counsel.`;
-  }
-
-  return `CRITICAL TONE DIRECTIVE — Gentle ("Gently, ease me in"):
-The user has selected "Gently, ease me in" as their preferred tone. Respond with soft, gentle, and low-pressure language. Focus on positive momentum, comfort, and reassurance without dense metrics, harsh judgment, or urgent pressure.`;
+/** Tone for the longer AI routes and PayPal (server/tone.ts). Analytic falls back to Gentle on Free. */
+function getToneInstruction(tone: string, plan?: Plan, surface: 'chat' | 'longform' = 'longform'): string {
+  const t = resolveTone(tone, plan);
+  return surface === 'chat' ? chatToneStyle(t) : longformToneStyle(t);
 }
 
 // ---- Financial snapshot (fix list item 7) ---------------------------------------------------
@@ -1059,6 +1037,97 @@ app.post('/api/account/delete', requireAuth, async (req: AuthenticatedRequest, r
 
 // "Report" on a Kova reply (Google Play AI-generated content policy). Stored in the server-only aiReports
 // collection for review; deleted with the account (KOVA-092).
+// "Can I afford the Sony WH-1000XM5?" without a price: one real price from Channel3 (KOVA-101).
+// Body: { item, currency }. Returns { available, quote } — quote null means "ask the user for the price".
+// Only the item name leaves the server; rate limited in server/rateLimit.ts.
+app.post('/api/price-lookup', requireAuth, async (req: AuthenticatedRequest, res) => {
+  if (!channel3.configured) return res.json({ available: false, quote: null });
+  const item = typeof req.body?.item === 'string' ? req.body.item.replace(/\s+/g, ' ').trim().slice(0, 80) : '';
+  const currency = typeof req.body?.currency === 'string' && /^[A-Za-z]{3}$/.test(req.body.currency) ? req.body.currency.toUpperCase() : 'USD';
+  if (!isSpecificItem(item)) return res.json({ available: true, quote: null });
+  try {
+    const quote = await channel3.lookup(item, currency);
+    return res.json({ available: true, quote });
+  } catch (err: any) {
+    // The message only, never the response body: keep logs free of third-party data.
+    console.warn(`[Channel3] lookup failed: ${err?.name === 'AbortError' ? 'timeout' : err?.message || 'unknown'}`);
+    return res.json({ available: true, quote: null });
+  }
+});
+
+// Price watch (KOVA-102). "I'll wait" on a priced product: Kova checks the price now and then and says so
+// in chat only when it really drops. Server-only collection priceWatches; prices from Channel3.
+app.post('/api/price-watch', requireAuth, async (req: AuthenticatedRequest, res) => {
+  if (!channel3.configured) return res.json({ ok: false, reason: 'unavailable' });
+  const uid = req.user!.uid;
+  const record = watchRecord(uid, req.body, new Date().toISOString());
+  if (!record) return res.status(400).json({ ok: false, reason: 'invalid' });
+  try {
+    const active = await adminDb.collection('priceWatches').where('uid', '==', uid).where('status', '==', 'active').get();
+    const ref = adminDb.collection('priceWatches').doc(watchDocId(uid, record.productId));
+    const already = active.docs.some((d) => d.id === ref.id);
+    if (!already && active.size >= MAX_ACTIVE_WATCHES) return res.json({ ok: false, reason: 'limit', max: MAX_ACTIVE_WATCHES });
+    await ref.set(record);
+    // Best effort: Channel3 starts recording price history, used for "lowest in 30 days".
+    channel3.startTracking(record.productId).catch((err: any) => console.warn(`[Channel3] start tracking failed: ${err?.message || 'unknown'}`));
+    return res.json({ ok: true });
+  } catch (err: any) {
+    console.error(`[PriceWatch] save failed: code=${err?.code || 'unknown'}`);
+    return res.status(500).json({ ok: false, reason: 'error' });
+  }
+});
+
+// Called when the app opens on chat. Checks at most 3 due watches, each at most every 6 hours.
+// ?simulate=1 is for admins testing the live demo: a clearly marked, made-up drop, never stored.
+app.get('/api/price-watch/updates', requireAuth, async (req: AuthenticatedRequest, res) => {
+  if (!channel3.configured) return res.json({ updates: [] });
+  const uid = req.user!.uid;
+  try {
+    const snap = await adminDb.collection('priceWatches').where('uid', '==', uid).where('status', '==', 'active').limit(MAX_ACTIVE_WATCHES).get();
+    const watches = snap.docs.map((d) => ({ ref: d.ref, w: d.data() as PriceWatch }));
+    if (req.query.simulate === '1' && PLAN_ADMIN_UIDS.has(uid)) {
+      const newest = watches.sort((a, b) => b.w.createdAt.localeCompare(a.w.createdAt))[0];
+      return res.json({ updates: newest ? [simulatedDrop(newest.w)] : [] });
+    }
+    const now = Date.now();
+    const updates: PriceDrop[] = [];
+    let checked = 0;
+    for (const { ref, w } of watches) {
+      const action = watchAction(w, now);
+      if (action === 'expire') {
+        await ref.update({ status: 'expired' });
+        continue;
+      }
+      if (action !== 'check' || checked >= 3) continue;
+      checked++;
+      let quote = null;
+      try {
+        quote = await channel3.currentQuote(w.productId, w.currency);
+      } catch (err: any) {
+        console.warn(`[Channel3] price check failed: ${err?.name === 'AbortError' ? 'timeout' : err?.message || 'unknown'}`);
+      }
+      const drop = priceDrop(w, quote);
+      const patch: Record<string, unknown> = { lastCheckedAt: new Date(now).toISOString() };
+      if (quote && quote.currency === w.currency) patch.lastPrice = quote.price;
+      if (drop) {
+        try {
+          const stats = await channel3.priceStats(w.productId);
+          if (stats && stats.currency === drop.currency && drop.newPrice <= stats.min) drop.lowestIn30Days = true;
+        } catch {
+          // No history yet: the drop is still real, just without the "lowest in 30 days" note.
+        }
+        patch.notifiedPrice = drop.newPrice;
+        updates.push(drop);
+      }
+      await ref.update(patch);
+    }
+    return res.json({ updates });
+  } catch (err: any) {
+    console.error(`[PriceWatch] updates failed: code=${err?.code || 'unknown'}`);
+    return res.json({ updates: [] });
+  }
+});
+
 app.post('/api/ai-report', requireAuth, async (req: AuthenticatedRequest, res) => {
   const record = aiReportRecord(req.user!.uid, req.body, new Date().toISOString());
   if (!record) return res.status(400).json({ error: 'Nothing to report.' });
@@ -1167,7 +1236,9 @@ app.post('/api/chat', requireAuth, async (req: AuthenticatedRequest, res) => {
       const plain = parsePlainLog(message);
       if (plain && !isDuplicateOfRecentExpenses(plain, expenses)) {
         const amountText = snapshotMoney(plain.amount, currencySymbol);
-        return sendDirect(`Logged ${plain.label.toLowerCase()}, ${amountText}.`, ['Log another', 'How much did I spend this month?'], {
+        const feeling = plainLogFeeling(message);
+        const pills = feeling ? ['How much did I spend this month?', 'Log another'] : ['Log another', 'How much did I spend this month?'];
+        return sendDirect(plainLogReply(plain.label, amountText, feeling, resolveTone(preferredTone, verifiedPlan)), pills, {
           extractedExpense: plain,
         });
       }
@@ -1200,7 +1271,7 @@ app.post('/api/chat', requireAuth, async (req: AuthenticatedRequest, res) => {
     });
 
     // Voice (fix list item 12). Chat uses its own style guide; the educational routes keep getToneInstruction.
-    const chatStyle = getChatStyleInstruction(preferredTone);
+    const chatStyle = getChatStyleInstruction(preferredTone, verifiedPlan);
 
     // Lean, fast system prompt for high-throughput live chat
     const systemInstruction = `You are Kova, a calm, non-judgmental money companion. You explain money; you never lecture about it.
@@ -1718,6 +1789,7 @@ ${NUMBERS_RULE}
 Totals, category amounts and goal progress MUST come from the FINANCIAL SNAPSHOT. Individual entries may be quoted as listed. "Moved to a goal" entries are transfers, not income or spending.
 
 ${KOVA_LONGFORM_VOICE}
+${getToneInstruction(userProfile?.preferredTone || '', letterPlan)}
 
 CRITICAL CURRENCY MANDATE:
 The user's official active currency is ${currency} (${currencySymbol}).
@@ -2125,7 +2197,7 @@ app.post('/api/goal-coach', requireAuth, usage.guard('coach'), async (req: Authe
     const currencySymbol = propCurrencySymbol || userProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
 
     const userName = userProfile?.firstName || 'Friend';
-    const tone = userProfile?.preferredTone || 'Warm, like a wise mentor';
+    const tone = userProfile?.preferredTone || 'Gently, ease me in'; // was the mentor tone, which pushed lectures (KOVA-100)
     const goalTitle = goal?.title || 'Savings Goal';
     const target = serverConvertCurrency(Number(goal?.targetAmount || 0), goal?.nativeCurrency || 'USD', currency);
     const current = serverConvertCurrency(Number(goal?.currentAmount || 0), goal?.nativeCurrency || 'USD', currency);
@@ -2161,7 +2233,7 @@ app.post('/api/goal-coach', requireAuth, usage.guard('coach'), async (req: Authe
       });
     }
 
-    const toneDirective = getToneInstruction(tone);
+    const toneDirective = getToneInstruction(tone, req.verifiedPlan);
 
     const systemInstruction = `${KOVA_WEALTH_PHILOSOPHY}
 
@@ -2283,7 +2355,7 @@ app.post('/api/grow-lesson', requireAuth, async (req: AuthenticatedRequest, res)
       });
     }
 
-    const toneDirective = getToneInstruction(tone);
+    const toneDirective = getToneInstruction(tone, req.verifiedPlan);
     const growSnapshot = buildFinancialSnapshot({
       expenses,
       // Older clients don't send goals: say so rather than claiming there are none.
@@ -2412,7 +2484,7 @@ app.post('/api/topic-opener', requireAuth, async (req: AuthenticatedRequest, res
       });
     }
 
-    const toneDirective = getToneInstruction(tone);
+    const toneDirective = getToneInstruction(tone, req.verifiedPlan);
 
     const systemInstruction = `${KOVA_WEALTH_PHILOSOPHY}
 

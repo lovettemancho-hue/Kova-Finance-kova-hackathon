@@ -47,11 +47,19 @@ const REPORT_RULES: Rule[] = [
   { limit: 50, windowMs: HOUR, label: 'report-hour' },
 ];
 
+// Price lookups call Channel3, which costs credits (KOVA-101).
+const PRICE_PATHS = new Set(['/api/price-lookup', '/api/price-watch', '/api/price-watch/updates']);
+const PRICE_RULES: Rule[] = [
+  { limit: 10, windowMs: MINUTE, label: 'price-minute' },
+  { limit: 60, windowMs: HOUR, label: 'price-hour' },
+];
+
 const GENERAL_RULES: Rule[] = [{ limit: 120, windowMs: MINUTE, label: 'general-minute' }];
 
 function rulesFor(path: string): Rule[] {
   if (path === CHECKIN_PATH) return CHECKIN_RULES;
   if (path === REPORT_PATH) return REPORT_RULES;
+  if (PRICE_PATHS.has(path)) return PRICE_RULES;
   if (AI_PATHS.has(path)) return AI_RULES;
   return GENERAL_RULES;
 }

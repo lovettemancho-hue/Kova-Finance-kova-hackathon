@@ -44,7 +44,7 @@ test('deletes the user tree, usage, billing, then the sign-in, in that order', a
   const { calls, deps } = fakes({ billing: async () => true });
   const r = await deleteAccountEverywhere('u1', deps);
   assert.deepEqual(calls, [
-    'delete users/u1', 'delete usage/u1', 'delete aiReports/r1 of u1', 'delete aiReports/r2 of u1', 'billing u1', 'auth u1',
+    'delete users/u1', 'delete usage/u1', 'delete aiReports/r1 of u1', 'delete aiReports/r2 of u1', 'delete priceWatches/r1 of u1', 'delete priceWatches/r2 of u1', 'billing u1', 'auth u1',
   ]);
   assert.equal(r.billingDeleted, true);
 });

@@ -6,6 +6,8 @@
 //
 // Pure functions only (no Firebase), so they can be unit-tested: server/plans.test.ts.
 
+import type { Tone } from './tone';
+
 export type Plan = 'free' | 'premium';
 
 /** Things that cost money and are counted per user. */
@@ -188,18 +190,43 @@ export interface PlainLog {
  * Parses a plain logging message without AI, or returns null (then the AI handles it).
  * Needs isPlainLogCommand() to be true and exactly one amount, so nothing is guessed.
  */
+/** Feelings people add to a log ("…feeling a bit guilty"). Kept out of the label; Kova answers them (KOVA-099). */
+const FEELING = /\b(guilty|bad|stressed|anxious|ashamed|worried|terrible|awful|silly|dumb|stupid|nervous|regret\w*|sad|upset)\b/i;
+const CLAUSE_START = /,|;|\.|!|\bfeel(?:ing)?\b|\bi'?m\b|\bim\b|\bi am\b|\bkinda\b|\bkind of\b/gi;
+const TIME_WORDS = /\b(today|yesterday|tonight|this (morning|afternoon|evening|week)|earlier|just now)\b/gi;
+
+/** Splits "spent 12 on lunch today, feeling a bit guilty" into the log part and whether a feeling was named. */
+export function splitFeeling(message: string): { core: string; feeling: boolean } {
+  const at = message.search(FEELING);
+  if (at < 0) return { core: message, feeling: false };
+  const before = message.slice(0, at);
+  let cut = at;
+  for (const m of before.matchAll(CLAUSE_START)) cut = m.index!; // the clause nearest the feeling word
+  const lead = /\s+(?:and|but)(?:\s+i)?\s*$/i.exec(message.slice(0, cut)); // "…and I feel bad"
+  if (lead) cut = lead.index;
+  return { core: message.slice(0, cut).trim(), feeling: true };
+}
+
+/** True when a plain log also says how the user feels about it, so the reply can answer that calmly. */
+export function plainLogFeeling(message: string): boolean {
+  return splitFeeling(message).feeling;
+}
+
 export function parsePlainLog(message: string): PlainLog | null {
-  if (!isPlainLogCommand(message)) return null;
-  const amounts = amountsInText(message);
+  const { core } = splitFeeling(message);
+  if (!isPlainLogCommand(core)) return null;
+  const amounts = amountsInText(core);
   if (amounts.length !== 1) return null;
-  const lower = message.toLowerCase();
+  const lower = core.toLowerCase();
   const category = LOG_CATEGORIES.find(([re]) => re.test(lower))?.[1] || 'Other';
-  const label = message
+  const label = core
     .replace(/[$€£¥₦]?\s*\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?\s*k?|[$€£¥₦]?\s*\d+(?:\.\d{1,2})?\s*k?/i, ' ')
+    .replace(TIME_WORDS, ' ')
     .replace(/^\s*(log|logged|add|spent|paid|bought|purchased)\b/i, ' ')
     .replace(/\b(new )?(expense|purchase)\b/gi, ' ')
     .replace(/^\s*(on|for|at|a|an)\b/i, ' ')
     .replace(/\b(on|for|at)\s*$/i, ' ')
+    .replace(/[,;.!]+\s*$/, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
   const finalLabel = label.length >= 2 ? label : category === 'Other' ? 'Expense' : category;
@@ -209,4 +236,23 @@ export function parsePlainLog(message: string): PlainLog | null {
     amount: amounts[0],
     type: 'outcome',
   };
+}
+
+/**
+ * Kova's reply to a plain log. Logging is a command, so every tone confirms it in one line. A named feeling
+ * gets one more line in the user's tone (KOVA-100), with no numbers beyond the logged amount and no advice.
+ */
+export function plainLogReply(label: string, amountText: string, feeling: boolean, tone: Tone = 'gentle'): string {
+  const logged = `Logged ${label.toLowerCase()}, ${amountText}.`;
+  if (!feeling) return logged;
+  switch (tone) {
+    case 'straight':
+      return `${logged} One entry. Your month's total is in Log.`;
+    case 'analytic':
+      return `${logged} To see it against this month, ask "How much did I spend this month?"`;
+    case 'mentor':
+      return `${logged} Noticing how a purchase feels is where lasting money habits start, and you just did that.`;
+    default:
+      return `${logged} No judgment here. It's noted, and you can see how this month looks any time.`;
+  }
 }

@@ -51,6 +51,7 @@
       <tr><td>Conversations</td><td>Your chats with Kova, goal coaching threads, and the monthly letters Kova writes for you, so you can come back to them.</td></tr>
       <tr><td>Purchases</td><td>If you buy Premium, whether you're subscribed, which plan, and when it renews or ends. Payment is handled by Google Play; we never see your card details. We use RevenueCat to confirm purchases.</td></tr>
       <tr><td>Notifications</td><td>If you allow notifications, a device token so we can send you reminders. Notifications never contain amounts or merchant names.</td></tr>
+      <tr><td>Price watches</td><td>If you tap "I'll wait" on a product Kova priced: the product's name, price, store and photo link. Kept for up to 30 days so Kova can tell you if the price drops, then it stops. Deleted with your account.</td></tr>
       <tr><td>Usage counts</td><td>How many replies, imports and letters you've used this period, to apply the Free and Premium limits.</td></tr>
     </tbody>
   </table>
@@ -84,6 +85,7 @@
   <ul>
     <li><strong>Google Firebase and Google Cloud</strong>: sign-in, database, hosting, notifications and Gemini AI.</li>
     <li><strong>Google Play</strong>: app distribution and Premium payments.</li>
+    <li><strong>Channel3</strong>: when you ask "Can I afford…" about a specific product without giving a price, only the product name is sent to Channel3 to look up a current price. If you tap "I'll wait", Kova keeps that product (name, price and store) for up to 30 days and checks its price with Channel3 from time to time, so it can tell you about a drop. Nothing about your money or your account is sent to Channel3.</li>
     <li><strong>RevenueCat</strong>: confirming Premium purchases.</li>
   </ul>
   <p>We'll also disclose data if the law requires it. If Kova is ever sold or merged, we'll tell you before your data moves to a new owner.</p>

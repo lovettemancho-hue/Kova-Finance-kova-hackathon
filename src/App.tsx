@@ -76,6 +76,7 @@ import { generateUniqueId } from './utils/id';
 import { buildCategoryBreakdownCard } from './utils/analytics';
 import { isCategoryBreakdownRequest } from './utils/chatIntents';
 import { parseAffordRequest, parseAmountReply, buildAffordCard, isThinCard } from './utils/affordability';
+import { fetchPriceUpdates, lookupPrice, shortProductName, watchPrice } from './utils/priceLookup';
 import { localCategory } from './lib/statementImport/categorize';
 import { paypalApi, isPayPalQuestion } from './utils/paypalClient';
 import {
@@ -460,6 +461,44 @@ function AppContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile, currentView, messages.length, expenses, subscriptionNotes, activeCurrency]);
 
+  // Price watch (KOVA-102): when the app opens on chat, mention real drops on products the user chose to
+  // wait on, with the card redone at the new price. Prices from Channel3, checked by the server.
+  // Admins can add ?simulatePriceDrop=1 to the URL to see a clearly marked test drop.
+  const priceWatchCheckedRef = useRef(false);
+  useEffect(() => {
+    if (priceWatchCheckedRef.current || !userProfile || !currentUser || currentView !== 'chat' || messages.length === 0) return;
+    priceWatchCheckedRef.current = true;
+    let simulate = false;
+    try {
+      simulate = new URLSearchParams(window.location.search).get('simulatePriceDrop') === '1';
+    } catch {
+      // no URL (native shell): no simulation
+    }
+    fetchPriceUpdates(simulate).then((drops) => {
+      const goals = savingsGoals.length > 0 ? savingsGoals : savingsGoal ? [savingsGoal] : [];
+      for (const d of drops) {
+        const name = shortProductName(d.title);
+        const price = d.currency !== activeCurrency ? convertCurrency(d.newPrice, d.currency, activeCurrency) : d.newPrice;
+        const before = d.currency !== activeCurrency ? convertCurrency(d.oldPrice, d.currency, activeCurrency) : d.oldPrice;
+        const money = (n: number) => formatWholeCurrency(n, activeCurrency, activeCurrency);
+        const card = {
+          ...buildAffordCard({ item: name, price, currency: activeCurrency, expenses, goals }),
+          priceSource: {
+            provider: 'Channel3' as const, domain: d.domain, stores: 1, quotedPrice: d.newPrice, quotedCurrency: d.currency,
+            productId: d.productId, title: d.title, previousPrice: d.oldPrice,
+            ...(d.imageUrl ? { imageUrl: d.imageUrl } : {}), ...(d.lowestIn30Days ? { lowestIn30Days: true } : {}),
+          },
+        };
+        postKovaMessage({
+          text: `${d.simulated ? '(Test, not a real price) ' : ''}The ${name} dropped to ${money(price)} at ${d.domain}, from ${money(before)} when you asked${d.lowestIn30Days ? ', the lowest in 30 days' : ''}. Still want it? Here's how it fits now.`,
+          affordCard: card,
+          quickReplies: ['I bought it, log it', "I'll wait"],
+        });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile, currentUser, currentView, messages.length]);
+
   // Handle sending chat message to Kova
   // Item waiting for its price after Kova asked "How much is it?" (KOVA-085).
   const pendingAffordRef = useRef<{ item: string } | null>(null);
@@ -584,7 +623,6 @@ function AppContent({
       const affordAsk = parseAffordRequest(text, activeCurrency);
       const followUpPrice = !affordAsk && pendingAfford ? parseAmountReply(text, activeCurrency) : null;
       if (affordAsk || followUpPrice) {
-        setIsSending(false);
         const item = affordAsk ? affordAsk.item : pendingAfford!.item;
         const parsed = affordAsk ? affordAsk.price : followUpPrice;
         const base = {
@@ -593,8 +631,30 @@ function AppContent({
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           createdAt: Date.now(),
         };
+        const goals = savingsGoals.length > 0 ? savingsGoals : savingsGoal ? [savingsGoal] : [];
+        // No price typed: ask the server for a real one first (Channel3, KOVA-101). A vague item or no clear
+        // match comes back empty, and Kova asks "How much is it?" as before. Only the item name is sent.
+        const quote = !parsed && affordAsk && item !== 'it' ? await lookupPrice(item, activeCurrency) : null;
         let kovaMsg: ChatMessage;
-        if (!parsed) {
+        if (quote) {
+          const price = quote.currency !== activeCurrency ? convertCurrency(quote.price, quote.currency, activeCurrency) : quote.price;
+          const name = shortProductName(quote.title);
+          const card = {
+            ...buildAffordCard({ item: name, price, currency: activeCurrency, expenses, goals }),
+            priceSource: { provider: 'Channel3' as const, domain: quote.domain, stores: quote.stores, quotedPrice: quote.price, quotedCurrency: quote.currency, productId: quote.productId, title: quote.title, imageUrl: quote.imageUrl },
+          };
+          const priceText = formatWholeCurrency(price, activeCurrency, activeCurrency);
+          const where = quote.stores > 1 ? `the lowest in-stock price I found across ${quote.stores} stores` : 'the in-stock price I found';
+          const intro = `${name} is about ${priceText} at ${quote.domain}, ${where}.`;
+          kovaMsg = {
+            ...base,
+            text: isThinCard(card)
+              ? `${intro} Here's this month so far. Once you've logged a month or two, I can show how it affects your goals too.`
+              : `${intro} Here's how it fits, so you can decide.`,
+            affordCard: card,
+            quickReplies: ['I bought it, log it', "I'll wait", 'Use a different price'],
+          };
+        } else if (!parsed) {
           pendingAffordRef.current = { item };
           kovaMsg = { ...base, text: item === 'it' ? 'How much is it?' : `How much is the ${item}?` };
         } else {
@@ -602,7 +662,6 @@ function AppContent({
             parsed.currency && parsed.currency !== activeCurrency
               ? convertCurrency(parsed.amount, parsed.currency, activeCurrency)
               : parsed.amount;
-          const goals = savingsGoals.length > 0 ? savingsGoals : savingsGoal ? [savingsGoal] : [];
           const card = buildAffordCard({ item, price, currency: activeCurrency, expenses, goals });
           const priceText = formatWholeCurrency(price, activeCurrency, activeCurrency);
           const intro = item === 'it' ? `That's ${priceText}.` : `That's ${priceText} for ${item}.`;
@@ -615,12 +674,35 @@ function AppContent({
             quickReplies: ['I bought it, log it', "I'll wait"],
           };
         }
+        setIsSending(false);
         setMessages((prev) => {
           const next = [...prev, kovaMsg];
           if (currentUser) updateUserMessages(currentUser.uid, next);
           return next;
         });
         return;
+      }
+
+      // The quoted price isn't what they'd pay: ask for theirs and redo the card (KOVA-101).
+      if (lower === 'use a different price') {
+        const lastAsk = [...messages].reverse().find((m) => m.affordCard)?.affordCard;
+        if (lastAsk) {
+          setIsSending(false);
+          pendingAffordRef.current = { item: lastAsk.item };
+          const kovaMsg: ChatMessage = {
+            id: generateUniqueId('msg'),
+            sender: 'kova',
+            text: `Sure. How much is the ${lastAsk.item} where you'd buy it?`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            createdAt: Date.now(),
+          };
+          setMessages((prev) => {
+            const next = [...prev, kovaMsg];
+            if (currentUser) updateUserMessages(currentUser.uid, next);
+            return next;
+          });
+          return;
+        }
       }
 
       if (lower === 'i bought it, log it') {
@@ -643,10 +725,32 @@ function AppContent({
 
       if (lower === "i'll wait") {
         setIsSending(false);
+        // A product Kova priced: offer to watch its price while they wait (KOVA-102).
+        const lastAsk = [...messages].reverse().find((m) => m.affordCard)?.affordCard;
+        const src = lastAsk?.priceSource;
+        let text = "Okay. A day or two often makes the choice clearer. Ask me again anytime.";
+        let watchCard: ChatMessage['priceWatch'];
+        if (lastAsk && src?.productId) {
+          const watched = await watchPrice({ productId: src.productId, title: src.title || lastAsk.item, price: src.quotedPrice, currency: src.quotedCurrency, domain: src.domain, imageUrl: src.imageUrl });
+          if (watched === 'ok') {
+            text = `Okay. I'll keep an eye on the price of the ${lastAsk.item} and tell you here if it drops. A day or two often makes the choice clearer.`;
+            watchCard = {
+              title: lastAsk.item,
+              price: src.quotedPrice,
+              currency: src.quotedCurrency,
+              domain: src.domain,
+              ...(src.imageUrl ? { imageUrl: src.imageUrl } : {}),
+              until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            };
+          } else if (watched === 'limit') {
+            text = "Okay. I'm already watching the most prices I can for you, so I won't track this one. A day or two often makes the choice clearer.";
+          }
+        }
         const kovaMsg: ChatMessage = {
           id: generateUniqueId('msg'),
           sender: 'kova',
-          text: "Okay. A day or two often makes the choice clearer. Ask me again anytime.",
+          text,
+          ...(watchCard ? { priceWatch: watchCard } : {}),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           createdAt: Date.now(),
           quickReplies: ['How am I doing this month?'],

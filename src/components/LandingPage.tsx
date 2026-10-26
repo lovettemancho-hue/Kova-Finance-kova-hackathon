@@ -2,7 +2,7 @@ import React from 'react';
 import { KovaAvatar } from './KovaAvatar';
 import { CalmTreeScene } from './CalmTreeScene';
 import { ViewMode } from '../types';
-import { MessageSquare, BarChart3, Mail, ArrowRight, Sparkles, BookOpen, ShieldCheck } from 'lucide-react';
+import { MessageSquare, BarChart3, Mail, ArrowRight, Sparkles, BookOpen, ShieldCheck, ShoppingBag, Eye, Headphones } from 'lucide-react';
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -159,7 +159,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             How Kova Works
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif-headline font-normal text-white">
-            Three simple rhythms
+            Four simple rhythms
           </h2>
         </div>
 
@@ -236,6 +236,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             <div className="text-[10px] text-[#8A8A8E] border-t border-white/5 pt-1.5 text-right italic">
               Also available as a downloadable PDF report.
             </div>
+          </div>
+        </div>
+
+        {/* Pillar 4: Ask before you buy (KOVA-104) */}
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4 hover:border-white/20 transition-all">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">4. Ask before you buy</h3>
+              <p className="text-xs text-[#8A8A8E]">
+                Ask about any product. Kova finds today's price across stores, shows how it fits your month and goals, and watches the price if you decide to wait.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/5 flex items-center gap-3 text-xs">
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0" aria-hidden="true">
+              <Headphones className="w-5 h-5 text-black" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-white font-medium block truncate">"Can I afford the Sony WH-1000XM6?"</span>
+              <span className="text-[10px] text-[#8A8A8E]">Example · prices via Channel3</span>
+            </div>
+            <span className="text-[#30D158] font-bold shrink-0 flex items-center gap-1">
+              <Eye className="w-3.5 h-3.5" /> Watching
+            </span>
           </div>
         </div>
       </section>
