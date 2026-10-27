@@ -161,7 +161,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
     return (
       <div
         onClick={onEditGoal}
-        className="glass-card rounded-[28px] p-5 w-full relative overflow-hidden border border-dashed border-white/20 shadow-2xl my-2 transition-all group cursor-pointer hover:border-white/40 hover:bg-[#1A1A1D]/90"
+        className="glass-card rounded-[28px] p-5 w-full relative overflow-hidden border border-dashed border-white/20 shadow-2xl my-2 transition-all group cursor-pointer hover:border-white/40 hover:bg-kova-surface/90"
         title="Tap to set target amount"
       >
         {/* Background glow gradient */}
@@ -171,7 +171,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
         <div className="flex items-start justify-between mb-3">
           <div className="min-w-0 flex-1 pr-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs text-[#8A8A8E] font-medium tracking-wide uppercase truncate">
+              <span className="text-xs text-kova-muted font-medium tracking-wide uppercase truncate">
                 {data.title || 'Savings Goal'}
               </span>
               <span className="text-[10px] text-white/50 reveal-on-hover flex items-center gap-0.5 bg-white/10 px-2 py-0.5 rounded-full">
@@ -198,7 +198,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
               {saved > 0 ? (
                 <div className="flex items-baseline gap-2">
                   <span>{formattedSaved}</span>
-                  <span className="text-xs text-[#8A8A8E] font-normal">{words.soFar}</span>
+                  <span className="text-xs text-kova-muted font-normal">{words.soFar}</span>
                 </div>
               ) : (
                 <span className="text-white/90">Target not set yet</span>
@@ -229,7 +229,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
 
         {/* Contribution Activity Footer if contributions exist */}
         {contributionSummary.totalEntries > 0 && (
-          <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 text-[10px] text-[#8A8A8E]">
+          <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 text-[10px] text-kova-muted">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="flex items-center gap-1 text-emerald-400 font-medium font-mono">
                 <ArrowDownLeft className="w-3 h-3" />
@@ -304,8 +304,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
   return (
     <div
       onClick={onEditGoal}
-      className={`glass-card rounded-[28px] p-5 w-full relative overflow-hidden border border-white/15 shadow-2xl my-2 transition-all group cursor-pointer hover:border-white/30 hover:bg-[#1A1A1D]/90 ${
-        isAchieved ? 'ring-1 ring-[#30D158]/50' : ''
+      className={`glass-card rounded-[28px] p-5 w-full relative overflow-hidden border border-white/15 shadow-2xl my-2 transition-all group cursor-pointer hover:border-white/30 hover:bg-kova-surface/90 ${
+        isAchieved ? 'ring-1 ring-kova-green/50' : ''
       }`}
       title="Tap to edit goal or target amount"
     >
@@ -316,7 +316,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs text-[#8A8A8E] font-medium tracking-wide uppercase">
+            <span className="text-xs text-kova-muted font-medium tracking-wide uppercase">
               {data.title || 'Savings Goal'}
             </span>
             <span className="text-[10px] text-white/50 reveal-on-hover flex items-center gap-0.5 bg-white/10 px-2 py-0.5 rounded-full">
@@ -341,7 +341,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
 
           <div className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1 flex items-baseline gap-2">
             <span>{formattedSaved}</span>
-            <span className="text-xs text-[#8A8A8E] font-normal">
+            <span className="text-xs text-kova-muted font-normal">
               of {formattedTarget} {words.targetNoun}
             </span>
           </div>
@@ -354,7 +354,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
               cx="28"
               cy="28"
               r="22"
-              stroke="rgba(255, 255, 255, 0.12)"
+              style={{ stroke: 'color-mix(in srgb, var(--color-white) 12%, transparent)' }}
               strokeWidth="4"
               fill="transparent"
             />
@@ -362,7 +362,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
               cx="28"
               cy="28"
               r="22"
-              stroke={isAchieved ? '#30D158' : '#FFFFFF'}
+              style={{ stroke: isAchieved ? 'var(--color-kova-green)' : 'var(--color-white)' }}
               strokeWidth="4"
               strokeDasharray={2 * Math.PI * 22}
               strokeDashoffset={2 * Math.PI * 22 * (1 - percentage / 100)}
@@ -373,13 +373,13 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
           </svg>
           <div className="absolute text-center flex flex-col items-center justify-center">
             {isAchieved ? (
-              <CheckCircle2 className="w-4 h-4 text-[#30D158]" />
+              <CheckCircle2 className="w-4 h-4 text-kova-green" />
             ) : (
               <>
                 <span className="text-[11px] font-bold text-white block leading-none">
                   {percentage}%
                 </span>
-                <span className="text-[7px] text-[#8A8A8E] tracking-tight">{words.progress}</span>
+                <span className="text-[7px] text-kova-muted tracking-tight">{words.progress}</span>
               </>
             )}
           </div>
@@ -388,7 +388,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
 
       {/* Timeframe Pill Switch & Status Indicator */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-1 bg-[#121214]/80 p-1 rounded-full w-fit border border-white/5">
+        <div className="flex items-center gap-1 bg-kova-surface-2/80 p-1 rounded-full w-fit border border-white/5">
           {(['Day', 'Week', 'Month', 'Year'] as const).map((item) => (
             <button
               key={item}
@@ -400,7 +400,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
               className={`px-3 py-0.5 rounded-full text-[11px] font-medium transition-all duration-200 ${
                 timeframe === item
                   ? 'bg-white text-black shadow-md font-semibold'
-                  : 'text-[#8A8A8E] hover:text-white'
+                  : 'text-kova-muted hover:text-white'
               }`}
             >
               {item}
@@ -409,12 +409,12 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
         </div>
 
         {isAchieved ? (
-          <span className="text-[10px] text-[#30D158] font-semibold bg-[#30D158]/10 px-2.5 py-1 rounded-full border border-[#30D158]/20 flex items-center gap-1">
+          <span className="text-[10px] text-kova-green font-semibold bg-kova-green/10 px-2.5 py-1 rounded-full border border-kova-green/20 flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" />
             <span>Goal Completed!</span>
           </span>
         ) : (
-          <span className="text-[10px] text-[#8A8A8E] italic">
+          <span className="text-[10px] text-kova-muted italic">
             Tap card to update
           </span>
         )}
@@ -429,8 +429,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
         >
           <defs>
             <linearGradient id={`whiteGradientGoal-${timeframe}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={isAchieved ? '#30D158' : '#FFFFFF'} stopOpacity="0.25" />
-              <stop offset="100%" stopColor={isAchieved ? '#30D158' : '#FFFFFF'} stopOpacity="0.0" />
+              <stop offset="0%" style={{ stopColor: isAchieved ? 'var(--color-kova-green)' : 'var(--color-white)' }} stopOpacity="0.25" />
+              <stop offset="100%" style={{ stopColor: isAchieved ? 'var(--color-kova-green)' : 'var(--color-white)' }} stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -441,7 +441,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
           <path
             d={lineD}
             fill="none"
-            stroke={isAchieved ? '#30D158' : '#FFFFFF'}
+            style={{ stroke: isAchieved ? 'var(--color-kova-green)' : 'var(--color-white)' }}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -453,15 +453,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
             cx={lastX}
             cy={lastY}
             r="4.5"
-            fill={isAchieved ? '#30D158' : '#FFFFFF'}
-            stroke="#121214"
+            style={{ fill: isAchieved ? 'var(--color-kova-green)' : 'var(--color-white)', stroke: 'var(--color-kova-surface-2)' }}
             strokeWidth="2"
             className="shadow-[0_0_12px_#ffffff]"
           />
         </svg>
 
         {/* Dynamic Timeline Markers */}
-        <div className="flex justify-between text-[9px] text-[#8A8A8E] mt-1 px-1 font-mono">
+        <div className="flex justify-between text-[9px] text-kova-muted mt-1 px-1 font-mono">
           {displayLabels.map((lbl, idx) => (
             <span
               key={idx}
@@ -474,7 +473,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ data, currency: propCurrency
       </div>
 
       {/* Contribution Activity & Distribution Sparkline Footer */}
-      <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 text-[10px] text-[#8A8A8E]">
+      <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 text-[10px] text-kova-muted">
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="flex items-center gap-1 text-emerald-400 font-medium font-mono">
             <ArrowDownLeft className="w-3 h-3" />

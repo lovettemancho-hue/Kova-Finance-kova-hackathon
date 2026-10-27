@@ -14,11 +14,17 @@ Kova is an AI money companion that explains your money in plain words and helps 
 - **Ask Kova about your PayPal.** Plain-language questions ("What did I pay for on PayPal this month?", "Anything I should cancel?") are answered by a Gemini function-calling agent over the PayPal data. Each answer shows what it is based on, and every number in it comes from PayPal.
 - **Actions only with the user's yes.** Kova can propose cancelling a subscription or drafting a dispute message. Nothing happens until the user taps the button; the cancel then goes through PayPal's Subscriptions API.
 
+**Ask before you buy (Channel3)**
+
+- **Real prices.** "Can I afford the Sony WH-1000XM6?" Kova looks the product up with Channel3's product search and shows the lowest in-stock price, the store and how many stores have it, then how the purchase fits the user's month and savings goal. Vague items ("headphones") still get "How much is it?", and a result is used only if its title contains every specific word the user typed.
+- **Price watch.** Tap "I'll wait" and Kova watches the price for 30 days (Channel3 price tracking). When the user opens the app, Kova mentions only a real drop (at least 3%), with the old price, the new one and "lowest in 30 days" when Channel3's history confirms it.
+
 **Without PayPal**
 
 - Log spending by chatting ("Spent 12 on lunch").
 - Import a statement CSV from a bank or wallet (PayPal's format is recognised). The file is read on the device; only rows the user confirms are saved.
 - "Can I afford this?", a subscription radar that warns before renewals, savings goals, short lessons and a monthly letter.
+- Eight themes in Settings → Appearance (Midnight, Dusk and a soft Daylight free; Solarized Light, Solarized Dark, Solarized Gold, Forest and Nord Night with Premium), saved to the account.
 
 ## How it works
 
@@ -30,6 +36,7 @@ flowchart LR
   API --> DB
   API --> Gemini["Gemini on Vertex AI<br/>function calling"]
   API --> PayPal["PayPal REST API<br/>(sandbox)"]
+  API --> C3["Channel3 API<br/>product prices + tracking"]
 ```
 
 ### PayPal APIs used (sandbox)
@@ -43,6 +50,17 @@ flowchart LR
 | `POST /v1/billing/subscriptions/{id}/cancel` | Cancelling a subscription after the user confirms |
 
 Code: [`server/paypal/`](server/paypal) (`realPaypal.ts` for the API, `checkin.ts` for flags, `agent.ts` for the Gemini agent, `routes.ts` for the endpoints).
+
+### Channel3 APIs used
+
+| API | Used for |
+| --- | --- |
+| `POST /v1/search` | Finding the product and its in-stock offers for "Can I afford…?" |
+| `GET /v1/products/{id}` | Re-checking the exact product's price for a price watch |
+| `POST /v0/price-tracking/start` | Starting price history when the user taps "I'll wait" |
+| `GET /v0/price-tracking/history/{id}` | 30-day low, for "lowest in 30 days" |
+
+Code: [`server/channel3.ts`](server/channel3.ts) (client and matching), [`server/priceWatch.ts`](server/priceWatch.ts) (watch rules), tests in `server/channel3.test.ts` and `server/priceWatch.test.ts`. Only the product name is sent to Channel3, never money data, and the key stays on the server.
 
 ### How the agent stays honest and safe
 
@@ -60,6 +78,7 @@ These rules are unit-tested in [`server/paypal/agent.test.ts`](server/paypal/age
 - **Data and sign-in:** Firebase Authentication, Cloud Firestore with security rules ([`firestore.rules`](firestore.rules))
 - **AI:** Google Gemini on Vertex AI (`@google/genai`), Gemini 3.1 Flash-Lite and 3.6 Flash
 - **Payments:** PayPal REST APIs (sandbox)
+- **Product prices:** Channel3 (search, products, price tracking)
 - **CI:** GitHub Actions: type check, build, tests, secret scan, container build ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
 
 ## Run it locally
@@ -87,7 +106,8 @@ You need **Node.js 22 or newer**, a **Firebase project** of your own, and option
      npm run paypal:seed
      ```
      Approve the subscriptions as the sandbox buyer, then put the printed IDs in `PAYPAL_SUBSCRIPTION_IDS`.
-5. **Start:**
+5. **Channel3 (optional):** get a free key at [trychannel3.com](https://trychannel3.com) and set `CHANNEL3_API_KEY` in `.env`. Without it, "Can I afford…?" asks for the price instead.
+6. **Start:**
    ```bash
    npm run dev
    ```
@@ -112,6 +132,8 @@ See [`docs/ANDROID.md`](docs/ANDROID.md): `npm run build:android`, then build in
 - No secrets in the code or the app bundle: the Gemini and PayPal secrets live on the server (Secret Manager in production).
 - Firestore rules let users read only their own data and stop them changing their own plan.
 - Statements are read on the device. Accounts can be exported or fully deleted from Settings ([`server/account.ts`](server/account.ts)).
+- The API only accepts requests from Kova's own web origin and Android app (CORS allowlist), caps what reaches the AI prompts, and keeps logs free of money data.
+- A confirmed PayPal action works even if the request reaches a different server instance: open check-in items are kept server-side for 30 minutes ([`server/paypal/checkinStore.ts`](server/paypal/checkinStore.ts)).
 
 ## License
 

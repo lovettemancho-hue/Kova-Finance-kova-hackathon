@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             <div className="space-y-1.5">
               <h3 className="text-base font-semibold text-white">Something went sideways</h3>
-              <p className="text-xs text-[#8A8A8E] leading-relaxed max-w-xs mx-auto">
+              <p className="text-xs text-kova-muted leading-relaxed max-w-xs mx-auto">
                 Take a breath — we can reload {sectionLabel} to get right back on track.
               </p>
             </div>

@@ -1,5 +1,257 @@
 @import "tailwindcss";
 
+/* ---------- Themes (Settings → Appearance) ----------
+   Components use two kinds of colour:
+   - Tailwind's white/black (text-white, bg-black, border-white/10 …). "white" means the foreground ink
+     and "black" the page, so each theme only redefines --color-white and --color-black.
+   - Kova tokens for the greys and status colours (text-kova-muted, bg-kova-surface, text-kova-green …).
+   Every theme below is scoped by [data-theme], so a nested element with data-theme shows that theme
+   (the previews in Settings). .kova-keep-dark keeps night illustrations and book covers dark. */
+@theme {
+  --color-kova-muted: #8a8a8e;
+  --color-kova-soft: #d1d1d6;
+  --color-kova-surface: #161618;
+  --color-kova-surface-2: #121214;
+  --color-kova-raised: #2c2c2e;
+  --color-kova-line: #3a3a3c;
+  --color-kova-green: #30d158;
+  --color-kova-red: #ff3b30;
+  --color-kova-red-soft: #ff6b6b;
+  --color-kova-orange: #ff9500;
+}
+
+:root,
+[data-theme],
+.kova-keep-dark {
+  --kova-glass: color-mix(in srgb, var(--color-kova-surface) 92%, transparent);
+  --kova-glass-hover: color-mix(in srgb, var(--color-kova-raised) 70%, var(--color-kova-surface));
+  --kova-glass-border: color-mix(in srgb, var(--color-white) 8%, transparent);
+  --kova-glass-border-hover: color-mix(in srgb, var(--color-white) 16%, transparent);
+  --kova-pill: color-mix(in srgb, var(--color-white) 6%, transparent);
+  --kova-pill-border: color-mix(in srgb, var(--color-white) 10%, transparent);
+  --kova-focus: color-mix(in srgb, var(--color-white) 75%, transparent);
+  --kova-glow: color-mix(in srgb, var(--color-white) 25%, transparent);
+  --kova-glow-strong: color-mix(in srgb, var(--color-white) 45%, transparent);
+}
+
+/* Midnight (default): Kova's original black. Also used to keep illustrations dark in every theme. */
+[data-theme="midnight"],
+.kova-keep-dark {
+  color-scheme: dark;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-kova-muted: #8a8a8e;
+  --color-kova-soft: #d1d1d6;
+  --color-kova-surface: #161618;
+  --color-kova-surface-2: #121214;
+  --color-kova-raised: #2c2c2e;
+  --color-kova-line: #3a3a3c;
+  --color-kova-green: #30d158;
+  --color-kova-red: #ff3b30;
+  --color-kova-red-soft: #ff6b6b;
+  --color-kova-orange: #ff9500;
+  --color-amber-200: #fee685;
+  --color-amber-300: #ffd236;
+  --color-amber-400: #fcbb00;
+  --color-amber-500: #f99c00;
+  --color-emerald-300: #5ee9b5;
+  --color-emerald-400: #00d294;
+  --color-emerald-500: #00bb7f;
+  --color-red-400: #ff6467;
+  --color-red-500: #fb2c36;
+  --color-rose-400: #ff637e;
+  --color-indigo-300: #a3b3ff;
+  --color-indigo-400: #7c86ff;
+  --kova-glass: rgba(26, 26, 28, 0.88);
+  --kova-glass-hover: rgba(36, 36, 38, 0.92);
+}
+
+/* Dusk (free): a softer slate dark, easier on the eyes than pure black. */
+[data-theme="dusk"] {
+  color-scheme: dark;
+  --color-white: #eceae6;
+  --color-black: #14161b;
+  --color-kova-muted: #8e929b;
+  --color-kova-soft: #c7cad1;
+  --color-kova-surface: #1d2027;
+  --color-kova-surface-2: #191b21;
+  --color-kova-raised: #2a2e37;
+  --color-kova-line: #363b45;
+}
+
+/* Daylight (free): warm paper, never pure white. */
+[data-theme="daylight"] {
+  color-scheme: light;
+  --color-white: #1f1e1b;
+  --color-black: #f2efe8;
+  --color-kova-muted: #6e6b64;
+  --color-kova-soft: #3f3d38;
+  --color-kova-surface: #faf8f3;
+  --color-kova-surface-2: #ece8df;
+  --color-kova-raised: #e2ddd2;
+  --color-kova-line: #cfc9bc;
+  --color-kova-green: #1f8a46;
+  --color-kova-red: #c8312a;
+  --color-kova-red-soft: #b9443a;
+  --color-kova-orange: #b86200;
+  --color-amber-200: #7c4a03;
+  --color-amber-300: #8f5a06;
+  --color-amber-400: #a1660a;
+  --color-amber-500: #a1660a;
+  --color-emerald-300: #0f7a55;
+  --color-emerald-400: #0f7a55;
+  --color-emerald-500: #0b6b4a;
+  --color-red-400: #c2362f;
+  --color-red-500: #b42318;
+  --color-rose-400: #b4234f;
+  --color-indigo-300: #4b46b8;
+  --color-indigo-400: #4338ca;
+}
+
+/* Solarized Light (Premium): Ethan Schoonover's base3 cream with base02 ink. */
+[data-theme="solarized-light"] {
+  color-scheme: light;
+  --color-white: #073642;
+  --color-black: #fdf6e3;
+  --color-kova-muted: #5b6f77;
+  --color-kova-soft: #2e4a53;
+  --color-kova-surface: #fffbef;
+  --color-kova-surface-2: #eee8d5;
+  --color-kova-raised: #e4dcc3;
+  --color-kova-line: #d3c9ab;
+  --color-kova-green: #6b7b00;
+  --color-kova-red: #dc322f;
+  --color-kova-red-soft: #c4401a;
+  --color-kova-orange: #cb4b16;
+  --color-amber-200: #7a5c00;
+  --color-amber-300: #8c6a00;
+  --color-amber-400: #9c7600;
+  --color-amber-500: #b58900;
+  --color-emerald-300: #1e8079;
+  --color-emerald-400: #1e8079;
+  --color-emerald-500: #2aa198;
+  --color-red-400: #dc322f;
+  --color-red-500: #c62a28;
+  --color-rose-400: #d33682;
+  --color-indigo-300: #5b5fb5;
+  --color-indigo-400: #6c71c4;
+}
+
+/* Solarized Dark (Premium): base03 with base2 ink. */
+[data-theme="solarized-dark"] {
+  color-scheme: dark;
+  --color-white: #eee8d5;
+  --color-black: #002b36;
+  --color-kova-muted: #839496;
+  --color-kova-soft: #b9c4c4;
+  --color-kova-surface: #073642;
+  --color-kova-surface-2: #04303b;
+  --color-kova-raised: #0d4250;
+  --color-kova-line: #1d5563;
+  --color-kova-green: #9cb30a;
+  --color-kova-red: #e0504d;
+  --color-kova-red-soft: #e66b5b;
+  --color-kova-orange: #e06a2c;
+  --color-amber-200: #e8c35a;
+  --color-amber-300: #d9ae2b;
+  --color-amber-400: #c99a0a;
+  --color-amber-500: #b58900;
+  --color-emerald-300: #44b9ae;
+  --color-emerald-400: #2aa198;
+  --color-emerald-500: #2aa198;
+  --color-red-400: #e0504d;
+  --color-red-500: #dc322f;
+  --color-rose-400: #e05a9a;
+  --color-indigo-300: #9ea2e3;
+  --color-indigo-400: #8c8fd6;
+}
+
+/* Solarized Gold (Premium): warm gold parchment with deep brown ink. */
+[data-theme="solarized-gold"] {
+  color-scheme: light;
+  --color-white: #33280f;
+  --color-black: #f2e3bc;
+  --color-kova-muted: #75603a;
+  --color-kova-soft: #4c3d1b;
+  --color-kova-surface: #fbf2d9;
+  --color-kova-surface-2: #eadaab;
+  --color-kova-raised: #e0cc96;
+  --color-kova-line: #cfb87a;
+  --color-kova-green: #4f6b00;
+  --color-kova-red: #b1261c;
+  --color-kova-red-soft: #a63a1a;
+  --color-kova-orange: #a84e0b;
+  --color-amber-200: #6e4e00;
+  --color-amber-300: #7e5a00;
+  --color-amber-400: #8f6600;
+  --color-amber-500: #a47400;
+  --color-emerald-300: #2e6e3e;
+  --color-emerald-400: #2e6e3e;
+  --color-emerald-500: #255c33;
+  --color-red-400: #b1261c;
+  --color-red-500: #9e2018;
+  --color-rose-400: #a2284f;
+  --color-indigo-300: #4b4a9e;
+  --color-indigo-400: #403f8f;
+}
+
+/* Forest (Premium): deep evergreen. */
+[data-theme="forest"] {
+  color-scheme: dark;
+  --color-white: #e7efe9;
+  --color-black: #0d1511;
+  --color-kova-muted: #8da295;
+  --color-kova-soft: #c3d2c8;
+  --color-kova-surface: #15201a;
+  --color-kova-surface-2: #111a15;
+  --color-kova-raised: #213029;
+  --color-kova-line: #2d3f35;
+  --color-kova-green: #4ade80;
+}
+
+/* Nord Night (Premium): cool polar night with frost accents. */
+[data-theme="nord"] {
+  color-scheme: dark;
+  --color-white: #eceff4;
+  --color-black: #242933;
+  --color-kova-muted: #9aa3b2;
+  --color-kova-soft: #d8dee9;
+  --color-kova-surface: #2e3440;
+  --color-kova-surface-2: #2a2f3a;
+  --color-kova-raised: #3b4252;
+  --color-kova-line: #4c566a;
+  --color-kova-green: #a3be8c;
+  --color-kova-red: #bf616a;
+  --color-kova-red-soft: #d08770;
+  --color-kova-orange: #d08770;
+  --color-amber-200: #f0d9a8;
+  --color-amber-300: #ebcb8b;
+  --color-amber-400: #e5be6e;
+  --color-amber-500: #d9ae52;
+  --color-emerald-300: #8fbcbb;
+  --color-emerald-400: #8fbcbb;
+  --color-emerald-500: #88c0d0;
+  --color-red-400: #bf616a;
+  --color-red-500: #bf616a;
+  --color-rose-400: #b48ead;
+  --color-indigo-300: #88c0d0;
+  --color-indigo-400: #81a1c1;
+}
+
+/* Theme previews in Settings paint their own page colour. */
+[data-theme].kova-theme-preview {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+/* Switching themes fades instead of flashing (skipped for people who prefer less motion). */
+@media (prefers-reduced-motion: no-preference) {
+  html.kova-theme-switching,
+  html.kova-theme-switching * {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
+  }
+}
+
 :root {
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
@@ -47,7 +299,7 @@ a, button, [role="button"], [role="tab"], label, summary, select {
 /* Keyboard users (PC): show where focus is. Mouse and touch clicks don't trigger :focus-visible. */
 @layer base {
   :where(a, button, [role="button"], [role="tab"], summary, select):focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline: 2px solid var(--kova-focus);
     outline-offset: 2px;
   }
 }
@@ -88,8 +340,8 @@ a, button, [role="button"], [role="tab"], label, summary, select {
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--color-black);
+    color: var(--color-white);
   }
 }
 
@@ -112,30 +364,30 @@ a, button, [role="button"], [role="tab"], label, summary, select {
 
 /* Glass card styling */
 .glass-card {
-  background: rgba(26, 26, 28, 0.88);
+  background: var(--kova-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--kova-glass-border);
 }
 
 .glass-card-hover {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  background: rgba(36, 36, 38, 0.92);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: var(--kova-glass-hover);
+  border-color: var(--kova-glass-border-hover);
 }
 
 .glass-pill {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--kova-pill);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--kova-pill-border);
 }
 
 /* Glowing ring for Kova avatar */
 .kova-glow-ring {
-  box-shadow: 0 0 16px 2px rgba(255, 255, 255, 0.25), inset 0 0 8px 1px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 16px 2px var(--kova-glow), inset 0 0 8px 1px var(--kova-glow);
 }
 
 .kova-pulse {
@@ -144,11 +396,11 @@ a, button, [role="button"], [role="tab"], label, summary, select {
 
 @keyframes kovaPulse {
   0%, 100% {
-    box-shadow: 0 0 12px 2px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 12px 2px var(--kova-glow);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 24px 6px rgba(255, 255, 255, 0.45);
+    box-shadow: 0 0 24px 6px var(--kova-glow-strong);
     transform: scale(1.02);
   }
 }

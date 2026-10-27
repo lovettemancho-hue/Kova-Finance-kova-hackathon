@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 export const CalmTreeScene: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-[#0C0914] shadow-2xl h-52 sm:h-56 select-none flex items-center justify-center ${className}`}
+      className={`kova-keep-dark relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-[#0C0914] shadow-2xl h-52 sm:h-56 select-none flex items-center justify-center ${className}`}
     >
       {/* 1. Ambient Background Nocturnal Gradient & Star Dust */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#140F22] via-[#100C1B] to-[#0A0712] pointer-events-none">

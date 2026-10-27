@@ -72,7 +72,7 @@ export const ReplyMoreButton: React.FC<{ onClick: () => void }> = ({ onClick }) 
     onClick={onClick}
     aria-label="Reply options"
     title="Reply options"
-    className="hidden pointer-fine:inline-flex ml-auto w-6 h-6 items-center justify-center rounded-full text-[#8A8A8E] hover:text-white hover:bg-white/10 opacity-0 group-hover/reply:opacity-100 focus-visible:opacity-100 transition-opacity"
+    className="hidden pointer-fine:inline-flex ml-auto w-6 h-6 items-center justify-center rounded-full text-kova-muted hover:text-white hover:bg-white/10 opacity-0 group-hover/reply:opacity-100 focus-visible:opacity-100 transition-opacity"
   >
     <MoreHorizontal className="w-4 h-4" />
   </button>
@@ -167,12 +167,12 @@ export const ReplyActionsSheet: React.FC<{
         role="dialog"
         aria-modal="true"
         aria-label={step === 'menu' ? 'Reply options' : 'Report this reply'}
-        className="glass-card rounded-[28px] p-4 border border-white/15 bg-[#18181A] max-w-sm w-full space-y-3 shadow-2xl"
+        className="glass-card rounded-[28px] p-4 border border-white/15 bg-kova-surface max-w-sm w-full space-y-3 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mx-auto h-1 w-10 rounded-full bg-white/20 sm:hidden" aria-hidden="true" />
 
-        <p className="text-xs text-[#8A8A8E] leading-relaxed line-clamp-3 px-1">{text}</p>
+        <p className="text-xs text-kova-muted leading-relaxed line-clamp-3 px-1">{text}</p>
 
         {step === 'menu' && (
           <div className="space-y-1">
@@ -184,7 +184,7 @@ export const ReplyActionsSheet: React.FC<{
               type="button"
               onClick={() => setStep('reasons')}
               disabled={reported}
-              className={`${row} text-[#FF6B6B] hover:bg-[#FF3B30]/10 active:bg-[#FF3B30]/10`}
+              className={`${row} text-kova-red-soft hover:bg-kova-red/10 active:bg-kova-red/10`}
             >
               <Flag className="w-4 h-4" />
               <span>{reported ? 'Reported' : 'Report reply'}</span>
@@ -200,7 +200,7 @@ export const ReplyActionsSheet: React.FC<{
                 onClick={() => setStep('menu')}
                 disabled={step === 'sending'}
                 aria-label="Back"
-                className="w-7 h-7 -ml-1 rounded-full flex items-center justify-center text-[#8A8A8E] hover:text-white hover:bg-white/10 disabled:opacity-50"
+                className="w-7 h-7 -ml-1 rounded-full flex items-center justify-center text-kova-muted hover:text-white hover:bg-white/10 disabled:opacity-50"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -218,17 +218,17 @@ export const ReplyActionsSheet: React.FC<{
               </button>
             ))}
             {step === 'sending' && (
-              <p className="flex items-center gap-2 text-xs text-[#8A8A8E] px-4 pt-1" aria-live="polite">
+              <p className="flex items-center gap-2 text-xs text-kova-muted px-4 pt-1" aria-live="polite">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 Sending...
               </p>
             )}
             {error && (
-              <p className="text-xs text-[#FF6B6B] px-4 pt-1" role="alert">
+              <p className="text-xs text-kova-red-soft px-4 pt-1" role="alert">
                 {error}
               </p>
             )}
-            <p className="text-[10px] text-[#8A8A8E] px-4 pt-1">The reply is sent to the Kova team for review.</p>
+            <p className="text-[10px] text-kova-muted px-4 pt-1">The reply is sent to the Kova team for review.</p>
           </div>
         )}
       </div>

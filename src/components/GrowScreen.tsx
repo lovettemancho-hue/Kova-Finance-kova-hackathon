@@ -196,27 +196,27 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
   return (
     <div className="flex flex-col min-h-app max-w-2xl mx-auto w-full px-4 pb-20 pt-2 animate-in fade-in duration-300 font-sans space-y-6">
       {/* Grow Header */}
-      <div className="flex items-center justify-between py-2 border-b border-[#2C2C2E]/50">
+      <div className="flex items-center justify-between py-2 border-b border-kova-raised/50">
         <div className="flex items-center gap-2 min-w-0">
           <KovaAvatar size="sm" isPulsing={true} />
           <div>
             <h2 className="text-sm font-bold text-white tracking-tight">Growth & Literacy</h2>
-            <p className="text-[10px] text-[#8A8A8E]">Accumulating quietly without score or pressure</p>
+            <p className="text-[10px] text-kova-muted">Accumulating quietly without score or pressure</p>
           </div>
         </div>
 
-        <div className="text-xs text-[#8A8A8E] bg-white/5 px-3 py-1 rounded-full border border-white/10 shrink-0 whitespace-nowrap max-w-[45%] truncate">
+        <div className="text-xs text-kova-muted bg-white/5 px-3 py-1 rounded-full border border-white/10 shrink-0 whitespace-nowrap max-w-[45%] truncate">
           {userProfile?.firstName ? `${userProfile.firstName}'s Journey` : 'Personal Rhythm'}
         </div>
       </div>
 
       {/* 1. Rhythm Card */}
-      <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-gradient-to-b from-[#1A1A1D] to-[#121214] shadow-xl space-y-4">
+      <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-gradient-to-b from-kova-surface to-kova-surface-2 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] uppercase font-semibold text-[#8A8A8E] tracking-widest">
+          <span className="text-[10px] uppercase font-semibold text-kova-muted tracking-widest">
             Consistency Rhythm
           </span>
-          <span className="text-[10px] text-[#30D158] font-medium bg-[#30D158]/10 px-2.5 py-0.5 rounded-full border border-[#30D158]/20">
+          <span className="text-[10px] text-kova-green font-medium bg-kova-green/10 px-2.5 py-0.5 rounded-full border border-kova-green/20">
             {activeWeeksCount > 0 ? `${activeWeeksCount} active week${activeWeeksCount > 1 ? 's' : ''}` : 'Week 1'}
           </span>
         </div>
@@ -225,7 +225,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
           <h3 className="text-2xl sm:text-3xl font-serif-headline text-white font-normal leading-tight">
             {totalWeeks} {totalWeeks === 1 ? 'week' : 'weeks'} running
           </h3>
-          <p className="text-xs text-[#8A8A8E] mt-1">
+          <p className="text-xs text-kova-muted mt-1">
             Logging intention regularly without standard app friction or streak loss penalties.
           </p>
         </div>
@@ -239,14 +239,14 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                   className={`w-3.5 h-3.5 rounded-full transition-all duration-300 ${
                     item.hasActivity
                       ? 'bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] scale-110'
-                      : 'bg-[#2C2C2E] border border-white/10'
+                      : 'bg-kova-raised border border-white/10'
                   }`}
                 />
-                <span className="text-[9px] text-[#8A8A8E]">W{item.weekNum}</span>
+                <span className="text-[9px] text-kova-muted">W{item.weekNum}</span>
               </div>
             ))}
           </div>
-          <div className="text-center text-[10px] text-[#8A8A8E] italic pt-1">
+          <div className="text-center text-[10px] text-kova-muted italic pt-1">
             Every entry adds to your personal context
           </div>
         </div>
@@ -254,12 +254,12 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
 
       {/* 2. Growth Marks (Timeline) */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider px-1">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider px-1">
           <Feather className="w-3.5 h-3.5 text-white/80" />
           <span>Growth Marks</span>
         </div>
 
-        <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-[#161618]/90 relative">
+        <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-kova-surface/90 relative">
           <div className="space-y-6 relative pl-6">
             {/* Connecting Thin Line */}
             <div className="absolute left-[9px] top-2 bottom-2 w-[1.5px] bg-gradient-to-b from-white via-white/40 to-white/10" />
@@ -275,7 +275,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                   <h4 className="text-sm font-bold text-white tracking-tight">
                     {mark.title}
                   </h4>
-                  <span className="text-[10px] text-[#8A8A8E] font-mono shrink-0">
+                  <span className="text-[10px] text-kova-muted font-mono shrink-0">
                     {mark.date}
                   </span>
                 </div>
@@ -292,22 +292,22 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
       {/* 3. Today's Card (Micro-Lesson generated by Gemini) */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-white/80" />
             <span>Today's Literacy Nugget</span>
           </div>
           {lesson?.readTime && (
-            <span className="text-[10px] text-[#8A8A8E] bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+            <span className="text-[10px] text-kova-muted bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
               {lesson.readTime}
             </span>
           )}
         </div>
 
-        <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-[#18181A]/95 shadow-xl space-y-4 relative">
+        <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-kova-surface/95 shadow-xl space-y-4 relative">
           {isLoadingLesson ? (
             <div className="py-8 text-center space-y-3">
               <RefreshCw className="w-5 h-5 text-white/70 animate-spin mx-auto" />
-              <p className="text-xs text-[#8A8A8E]">Kova is writing today's custom lesson...</p>
+              <p className="text-xs text-kova-muted">Kova is writing today's custom lesson...</p>
             </div>
           ) : lesson ? (
             <>
@@ -324,7 +324,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                 {lesson.content}
               </p>
 
-              <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/10 text-xs text-white/90 italic">
+              <div className="bg-kova-surface-2 p-3.5 rounded-2xl border border-white/10 text-xs text-white/90 italic">
                 <span className="font-semibold text-white not-italic block mb-0.5">Key takeaway:</span>
                 "{lesson.takeaway}"
               </div>
@@ -335,7 +335,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                   onClick={() => setIsRead(!isRead)}
                   className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 flex items-center gap-2 border ${
                     isRead
-                      ? 'bg-[#30D158]/15 text-[#30D158] border-[#30D158]/30'
+                      ? 'bg-kova-green/15 text-kova-green border-kova-green/30'
                       : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
                   }`}
                 >
@@ -345,7 +345,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
               </div>
             </>
           ) : (
-            <div className="text-xs text-[#8A8A8E] text-center py-4">
+            <div className="text-xs text-kova-muted text-center py-4">
               Unable to load lesson at this moment.
             </div>
           )}
@@ -355,12 +355,12 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
       {/* 4. Explore Topics (Expanded 200 Topics Accordion) */}
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
             <Compass className="w-3.5 h-3.5 text-white/80" />
             <span>Explore Topics ({TOTAL_TOPICS_COUNT})</span>
           </div>
           {exploredTopics.length > 0 && (
-            <span className="text-[10px] text-[#30D158] font-medium bg-[#30D158]/10 px-2.5 py-0.5 rounded-full border border-[#30D158]/20">
+            <span className="text-[10px] text-kova-green font-medium bg-kova-green/10 px-2.5 py-0.5 rounded-full border border-kova-green/20">
               {exploredTopics.length} explored
             </span>
           )}
@@ -377,7 +377,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
             return (
               <div
                 key={category.id}
-                className="glass-card rounded-[22px] border border-white/10 bg-[#161618]/90 overflow-hidden transition-colors hover:border-white/20"
+                className="glass-card rounded-[22px] border border-white/10 bg-kova-surface/90 overflow-hidden transition-colors hover:border-white/20"
               >
                 {/* Collapsible Header */}
                 <button
@@ -391,7 +391,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                       {category.name} ({totalInCat})
                     </span>
                     {exploredInCatCount > 0 && (
-                      <span className="text-[10px] text-[#30D158] bg-[#30D158]/10 px-2 py-0.5 rounded-full border border-[#30D158]/20 font-medium">
+                      <span className="text-[10px] text-kova-green bg-kova-green/10 px-2 py-0.5 rounded-full border border-kova-green/20 font-medium">
                         {exploredInCatCount} explored
                       </span>
                     )}
@@ -423,7 +423,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                                 : 'bg-white/5 text-white/90 border-white/10 hover:bg-white/15 hover:border-white/25 hover:text-white'
                             }`}
                           >
-                            {isExplored && <Check className="w-3 h-3 text-[#30D158] stroke-[3]" />}
+                            {isExplored && <Check className="w-3 h-3 text-kova-green stroke-[3]" />}
                             <span>{topic}</span>
                           </button>
                         );
@@ -447,7 +447,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                               }`}
                             >
                               {isExplored ? (
-                                <Check className="w-3 h-3 text-[#30D158] stroke-[3]" />
+                                <Check className="w-3 h-3 text-kova-green stroke-[3]" />
                               ) : (
                                 <Sparkles className="w-3 h-3 text-amber-400/80" />
                               )}
@@ -480,16 +480,16 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
 
       {/* 5. Monthly Letter */}
       <div className="space-y-3 pt-2">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider px-1">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider px-1">
           <BookOpen className="w-3.5 h-3.5 text-white/80" />
           <span>Monthly Letter</span>
         </div>
 
         {monthlyLetter ? (
-          <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-[#1A1A1D]/90 shadow-xl space-y-4">
+          <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-kova-surface/90 shadow-xl space-y-4">
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[10px] text-[#8A8A8E] uppercase tracking-wider block">
+                <span className="text-[10px] text-kova-muted uppercase tracking-wider block">
                   {monthlyLetter.month} {monthlyLetter.year} Letter
                 </span>
                 <h4 className="text-base font-bold text-white tracking-tight mt-0.5">
@@ -508,7 +508,7 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
                   type="button"
                   onClick={handleDownloadReport}
                   disabled={isDownloading}
-                  className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer"
+                  className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap"><span className="sm:hidden">Download</span><span className="hidden sm:inline">Download {monthlyLetter.month} Report</span></span>
@@ -534,11 +534,11 @@ export const GrowScreen: React.FC<GrowScreenProps> = ({
             </div>
           </div>
         ) : (
-          <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-[#161618]/90 text-center space-y-3">
+          <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-kova-surface/90 text-center space-y-3">
             <h4 className="text-sm font-bold text-white tracking-tight">
               Your {currentMonthName} letter is scheduled for month-end
             </h4>
-            <p className="text-xs text-[#8A8A8E] max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-kova-muted max-w-md mx-auto leading-relaxed">
               Kova generates your personal briefing on the last day of each month using your real logged activity — no fake content or static placeholders.
             </p>
             <div className="pt-2 flex justify-center">

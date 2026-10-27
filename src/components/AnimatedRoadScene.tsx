@@ -2,7 +2,7 @@ import React from 'react';
 
 export const AnimatedRoadScene: React.FC = () => {
   return (
-    <div className="relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-[#0C0912] shadow-2xl h-52 sm:h-56 select-none">
+    <div className="kova-keep-dark relative w-full overflow-hidden rounded-[24px] border border-white/15 bg-[#0C0912] shadow-2xl h-52 sm:h-56 select-none">
       {/* 1. SKY & SUN BACKGROUND (STATIC / ULTRA-SLOW DRIFT) */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#140F20] via-[#100B1A] to-[#0A0711]">
         {/* Amber Sun with Soft Glow Aura */}

@@ -174,7 +174,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       <div className="flex items-center justify-between">
         <button
           onClick={onBackToLanding}
-          className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"
+          className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back</span>
@@ -188,7 +188,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
       {/* Main Glass Auth Card */}
       <div className="my-auto py-6 space-y-4">
-        <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-[#18181A]/95 shadow-2xl relative space-y-5">
+        <div className="glass-card rounded-[28px] p-6 border border-white/15 bg-kova-surface/95 shadow-2xl relative space-y-5">
           {showForgotPassword ? (
             /* Forgot Password Flow */
             <div className="space-y-5">
@@ -196,15 +196,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 <h2 className="text-2xl font-serif-headline font-normal text-white">
                   Reset your password
                 </h2>
-                <p className="text-xs text-[#8A8A8E]">
+                <p className="text-xs text-kova-muted">
                   Enter your email and Kova will send you a reset link
                 </p>
               </div>
 
               {resetSentMessage ? (
                 <div className="space-y-4 pt-1">
-                  <div className="text-xs text-[#30D158] bg-[#30D158]/10 border border-[#30D158]/20 rounded-2xl p-4 flex items-center gap-2.5 justify-center">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-[#30D158]" />
+                  <div className="text-xs text-kova-green bg-kova-green/10 border border-kova-green/20 rounded-2xl p-4 flex items-center gap-2.5 justify-center">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-kova-green" />
                     <span className="font-medium">{resetSentMessage}</span>
                   </div>
 
@@ -224,14 +224,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               ) : (
                 <form onSubmit={handlePasswordResetSubmit} className="space-y-4">
                   {resetError && (
-                    <div className="text-[11px] text-[#FF6B6B] bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded-2xl p-3.5 flex items-start justify-center gap-1.5 font-medium leading-relaxed text-center">
-                      <AlertCircle className="w-4 h-4 shrink-0 text-[#FF6B6B] mt-0.5" />
-                      <span className="break-words text-[11px] text-[#FF8080]">{resetError}</span>
+                    <div className="text-[11px] text-kova-red-soft bg-kova-red/10 border border-kova-red/20 rounded-2xl p-3.5 flex items-start justify-center gap-1.5 font-medium leading-relaxed text-center">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-kova-red-soft mt-0.5" />
+                      <span className="break-words text-[11px] text-kova-red-soft">{resetError}</span>
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block">
+                    <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block">
                       Account email
                     </label>
                     <div className="relative">
@@ -242,7 +242,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         value={resetEmail}
                         onChange={(e) => setResetEmail(e.target.value)}
                         placeholder="name@domain.com"
-                        className="w-full bg-[#121214] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30 transition-all"
+                        className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/30 transition-all"
                       />
                     </div>
                   </div>
@@ -272,7 +272,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         setShowForgotPassword(false);
                         setResetError(null);
                       }}
-                      className="text-xs text-[#8A8A8E] hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
+                      className="text-xs text-kova-muted hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
                     >
                       Back to Log in
                     </button>
@@ -288,7 +288,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 <h2 className="text-2xl font-serif-headline font-normal text-white">
                   {mode === 'signup' ? 'Welcome to Kova' : 'Welcome back'}
                 </h2>
-                <p className="text-xs text-[#8A8A8E]">
+                <p className="text-xs text-kova-muted">
                   {mode === 'signup'
                     ? 'Create your space for money conversations'
                     : 'Enter your credentials to continue'}
@@ -297,12 +297,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
               {/* Segmented Pill Switch */}
               <div className="flex justify-center">
-                <div className="bg-[#121214] p-1 rounded-full border border-white/10 flex items-center gap-1">
+                <div className="bg-kova-surface-2 p-1 rounded-full border border-white/10 flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => switchMode('signup')}
                     className={`px-5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
-                      mode === 'signup' ? 'bg-white text-black shadow-md' : 'text-[#8A8A8E] hover:text-white'
+                      mode === 'signup' ? 'bg-white text-black shadow-md' : 'text-kova-muted hover:text-white'
                     }`}
                   >
                     Sign up
@@ -311,7 +311,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     type="button"
                     onClick={() => switchMode('login')}
                     className={`px-5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
-                      mode === 'login' ? 'bg-white text-black shadow-md' : 'text-[#8A8A8E] hover:text-white'
+                      mode === 'login' ? 'bg-white text-black shadow-md' : 'text-kova-muted hover:text-white'
                     }`}
                   >
                     Log in
@@ -361,17 +361,17 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               {/* Divider with "or" */}
               <div className="relative flex items-center justify-center my-1">
                 <div className="border-t border-white/10 w-full" />
-                <span className="bg-[#18181A] px-3 text-[11px] text-[#8A8A8E] lowercase font-medium relative z-10 shrink-0">
+                <span className="bg-kova-surface px-3 text-[11px] text-kova-muted lowercase font-medium relative z-10 shrink-0">
                   or with email
                 </span>
               </div>
 
               {/* Error Display with Conditional Switch Buttons */}
               {authError && (
-                <div className="text-[11px] text-[#FF6B6B] bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded-2xl p-3.5 space-y-2.5 text-center">
+                <div className="text-[11px] text-kova-red-soft bg-kova-red/10 border border-kova-red/20 rounded-2xl p-3.5 space-y-2.5 text-center">
                   <div className="flex items-start justify-center gap-1.5 font-medium leading-relaxed">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-[#FF6B6B] mt-0.5" />
-                    <span className="break-words text-[11px] text-[#FF8080]">{authError}</span>
+                    <AlertCircle className="w-4 h-4 shrink-0 text-kova-red-soft mt-0.5" />
+                    <span className="break-words text-[11px] text-kova-red-soft">{authError}</span>
                   </div>
                   {isEmailInUseError && (
                     <button
@@ -416,7 +416,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 {/* First Name (Only for Sign Up) */}
                 {mode === 'signup' && (
                   <div className="space-y-1">
-                    <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block">
+                    <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block">
                       What should Kova call you?
                     </label>
                     <div className="relative">
@@ -427,7 +427,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="First Name (e.g., Alex)"
-                        className="w-full bg-[#121214] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30 transition-all"
+                        className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/30 transition-all"
                       />
                     </div>
                   </div>
@@ -435,7 +435,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
                 {/* Email Field */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block">
+                  <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block">
                     Where should Kova reach you?
                   </label>
                   <div className="relative">
@@ -446,14 +446,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@domain.com"
-                      className="w-full bg-[#121214] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30 transition-all"
+                      className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/30 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Password Field */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block">
+                  <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block">
                     Password
                   </label>
                   <div className="relative">
@@ -464,7 +464,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-[#121214] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30 transition-all"
+                      className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/30 transition-all"
                     />
                   </div>
                   {/* Forgot Password Link (Only for Log In) */}
@@ -478,7 +478,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                           setResetError(null);
                           setShowForgotPassword(true);
                         }}
-                        className="text-xs text-[#8A8A8E] hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
+                        className="text-xs text-kova-muted hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
                       >
                         Forgot password?
                       </button>
@@ -508,7 +508,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 <button
                   type="button"
                   onClick={() => switchMode(mode === 'signup' ? 'login' : 'signup')}
-                  className="text-xs text-[#8A8A8E] hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
+                  className="text-xs text-kova-muted hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
                 >
                   {mode === 'signup'
                     ? 'Already have an account? Log in'
@@ -521,7 +521,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       </div>
 
       {/* Footer minimal text */}
-      <div className="text-center text-[10px] text-[#8A8A8E]">
+      <div className="text-center text-[10px] text-kova-muted">
         Protected by Kova's private encryption standard.
       </div>
     </div>

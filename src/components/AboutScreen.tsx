@@ -24,7 +24,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] hover:text-white transition-colors cursor-pointer group"
+            className="flex items-center gap-2 text-xs font-semibold text-kova-muted hover:text-white transition-colors cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             <span>Settings</span>
@@ -52,7 +52,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
         </section>
 
         {/* 3. Why Kova exists */}
-        <section className="glass-card rounded-[28px] p-6 sm:p-8 border border-white/10 bg-[#141416] space-y-4">
+        <section className="glass-card rounded-[28px] p-6 sm:p-8 border border-white/10 bg-kova-surface-2 space-y-4">
           <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 uppercase tracking-wider">
             <Compass className="w-4 h-4" />
             <span>Mission</span>
@@ -62,7 +62,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
             Why Kova exists
           </h2>
 
-          <div className="text-sm sm:text-base text-[#D1D1D6] font-sans font-normal leading-relaxed space-y-4">
+          <div className="text-sm sm:text-base text-kova-soft font-sans font-normal leading-relaxed space-y-4">
             <p>
               Money is one of the most stressful parts of life, and most budgeting apps make it heavier. They feel like a test you're failing: red numbers, guilt, and rules that don't fit your real week.
             </p>
@@ -75,7 +75,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
         {/* 4. How Kova works — recap cards */}
         <section className="space-y-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-white/60" />
               <span>How Kova Works</span>
             </div>
@@ -86,52 +86,52 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
 
           <div className="grid grid-cols-1 gap-3.5 pt-1">
             {/* Card 1: Speak naturally */}
-            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] flex items-start gap-4">
+            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-kova-surface flex items-start gap-4">
               <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0 mt-0.5">
                 <MessageSquare className="w-5 h-5" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-white">Speak naturally</h3>
-                <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
+                <p className="text-xs sm:text-sm text-kova-muted leading-relaxed">
                   Log spending in plain sentences or audio voice notes. No rigid forms, no endless drop-downs, no manual spreadsheet overhead.
                 </p>
               </div>
             </div>
 
             {/* Card 2: Grow, daily */}
-            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] flex items-start gap-4">
+            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-kova-surface flex items-start gap-4">
               <div className="w-10 h-10 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-white">Grow, daily</h3>
-                <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
+                <p className="text-xs sm:text-sm text-kova-muted leading-relaxed">
                   60-second micro-lessons that turn financial psychology into lasting instinct. Learn the mental models used by truly autonomous builders.
                 </p>
               </div>
             </div>
 
             {/* Card 3: A letter, every month */}
-            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] flex items-start gap-4">
+            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-kova-surface flex items-start gap-4">
               <div className="w-10 h-10 rounded-2xl bg-indigo-400/10 border border-indigo-400/20 flex items-center justify-center text-indigo-300 shrink-0 mt-0.5">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-white">A letter, every month</h3>
-                <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
+                <p className="text-xs sm:text-sm text-kova-muted leading-relaxed">
                   A personalized, written debrief analyzing your real patterns and pairing your month with curated book recommendations.
                 </p>
               </div>
             </div>
 
             {/* Card 4: Ask before you buy (KOVA-101) */}
-            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-[#161618] flex items-start gap-4">
+            <div className="glass-card rounded-[24px] p-5 sm:p-6 border border-white/10 bg-kova-surface flex items-start gap-4">
               <div className="w-10 h-10 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
                 <ShoppingBag className="w-5 h-5" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-white">Ask before you buy</h3>
-                <p className="text-xs sm:text-sm text-[#8A8A8E] leading-relaxed">
+                <p className="text-xs sm:text-sm text-kova-muted leading-relaxed">
                   Ask "Can I afford the Sony WH-1000XM5?" and Kova finds today's price across stores, then shows how it fits your month and your goals. Tap "I'll wait" and Kova watches the price, telling you only if it drops. Product prices come from Channel3. The choice stays yours.
                 </p>
               </div>
@@ -140,8 +140,8 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
         </section>
 
         {/* 5. Who Kova is for */}
-        <section className="glass-card rounded-[28px] p-6 sm:p-8 border border-white/10 bg-[#161618] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+        <section className="glass-card rounded-[28px] p-6 sm:p-8 border border-white/10 bg-kova-surface space-y-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
             <Heart className="w-4 h-4 text-rose-400/80" />
             <span>Who Kova is for</span>
           </div>
@@ -150,17 +150,17 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
             Built for clarity, not judgment.
           </h2>
 
-          <p className="text-sm sm:text-base text-[#D1D1D6] font-normal leading-relaxed pt-1">
+          <p className="text-sm sm:text-base text-kova-soft font-normal leading-relaxed pt-1">
             Kova is for anyone who's tried a budgeting app and quit — not because they didn't care, but because the tools made money feel like a test. It's for people who want to actually understand how wealth works, not just track where it went. If you've ever avoided checking your balance because it felt like a judgment, Kova was built for you.
           </p>
         </section>
 
         {/* 6. Regulatory & Financial Disclaimer */}
-        <section className="rounded-2xl p-4 sm:p-5 border border-white/5 bg-[#121214] text-center space-y-1.5">
-          <p className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider">
+        <section className="rounded-2xl p-4 sm:p-5 border border-white/5 bg-kova-surface-2 text-center space-y-1.5">
+          <p className="text-[11px] font-medium text-kova-muted uppercase tracking-wider">
             Educational Disclaimer
           </p>
-          <p className="text-xs text-[#8A8A8E] leading-relaxed max-w-xl mx-auto">
+          <p className="text-xs text-kova-muted leading-relaxed max-w-xl mx-auto">
             Kova is an educational companion and reflective awareness tool, not a registered investment advisor, broker-dealer, or certified financial planner. All insights, coaching prompts, and monthly briefings are provided for informational and educational purposes only and should not be construed as individualized legal, tax, or investment advice.
           </p>
         </section>

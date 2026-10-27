@@ -276,7 +276,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
         <button
           type="button"
           onClick={() => onSelectView('chat')}
-          className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+          className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Chat companion</span>
@@ -333,14 +333,14 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
       {/* Income / Outcome Segmented Switch */}
       <div className="flex justify-center my-3">
-        <div className="glass-card p-1 rounded-full border border-white/10 flex items-center gap-1 bg-[#141416]">
+        <div className="glass-card p-1 rounded-full border border-white/10 flex items-center gap-1 bg-kova-surface-2">
           <button
             type="button"
             onClick={() => setFilterType('income')}
             className={`px-6 py-2 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
               filterType === 'income'
                 ? 'bg-white text-black shadow-md'
-                : 'text-[#8A8A8E] hover:text-white'
+                : 'text-kova-muted hover:text-white'
             }`}
           >
             Income
@@ -351,7 +351,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
             className={`px-6 py-2 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
               filterType === 'outcome'
                 ? 'bg-white text-black shadow-md'
-                : 'text-[#8A8A8E] hover:text-white'
+                : 'text-kova-muted hover:text-white'
             }`}
           >
             Outcome
@@ -365,7 +365,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
           {/* Blurred preview background */}
           <div className="filter blur-md opacity-30 pointer-events-none select-none space-y-6">
             <div className="text-center my-4">
-              <span className="text-xs text-[#8A8A8E] font-medium tracking-wide uppercase">
+              <span className="text-xs text-kova-muted font-medium tracking-wide uppercase">
                 Total Spent
               </span>
               <div className="text-4xl font-extrabold text-white mt-1">
@@ -373,7 +373,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
               </div>
             </div>
 
-            <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618]/80 h-32 flex items-end justify-between px-6">
+            <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface/80 h-32 flex items-end justify-between px-6">
               {[40, 65, 30, 85, 50, 75].map((h, idx) => (
                 <div key={idx} className="w-2 bg-white/20 rounded-full" style={{ height: `${h}%` }} />
               ))}
@@ -395,7 +395,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
         <>
           {/* Hero Number Header */}
           <div className="text-center my-4">
-            <span className="text-xs text-[#8A8A8E] font-medium tracking-wide uppercase">
+            <span className="text-xs text-kova-muted font-medium tracking-wide uppercase">
               {filterType === 'outcome' ? 'Total Spent' : 'Total Income Received'}
             </span>
             <div className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mt-1">
@@ -409,17 +409,17 @@ export const LogScreen: React.FC<LogScreenProps> = ({
           )}
 
           {/* Visualization Card: Rhythm & Category Breakdown Switcher */}
-          <div className="glass-card rounded-[24px] p-5 border border-white/10 mb-6 bg-[#161618]/80">
+          <div className="glass-card rounded-[24px] p-5 border border-white/10 mb-6 bg-kova-surface/80">
             {/* Tab Switcher Header */}
             <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-white/5">
-              <div className="flex items-center gap-1.5 bg-[#121214] p-1 rounded-full border border-white/10">
+              <div className="flex items-center gap-1.5 bg-kova-surface-2 p-1 rounded-full border border-white/10">
                 <button
                   type="button"
                   onClick={() => setAnalyticsTab('rhythm')}
                   className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     analyticsTab === 'rhythm'
                       ? 'bg-white text-black shadow-md'
-                      : 'text-[#8A8A8E] hover:text-white'
+                      : 'text-kova-muted hover:text-white'
                   }`}
                 >
                   <BarChart3 className="w-3.5 h-3.5" />
@@ -431,7 +431,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                   className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     analyticsTab === 'categories'
                       ? 'bg-white text-black shadow-md'
-                      : 'text-[#8A8A8E] hover:text-white'
+                      : 'text-kova-muted hover:text-white'
                   }`}
                 >
                   <PieChart className="w-3.5 h-3.5" />
@@ -454,7 +454,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                       type="button"
                       onClick={() => setTimeRange(r)}
                       className={`text-[10px] px-2.5 py-1 rounded-full transition-all cursor-pointer ${
-                        timeRange === r ? 'bg-white text-black font-semibold' : 'text-[#8A8A8E] hover:text-white'
+                        timeRange === r ? 'bg-white text-black font-semibold' : 'text-kova-muted hover:text-white'
                       }`}
                     >
                       {r}
@@ -462,7 +462,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                   ))}
                 </div>
               ) : (
-                <span className="text-[10px] text-[#8A8A8E] bg-white/5 px-2.5 py-1 rounded-full border border-white/5 font-mono">
+                <span className="text-[10px] text-kova-muted bg-white/5 px-2.5 py-1 rounded-full border border-white/5 font-mono">
                   Monthly Balance {formattedBalance}
                 </span>
               )}
@@ -471,7 +471,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
             {/* Rhythm View */}
             {analyticsTab === 'rhythm' && (
               <div className="animate-in fade-in duration-200">
-                <div className="flex items-center justify-between text-[11px] text-[#8A8A8E] mb-2 px-1">
+                <div className="flex items-center justify-between text-[11px] text-kova-muted mb-2 px-1">
                   <span>Velocity over time</span>
                   <span className="font-mono">Monthly Balance {formattedBalance}</span>
                 </div>
@@ -511,7 +511,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                         </div>
                         <span
                           className={`text-[9px] ${
-                            isActive ? 'text-white font-bold' : 'text-[#8A8A8E]'
+                            isActive ? 'text-white font-bold' : 'text-kova-muted'
                           }`}
                         >
                           {chartData.labels[i]}
@@ -539,9 +539,9 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
           {/* Note Card from Kova — Only rendered when genuinely true based on real data for selected month */}
           {higherThanUsualExpenses.length > 0 && (
-            <div className="glass-card rounded-2xl p-4 border border-dashed border-[#2C2C2E] bg-[#161618]/60 mb-6 flex items-start gap-3 animate-in fade-in duration-200">
+            <div className="glass-card rounded-2xl p-4 border border-dashed border-kova-raised bg-kova-surface/60 mb-6 flex items-start gap-3 animate-in fade-in duration-200">
               <Sparkles className="w-4 h-4 text-white/80 shrink-0 mt-0.5" />
-              <div className="text-xs leading-relaxed text-[#8A8A8E]">
+              <div className="text-xs leading-relaxed text-kova-muted">
                 <span className="text-white font-medium block mb-0.5">Note from Kova</span>
                 Kova noticed {higherThanUsualExpenses.length} purchase{higherThanUsualExpenses.length > 1 ? 's' : ''} higher than your usual baseline in {selectedMonthDate.toLocaleDateString('en-US', { month: 'long' })}.
               </div>
@@ -553,7 +553,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
             <h3 className="text-sm font-semibold text-white tracking-tight">
               {selectedMonthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} Entries
             </h3>
-            <span className="text-xs text-[#8A8A8E]">{filteredExpenses.length} records</span>
+            <span className="text-xs text-kova-muted">{filteredExpenses.length} records</span>
           </div>
 
           {/* Expense List Rows with Framer Motion Staggered Animation */}
@@ -568,7 +568,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center py-12 glass-card rounded-2xl border border-white/5 text-[#8A8A8E] text-xs"
+                className="text-center py-12 glass-card rounded-2xl border border-white/5 text-kova-muted text-xs"
               >
                 No {filterType} entries logged this month.
               </motion.div>
@@ -601,14 +601,14 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
                           {/* Restrained Soft Red "Higher Than Usual" Tag */}
                           {higherThanUsualIds.has(item.id) && (
-                            <span className="text-[10px] font-medium text-[#FF6B6B] bg-[#FF3B30]/10 px-2 py-0.5 rounded-full border border-[#FF3B30]/20 shrink-0 flex items-center gap-1">
+                            <span className="text-[10px] font-medium text-kova-red-soft bg-kova-red/10 px-2 py-0.5 rounded-full border border-kova-red/20 shrink-0 flex items-center gap-1">
                               <AlertCircle className="w-2.5 h-2.5" />
                               <span>higher than usual</span>
                             </span>
                           )}
                         </div>
 
-                        <div className="text-xs text-[#8A8A8E] mt-0.5 flex items-center gap-2 whitespace-nowrap min-w-0">
+                        <div className="text-xs text-kova-muted mt-0.5 flex items-center gap-2 whitespace-nowrap min-w-0">
                           <span className="truncate">{formatExpenseTimestamp(item.timestamp)}</span>
                           <span aria-hidden="true" className="shrink-0">•</span>
                           <span className="shrink-0">{item.category}</span>
@@ -620,7 +620,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                     <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                       <div className="text-right">
                         <div className={`text-sm font-bold tracking-tight ${
-                          item.type === 'income' ? 'text-[#30D158]' : 'text-white'
+                          item.type === 'income' ? 'text-kova-green' : 'text-white'
                         }`}>
                           {item.type === 'income' ? '+' : '-'}{formatCurrency(item.amount, currency, item.nativeCurrency)}
                         </div>
@@ -632,7 +632,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                           e.stopPropagation();
                           onDeleteExpense(item.id);
                         }}
-                        className="reveal-on-hover w-8 h-8 rounded-full bg-white/5 hover:bg-red-500/20 text-[#8A8A8E] hover:text-red-400 flex items-center justify-center cursor-pointer"
+                        className="reveal-on-hover w-8 h-8 rounded-full bg-white/5 hover:bg-red-500/20 text-kova-muted hover:text-red-400 flex items-center justify-center cursor-pointer"
                         title="Delete entry"
                         aria-label={`Delete ${item.label}`}
                       >
@@ -664,13 +664,13 @@ export const LogScreen: React.FC<LogScreenProps> = ({
       {/* EDIT EXPENSE MODAL */}
       {editingExpense && (
         <div className="kova-modal kova-sheet fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-[#161618] max-w-sm w-full space-y-5 shadow-2xl">
+          <div className="glass-card rounded-[28px] p-6 border border-white/10 bg-kova-surface max-w-sm w-full space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white tracking-tight">Edit Entry</h3>
               <button
                 type="button"
                 onClick={() => setEditingExpense(null)}
-                className="text-xs text-[#8A8A8E] hover:text-white transition-colors cursor-pointer"
+                className="text-xs text-kova-muted hover:text-white transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -679,7 +679,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
             <div className="space-y-3.5">
               {/* Type Switcher */}
               <div>
-                <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block mb-1.5">
+                <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block mb-1.5">
                   Type
                 </label>
                 <div className="grid grid-cols-2 gap-2 p-1 bg-white/5 rounded-xl border border-white/10">
@@ -687,7 +687,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                     type="button"
                     onClick={() => setEditType('outcome')}
                     className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      editType === 'outcome' ? 'bg-white text-black shadow' : 'text-[#8A8A8E] hover:text-white'
+                      editType === 'outcome' ? 'bg-white text-black shadow' : 'text-kova-muted hover:text-white'
                     }`}
                   >
                     Expense
@@ -696,7 +696,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
                     type="button"
                     onClick={() => setEditType('income')}
                     className={`py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      editType === 'income' ? 'bg-[#30D158] text-black shadow' : 'text-[#8A8A8E] hover:text-white'
+                      editType === 'income' ? 'bg-kova-green text-black shadow' : 'text-kova-muted hover:text-white'
                     }`}
                   >
                     Income
@@ -706,7 +706,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
               {/* Label */}
               <div>
-                <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block mb-1.5">
+                <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block mb-1.5">
                   Label / Description
                 </label>
                 <input
@@ -720,7 +720,7 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
               {/* Amount */}
               <div>
-                <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block mb-1.5">
+                <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block mb-1.5">
                   Amount ({getCurrencySymbol(currency)})
                 </label>
                 <input
@@ -735,13 +735,13 @@ export const LogScreen: React.FC<LogScreenProps> = ({
 
               {/* Category */}
               <div>
-                <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block mb-1.5">
+                <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block mb-1.5">
                   Category
                 </label>
                 <select
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full bg-[#202024] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 cursor-pointer"
+                  className="w-full bg-kova-raised border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 cursor-pointer"
                 >
                   {['Shopping', 'Car repair', 'Grocery', 'Gym', 'Laundry', 'Dining out', 'Coffee', 'Subscriptions', 'Travel', 'Housing', 'Income', 'Other'].map((cat) => (
                     <option key={cat} value={cat}>

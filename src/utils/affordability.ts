@@ -35,6 +35,7 @@ export interface ParsedAmount {
 
 const AMOUNT_RE =
   /([$€£₦])?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?\s*(k\b)?\s*(fcfa|xaf|cfa|francs?|usd|dollars?|eur|euros?|gbp|pounds?|ngn|naira)?/gi;
+const STANDALONE_AMOUNT_RE = new RegExp(`(?<![A-Za-z0-9-])(?:${AMOUNT_RE.source})(?![A-Za-z0-9-])`, 'gi');
 const PRICE_WORD_BEFORE = /\b(for|at|costs?|costing|price[ds]?|worth|spend|spending|of|about|around|is|be)\s*$/i;
 
 function currencyFrom(symbol: string | undefined, word: string | undefined, profileCurrency: string): string | null {
@@ -87,7 +88,9 @@ export function parseAffordRequest(text: string, profileCurrency = 'USD'): Affor
 
   const price = findAmount(text, profileCurrency);
   let rest = lower.slice((trigger.index ?? 0) + trigger[0].length);
-  rest = rest.replace(AMOUNT_RE, ' ').replace(/[?!.,]+/g, ' ').replace(/\s+/g, ' ').trim();
+  // Only standalone numbers are prices. Numbers inside a model name stay ("WH-1000XM5", "iPhone16"),
+  // so the item can be looked up exactly (KOVA-105).
+  rest = rest.replace(STANDALONE_AMOUNT_RE, ' ').replace(/[?!,]+/g, ' ').replace(/\.(?=\s|$)/g, ' ').replace(/\s+/g, ' ').trim();
   for (let i = 0; i < 6; i++) {
     const next = rest.replace(FILLER_EDGE, '').trim();
     if (next === rest) break;

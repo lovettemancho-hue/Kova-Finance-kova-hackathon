@@ -22,7 +22,7 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
     <div className="w-full max-w-lg mx-auto px-4 py-2 sticky top-14 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
       <div 
         onClick={onOpenLetter}
-        className="glass-card rounded-[22px] p-3.5 border border-white/15 shadow-2xl backdrop-blur-2xl bg-[#1C1C1E]/95 flex items-center justify-between gap-3 cursor-pointer hover:border-white/30 transition-all group"
+        className="glass-card rounded-[22px] p-3.5 border border-white/15 shadow-2xl backdrop-blur-2xl bg-kova-surface/95 flex items-center justify-between gap-3 cursor-pointer hover:border-white/30 transition-all group"
       >
         <div className="flex items-center gap-3 min-w-0">
           <KovaAvatar size="sm" />
@@ -31,7 +31,7 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
               <span className="text-xs font-semibold text-white tracking-tight">
                 {notification.sender}
               </span>
-              <span className="text-[10px] text-[#8A8A8E]">
+              <span className="text-[10px] text-kova-muted">
                 {notification.timeAgo}
               </span>
             </div>
@@ -69,7 +69,7 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
               e.stopPropagation();
               onDismiss();
             }}
-            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-[#8A8A8E] hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-kova-muted hover:text-white flex items-center justify-center transition-colors"
             title="Dismiss notification"
           >
             <X className="w-3.5 h-3.5" />

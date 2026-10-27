@@ -35,7 +35,7 @@ export const AboutBankScene: React.FC<{ className?: string; interactive?: boolea
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-[28px] border border-white/12 bg-gradient-to-b from-[#140F22] via-[#100C1B] to-[#0A0712] shadow-2xl h-64 sm:h-72 select-none flex items-center justify-center ${className}`}
+      className={`kova-keep-dark relative w-full overflow-hidden rounded-[28px] border border-white/12 bg-gradient-to-b from-[#140F22] via-[#100C1B] to-[#0A0712] shadow-2xl h-64 sm:h-72 select-none flex items-center justify-center ${className}`}
     >
       {/* 1. Ambient Background Glows & Vignette */}
       <div className="absolute inset-0 pointer-events-none">

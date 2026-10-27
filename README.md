@@ -24,6 +24,7 @@ Kova is an AI money companion that explains your money in plain words and helps 
 - Log spending by chatting ("Spent 12 on lunch").
 - Import a statement CSV from a bank or wallet (PayPal's format is recognised). The file is read on the device; only rows the user confirms are saved.
 - "Can I afford this?", a subscription radar that warns before renewals, savings goals, short lessons and a monthly letter.
+- Eight themes in Settings → Appearance (Midnight, Dusk and a soft Daylight free; Solarized Light, Solarized Dark, Solarized Gold, Forest and Nord Night with Premium), saved to the account.
 
 ## How it works
 
@@ -131,6 +132,8 @@ See [`docs/ANDROID.md`](docs/ANDROID.md): `npm run build:android`, then build in
 - No secrets in the code or the app bundle: the Gemini and PayPal secrets live on the server (Secret Manager in production).
 - Firestore rules let users read only their own data and stop them changing their own plan.
 - Statements are read on the device. Accounts can be exported or fully deleted from Settings ([`server/account.ts`](server/account.ts)).
+- The API only accepts requests from Kova's own web origin and Android app (CORS allowlist), caps what reaches the AI prompts, and keeps logs free of money data.
+- A confirmed PayPal action works even if the request reaches a different server instance: open check-in items are kept server-side for 30 minutes ([`server/paypal/checkinStore.ts`](server/paypal/checkinStore.ts)).
 
 ## License
 

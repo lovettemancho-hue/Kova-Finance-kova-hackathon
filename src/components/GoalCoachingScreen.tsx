@@ -42,7 +42,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
   if (!goal) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-        <p className="text-sm text-[#8A8A8E]">No active goal selected for coaching.</p>
+        <p className="text-sm text-kova-muted">No active goal selected for coaching.</p>
         <button
           onClick={onBack}
           className="mt-4 px-4 py-2 bg-white/10 text-white rounded-full text-xs font-semibold"
@@ -76,7 +76,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
   return (
     <div className="flex flex-col h-app max-w-2xl mx-auto w-full px-4 relative">
       {/* Top Header Bar */}
-      <div className="pt-3 pb-3 flex items-center justify-between border-b border-[#2C2C2E]/40 mb-2">
+      <div className="pt-3 pb-3 flex items-center justify-between border-b border-kova-raised/40 mb-2">
         <button
           type="button"
           onClick={onBack}
@@ -95,15 +95,15 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
       </div>
 
       {/* Goal Overview Context Header Banner */}
-      <div className="glass-card rounded-2xl p-4 border border-white/10 bg-[#161618] mb-3 flex items-center justify-between gap-3 shadow-lg">
+      <div className="glass-card rounded-2xl p-4 border border-white/10 bg-kova-surface mb-3 flex items-center justify-between gap-3 shadow-lg">
         <div className="min-w-0">
-          <div className="text-[10px] uppercase font-semibold text-[#8A8A8E] tracking-wider flex items-center gap-1 mb-0.5">
+          <div className="text-[10px] uppercase font-semibold text-kova-muted tracking-wider flex items-center gap-1 mb-0.5">
             <Target className="w-3.5 h-3.5 text-amber-300" />
             <span className="truncate">Coaching — {goal.title}</span>
           </div>
           <div className="text-sm font-bold text-white flex items-baseline gap-1.5">
             <span>{formattedSaved}</span>
-            <span className="text-xs text-[#8A8A8E] font-normal">
+            <span className="text-xs text-kova-muted font-normal">
               {goal.targetAmount > 0 ? `saved of ${formattedTarget}` : 'saved • Target not set yet'}
             </span>
           </div>
@@ -114,7 +114,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
             <div className="text-xs font-bold text-amber-300">
               {goal.targetAmount > 0 ? `${percentage}%` : 'Flexible'}
             </div>
-            <div className="text-[9px] text-[#8A8A8E]">
+            <div className="text-[9px] text-kova-muted">
               {goal.targetAmount > 0 ? 'Progress' : 'Target'}
             </div>
           </div>
@@ -129,7 +129,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
             className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} space-y-2`}
           >
             {/* Sender Label & Timestamp */}
-            <div className={`flex items-center gap-2 text-[10px] text-[#8A8A8E] px-1 w-full ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex items-center gap-2 text-[10px] text-kova-muted px-1 w-full ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.sender === 'kova' ? (
                 <>
                   <KovaAvatar size="sm" />
@@ -141,7 +141,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
                     onClick={() => {
                       alert('Thank you for flagging. This response has been submitted to review.');
                     }}
-                    className="ml-auto text-[9px] text-[#8A8A8E] hover:text-white underline underline-offset-2 transition-colors cursor-pointer"
+                    className="ml-auto text-[9px] text-kova-muted hover:text-white underline underline-offset-2 transition-colors cursor-pointer"
                     title="Report AI content"
                   >
                     Report
@@ -161,7 +161,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
               className={`max-w-[85%] text-sm leading-relaxed ${
                 msg.sender === 'user'
                   ? 'bg-white text-black font-medium p-4 rounded-[22px] rounded-tr-sm shadow-lg'
-                  : 'glass-card text-white/95 p-4 rounded-[22px] rounded-tl-sm border border-amber-400/20 bg-[#18181B]/90 shadow-xl'
+                  : 'glass-card text-white/95 p-4 rounded-[22px] rounded-tl-sm border border-amber-400/20 bg-kova-surface/90 shadow-xl'
               }`}
             >
               {msg.text}
@@ -187,7 +187,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
 
         {/* Thinking Indicator */}
         {isSending && (
-          <div className="flex items-start gap-2 text-xs text-[#8A8A8E]">
+          <div className="flex items-start gap-2 text-xs text-kova-muted">
             <KovaAvatar size="sm" isPulsing={true} />
             <div className="glass-card px-4 py-3 rounded-[22px] rounded-tl-sm text-white/80 flex items-center gap-2 border border-amber-400/20">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
@@ -208,7 +208,7 @@ export const GoalCoachingScreen: React.FC<GoalCoachingScreenProps> = ({
             onChange={(e) => setInputText(e.target.value)}
             placeholder={`Ask Kova about reaching "${goal.title}"...`}
             disabled={isSending}
-            className="w-full bg-[#1C1C1E] text-white placeholder-white/30 text-sm rounded-full pl-5 pr-12 py-3.5 border border-white/10 focus:outline-none focus:border-amber-400/50 transition-all shadow-inner"
+            className="w-full bg-kova-surface text-white placeholder-white/30 text-sm rounded-full pl-5 pr-12 py-3.5 border border-white/10 focus:outline-none focus:border-amber-400/50 transition-all shadow-inner"
           />
 
           <button

@@ -4,7 +4,7 @@ Living document. Update it in the same PR as the work it describes.
 Deadline: **PayPal AI Hackathon submission, 2026-11-12.**
 Point-in-time reviews live in [audits/](audits/); this file is the source of truth for what is next.
 
-_Last updated: 2026-10-26_
+_Last updated: 2026-10-27_
 
 ## Current state
 
@@ -20,8 +20,10 @@ _Last updated: 2026-10-26_
   stay off until the Play/RevenueCat setup and the two secrets exist. Firestore rules are deployed **by hand** (`firebase.json`).
 - PayPal: the real sandbox works locally (KOVA-020a): check-in reads it and the confirmed cancel happens in PayPal. Production still
   runs `PAYPAL_MODE=mock` until the deploy step (secret in Secret Manager + repo variables, KOVA-020 A7).
-- **Android** (KOVA-050): Capacitor 8 project generated, `com.kovafinance.app`; debug APK builds with JDK 21.
-  Not yet on Play; Google Sign-In needs `google-services.json` (follow-up). See [ANDROID.md](ANDROID.md).
+- **Android** (KOVA-050/094): `com.kovafinance.app`, signed release AAB, `google-services.json` in place; first build is in
+  Play Console closed testing (12 testers × 14 days before production). See [ANDROID.md](ANDROID.md).
+- **Hackathon:** submitted on Devpost 2026-10-26; the public judges' repo is refreshed from `main` with
+  `hackathon/update.ps1 -Message "…"` (committed files only, private files removed, secret scan, never pushes by itself).
 - CI (typecheck, build, gitleaks, Docker) and deploy-on-merge to Cloud Run are in place.
 - **Chat and expense storage (KOVA-062):** one Firestore doc per item at `users/{uid}/messages/{id}` and
   `users/{uid}/expenses/{id}` (`storageVersion: 2` on the user doc). Legacy users migrate on next login;
@@ -31,7 +33,7 @@ _Last updated: 2026-10-26_
 
 | ID | Item | Branch / PR |
 |---|---|---|
-| KOVA-050 | Android app via Capacitor 8 (`com.kovafinance.app`), build:android, release signing, docs/ANDROID.md. Plan: [plans/KOVA-050](plans/KOVA-050-android-capacitor.md) | `feat/android-capacitor`, #5 |
+| KOVA-106/107/108 | Review fixes, PayPal check-in store, themes (see Done) | `feat/kova-106-review-and-themes` |
 
 ## Backlog (ordered: do top to bottom unless something critical lands)
 
@@ -39,17 +41,19 @@ Severity: **P0** production broken · **P1** security/cost exposure · **P2** re
 
 | ID | Sev | Item | Notes |
 |---|---|---|---|
-| KOVA-025 | P1 | Rotate `cron-secret` (it was exposed) and fix the Cloud Scheduler header | Add a new Secret Manager version, update the `kova-monthly-letters` job to send it as `x-cron-secret`, redeploy so Cloud Run picks up `:latest`, then disable the old version. Done outside the repo; record here when done. |
-| KOVA-054 | P1 | Public web account-deletion URL required by Google Play: a page or form users can use without the app | In-app deletion already exists (Settings). Needed for the Play Data safety form before any Play release. Must authenticate the requester or verify by email; deletes `users/{uid}/**` and the Auth user. |
-| KOVA-055 | P1 | Add `google-services.json` for `com.kovafinance.app` (after registering the Android app and SHA-1/SHA-256 in Firebase) | Native Google Sign-In doesn't work without it. Steps in ANDROID.md. |
+| KOVA-110 | P1 | Firebase App Check: reCAPTCHA Enterprise on web, Play Integrity on Android, enforced on Firestore and checked by the API | Project rule. Firestore and the API trust any valid ID token today, so a scripted client with a real account can still write its own data at will. Roll out in monitor mode first. |
+| KOVA-111 | P1 | Firestore TTL policy on `paypalCheckins.expiresAt` | One command: `gcloud firestore fields ttls update expiresAt --collection-group=paypalCheckins --enable-ttl --database=<named db>`. Until then, stale check-ins are ignored but not deleted (they're deleted on disconnect and with the account). |
+| KOVA-112 | P2 | Content-Security-Policy header | Needs a tested allowlist (Google Fonts, Firebase Auth, Channel3 images, RevenueCat). Other security headers are on since KOVA-106. |
+| KOVA-113 | P3 | Android status/navigation bars follow the theme | Bars stay Kova black with light icons on every theme (the native window colour can't be changed from the web layer). Needs a small native plugin call. |
+| KOVA-114 | P2 | Dev Firebase project + Emulator Suite for local runs and CI | Project rule: no test data in prod. Today local runs use the production project. |
+| KOVA-116 | P2 | Kova admin console (team only): users and growth, plan mix and revenue (RevenueCat), AI and Cloud costs per route, quotas hit, AI reports to review, failed jobs | Separate admin route gated by `PLAN_ADMIN_UIDS` (or a custom claim), read-only by default; counts and totals only, never a user's money entries. Cost data from the `[AI usage]` logs and Cloud Billing export. |
+| KOVA-117 | P2 | Visual analytics in chat: small charts drawn from the user's own data (spending by week, income vs spending, a category over time, goal pace), offered when someone asks for a chart or "infographic" | Drawn on the phone from the data like the "Where October went" card, so no image model and no AI cost. Free: the basic charts; Premium: richer views (trends across months, comparisons). Fix the reply that says Kova "can't generate images". Image generation is not needed and would be expensive. |
+| KOVA-118 | P3 | PayPal sandbox reset for demos | A cancelled sandbox subscription can't be restarted. `npm run paypal:seed` creates fresh ones; approve them as the sandbox buyer, then update `PAYPAL_SUBSCRIPTION_IDS` (repo variable) and redeploy. Script a one-command reset later. |
 | KOVA-012 | P1 | PR 2: cost routing (`GEMINI_MODEL_SMART`/`FAST`, thinking levels, `maxOutputTokens`, retry only on retryable errors, timeouts, drop `gemini-flash-latest`) | Plan in the 2026-10-16 audit, §4. **Fallbacks:** SMART-primary calls (3.6-flash) need `gemini-3.1-flash-lite` as their Vertex fallback; today's chain `[primary, gemini-3.6-flash]` dedupes to no fallback for them. FAST-primary calls keep 3.6-flash as fallback. |
-| KOVA-013 | P1 | Cap prompt inputs server-side (history text, expenses, contributions, topic/category, csvContent) | Cost + prompt injection. |
-| KOVA-014 | P1 | Stop financial data reaching logs (`console.error(error)`, `JSON.parse` errors carry model output) | CLAUDE.md hard rule. #2 covered the Gemini path only. |
+| KOVA-014 | P2 | Stop financial data reaching logs: remaining `console.*(err)` with whole error objects outside `server/` (client `src/` logs stay on the device) | Server PayPal routes fixed in KOVA-106. |
 | KOVA-020 | P1 | PayPal real sandbox in production (A7): `paypal-client-secret` in Secret Manager, `PAYPAL_MODE`/`PAYPAL_CLIENT_ID`/`PAYPAL_SUBSCRIPTION_IDS` repo variables, `deploy.yml` lines | Required for submission. Works locally since KOVA-020a. |
-| KOVA-021 | P2 | Cron monthly letters: batch/queue instead of one long request; constant-time secret compare; no UIDs in response; guard `force=true` | Will hit Cloud Run timeout as users grow. Scheduler job exists (see Current state). |
+| KOVA-021 | P2 | Cron monthly letters: batch/queue instead of one long request | Will hit Cloud Run's timeout as users grow. Constant-time secret check and counts-only response done in KOVA-106. |
 | KOVA-022 | P2 | Abort Gemini stream on client disconnect; per-call timeouts | Partly in KOVA-012. |
-| KOVA-023 | P2 | CSV > 100 KB: HTML 413 breaks the client | Raise limit on that route with a cap, return JSON errors. |
-| KOVA-024 | P2 | CORS allowlist instead of `origin: true` | |
 | KOVA-051 | P2 | Voice notes on Android via a native speech-recognition plugin | Hidden on native in KOVA-050 (Web Speech API unsupported in WebView); add `RECORD_AUDIO` back with it. |
 | KOVA-030 | P3 | Delete legacy `FIREBASE_SERVICE_ACCOUNT_KEY` parser and hardcoded fallback DB id | |
 | KOVA-031 | P3 | Delete or wire up `/api/topic-opener` (no frontend caller) | |
@@ -64,6 +68,11 @@ Severity: **P0** production broken · **P1** security/cost exposure · **P2** re
 
 | ID | Item | PR |
 |---|---|---|
+| KOVA-109 | Finished PayPal check-ins stay in the chat: each check-in is saved as one chat message (`paypalCheckin` record: figures, summary, each flag and what the user did) and updated as they act; after closing or a reload it shows read-only ("This check-in has ended. Run a new PayPal check-in to act"). "Ask about PayPal" suggestions older than 30 minutes are read-only too. Settings → Appearance is collapsed by default (one line with the current theme) | `feat/kova-109-checkin-history` |
+| KOVA-108 | Themes: Settings → Appearance (a list of previewed themes, not a toggle). Free: Midnight, Dusk, Daylight (warm paper, not white). Premium: Solarized Light, Solarized Dark, Solarized Gold, Forest, Nord Night. Palettes are CSS variables in `src/index.css` (`[data-theme]`, also used for the live previews); components use `text-white`/`bg-black` plus `kova-*` tokens (556 hard-coded hex classes replaced). Saved on the device (no flash on start) and on the account (`users/{uid}.appearance.theme`); Premium themes follow the server-confirmed plan and come back after renewing. Night illustrations and book covers stay dark (`.kova-keep-dark`); charts use a light palette on light themes. Paywall lists the themes | this PR |
+| KOVA-107 | PayPal check-in flags survive Cloud Run instance changes and scale-to-zero: stored in server-only `paypalCheckins/{uid}` (flags + only the items they point at, 30 min, `expiresAt` for a TTL policy) instead of one instance's memory, so "Yes, cancel it" no longer says "expired" when it lands on another instance. Resolved flags are saved; deleted on disconnect and with the account. Tested (`checkinStore.test.ts`) | this PR |
+| KOVA-106 | Review pass (2026-10-27): CORS allowlist (own origin, Android WebView, localhost, `CORS_ORIGINS`), security headers, no `x-powered-by`; JSON bodies up to 2 MB with JSON 413/400 errors (chat broke with HTML 413 once a user had a few hundred entries); prompt inputs capped (message, history, profile fields, topic, goal title, CSV) via `server/httpSafety.ts` (tested); PayPal route logs carry status/name only; cron secret compared in constant time and the monthly-letters response has counts only (it returned UIDs and letter headlines); unknown `/api/*` paths return JSON 404; Grow lessons regenerate at most 3 times a day (changing currency skipped the cache every time); signing out clears the device's cached copy of the user's data; Export includes goals, Growth Marks and full chats; CI runs `npm test` (the second typecheck step was a duplicate); merge debris removed here | this PR |
+| KOVA-025, -054, -055 | Closed in the backlog clean-up: cron secret rotated (v3, scheduler header fixed), public account-deletion page (`/delete-account`, KOVA-092), `google-services.json` added (KOVA-094) | done earlier |
 | — | CI, deploy pipeline, Dockerfile, CLAUDE.md | #1 |
 | KOVA-001 | Vertex AI backend for Gemini (`GEMINI_BACKEND=vertex`); deployed and verified | #2 |
 | KOVA-002 | Streaming chat crash (`setHeader` after headers sent → process exit) | #2 |
@@ -71,7 +80,7 @@ Severity: **P0** production broken · **P1** security/cost exposure · **P2** re
 | KOVA-004 | Confirmed `gemini-3.1-flash-lite` is served on Vertex `global` in `kova-98d67` (Lovette, curl, 2026-10-16) | verified manually |
 | KOVA-011 | Billing budget alert set (outside the repo); `--max-instances=3` on deploy | #3 |
 | KOVA-010 | Server-owned premium entitlement; rules block client writes (incl. the `{document=**}` zero-segment fix); admin-only plan toggle. Rules are deployed by hand: rollout checklist in #4 | #4 |
- feat/kova-092-play-privacy
+| KOVA-105 | Price lookup fixes found in live testing: "Can I afford sony WH-1000XM5 headphones?" priced the XM6, because the number inside the model name was stripped as if it were a price ("wh- xm"). Only standalone numbers are prices now, so model names stay whole; and a result counts only if the model words appear in the product's own name, before "for / compatible with / fits / replacement", so cases and ear pads never stand in for the product. The "I'll wait" reply is shorter now that the card names the product | `fix/kova-105-exact-model-match` |
 | KOVA-104 | "Ask before you buy" listed everywhere Kova describes itself: Android welcome screen slide 4 (product price, how it fits, "I'll wait · Kova watches the price"), web landing page (fourth rhythm), How to use guide (Step 05), About (already), privacy policy ("Price watches" row plus the Channel3 sharing line) | `feat/kova-104-ask-before-you-buy-copy` |
 | KOVA-103 | Price UI: a product Kova priced shows as a store-style card (photo from Channel3 on a white tile, today's price, store, "lowest of N stores"); "I'll wait" gets a calm "Watching the price" card (product, price when asked, until when); a drop shows the old price struck through, the new one in green, "↓ $49 since you asked" and "Lowest in 30 days" chips. `ProductThumb.tsx`, `PriceWatchCard.tsx`, `AffordCard.tsx`; images https only, no referrer, icon fallback | `feat/kova-102-price-watch` |
 | KOVA-102 | Price watch: tapping "I'll wait" on a product Kova priced starts a watch (server-only `priceWatches/{uid}_{productId}`, max 5 active, 30 days, deleted with the account) and asks Channel3 to track its price history. When the app opens on chat, the server checks due watches (each at most every 6 h, 3 per visit) by product ID and Kova mentions only real drops (at least 3% and 1 unit below the last price mentioned), with the card redone at the new price and "the lowest in 30 days" when Channel3's history says so. `server/priceWatch.ts`, `GET /api/price-watch/updates`; admins can add `?simulatePriceDrop=1` to see a test drop labelled as such | `feat/kova-102-price-watch` |
@@ -85,7 +94,7 @@ Severity: **P0** production broken · **P1** security/cost exposure · **P2** re
 | KOVA-094 | Android app registered in Firebase (`com.kovafinance.app`, release upload-key SHA-1/SHA-256) and `android/app/google-services.json` added (public config, allowlisted in gitleaks). Native Google sign-in falls back to the classic account picker (`useCredentialManager: false`) when Credential Manager fails with "Your device doesn't support credential manager"; a cancelled sign-in doesn't open a second picker | this PR |
 | KOVA-093 | Reply actions instead of a "Report" link on every Kova reply: long-press a reply on phones (or right-click / the hover "⋯" on PC) to open a sheet with Copy and Report reply. Reporting asks why (numbers wrong, unhelpful, offensive, something else) and stores `reason` with the report (`aiReportRecord`, tested). The finger-lift click after a long-press is ignored so it can't close the sheet or tap a row. `ReportAiButton.tsx` removed | this PR |
 | KOVA-092 | Google Play readiness: deleting an account now deletes everything server-side (`POST /api/account/delete`: every subcollection under `users/{uid}`, `usage/{uid}`, the user's AI reports, the RevenueCat customer, then the Auth user; needs a sign-in from the last 10 minutes). The phone used to delete only the `users/{uid}` doc, leaving expenses, chats, goals, letters and push tokens behind. "Report" on Kova replies now sends the reply to `POST /api/ai-report` (server-only `aiReports`, rate-limited); it used to show a thank-you without sending anything. Public pages `/privacy` and `/delete-account` (`public/`), a Privacy policy link in Settings, and a Premium cancel note in the delete dialog. Tested in `server/account.test.ts` | this PR |
-| KOVA-091 | Kova app icon and launch screen: Capacitor's placeholder (blue X on white) replaced with the K avatar on black; launcher icons for all five densities (legacy, round and adaptive foreground at 108 dp, background `#000000`), portrait and landscape splash images, and a black Android 12+ launch screen (`windowSplashScreenBackground`) | this PR main
+| KOVA-091 | Kova app icon and launch screen: Capacitor's placeholder (blue X on white) replaced with the K avatar on black; launcher icons for all five densities (legacy, round and adaptive foreground at 108 dp, background `#000000`), portrait and landscape splash images, and a black Android 12+ launch screen (`windowSplashScreenBackground`) | this PR |
 | KOVA-090 | PayPal agent can't answer from thin air: the first Gemini call must call a tool; for "what did I pay for?" and "anything to cancel?" the server checks the answer carries the facts (real payment names, every active subscription) and otherwise answers with its own facts sentence; "anything to cancel?" always offers the confirm card for subscriptions with an unclear name (same rule as the check-in). Lecture-only answers are dropped. Also removes merge-conflict markers a stash pop left in `userService.ts` and this file. Tested | this PR |
 | KOVA-089 | PayPal agent answers what was asked, without lectures: instructions no longer include the general wealth philosophy (it produced "…a key step in keeping your habits aligned with your long-term wealth goals"), say to name the biggest payments for "what did I pay for?", and ban unrequested advice; the server also drops advice/moral sentences (`dropLectures`, tested) before the numbers check | this PR |
 | KOVA-088 | Fixes found with realistic demo data: rent is Housing even when it repeats (was imported as Subscriptions, so October showed "Subscriptions $1,308"); two charges at different prices aren't recurring (two Amazon orders became a "subscription"); the radar leaves out Housing; the import line lists recurring charges without rent, with readable names ("Netflix.com", "Spotify USA") and no doubled full stop. `analytics.ts` reads date helpers from `expenseDates` (no Firebase in pure code). Tested | this PR |

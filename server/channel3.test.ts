@@ -111,3 +111,10 @@ test('product photo: main image, https only (KOVA-103)', () => {
   const q = pickQuote([{ ...sony, images: [{ url: 'https://img.example.com/sony.jpg', is_main_image: true }] }], 'sony headphones')!;
   assert.equal(q.imageUrl, 'https://img.example.com/sony.jpg');
 });
+
+test('model numbers must match exactly, and accessories never count (KOVA-105)', () => {
+  assert.equal(titleMatches('Sony WH-1000XM6 Wireless Noise Canceling Headphones', 'sony wh-1000xm5 headphones'), false);
+  assert.equal(titleMatches('Sony WH-1000XM5 Wireless Headphones', 'sony wh-1000xm5 headphones'), true);
+  assert.equal(titleMatches('Hard Travel Case for Sony WH-1000XM5', 'sony wh-1000xm5'), false);
+  assert.equal(titleMatches('Replacement Ear Pads Compatible with Sony WH-1000XM5', 'sony wh-1000xm5'), false);
+});

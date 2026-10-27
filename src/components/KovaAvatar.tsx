@@ -23,7 +23,7 @@ export const KovaAvatar: React.FC<KovaAvatarProps> = ({ size = 'md', isPulsing =
       
       {/* Avatar surface */}
       <div 
-        className={`${sizeClasses[size]} rounded-full bg-gradient-to-b from-[#2A2A2D] to-[#121214] flex items-center justify-center border border-white/20 text-white font-medium tracking-wider shadow-inner select-none`}
+        className={`${sizeClasses[size]} kova-keep-dark rounded-full bg-gradient-to-b from-[#2A2A2D] to-[#121214] flex items-center justify-center border border-white/20 text-white font-medium tracking-wider shadow-inner select-none`}
       >
         <span className="bg-gradient-to-tr from-white via-white to-white/60 bg-clip-text text-transparent font-semibold">
           K

@@ -23,7 +23,7 @@ const NOTE: Record<string, string> = {
   draft_dispute: "I'll write a draft for you to send. I won't contact anyone.",
 };
 
-const ProposalItem: React.FC<{ proposal: PayPalProposal }> = ({ proposal }) => {
+const ProposalItem: React.FC<{ proposal: PayPalProposal; ended: boolean }> = ({ proposal, ended }) => {
   const [state, setState] = useState<State>({ status: 'idle' });
   const [copied, setCopied] = useState(false);
   const actions = [proposal.suggestedAction, proposal.secondaryAction].filter(
@@ -51,7 +51,7 @@ const ProposalItem: React.FC<{ proposal: PayPalProposal }> = ({ proposal }) => {
   };
 
   if (state.status === 'dismissed') {
-    return <p className="text-xs text-[#8A8A8E] px-1">Okay, left as it is.</p>;
+    return <p className="text-xs text-kova-muted px-1">Okay, left as it is.</p>;
   }
 
   return (
@@ -89,14 +89,17 @@ const ProposalItem: React.FC<{ proposal: PayPalProposal }> = ({ proposal }) => {
             </div>
           )}
         </div>
+      ) : ended ? (
+        // Suggestions expire with their check-in (30 min on the server). An old one is read-only.
+        <p className="text-[10px] text-kova-muted">This suggestion has ended. Ask again or run a new check-in to act on it.</p>
       ) : (
         <div className="space-y-2">
-          <p className="text-[10px] text-[#8A8A8E]">
+          <p className="text-[10px] text-kova-muted">
             {NOTE[actions[0]]}
             {actions[1] === 'draft_dispute' ? " Or I can draft a message for you to send; I won't contact anyone." : ''}
           </p>
           {state.status === 'error' && (
-            <p className="text-xs text-[#FF6B6B]" role="alert">
+            <p className="text-xs text-kova-red-soft" role="alert">
               {state.message}
             </p>
           )}
@@ -133,10 +136,16 @@ const ProposalItem: React.FC<{ proposal: PayPalProposal }> = ({ proposal }) => {
   );
 };
 
-export const PayPalProposalCard: React.FC<{ proposals: PayPalProposal[] }> = ({ proposals }) => (
-  <div className="w-full max-w-md space-y-2.5">
-    {proposals.map((p) => (
-      <ProposalItem key={p.id} proposal={p} />
-    ))}
-  </div>
-);
+/** Matches the server's check-in lifetime (server/paypal/checkinStore.ts). */
+const PROPOSAL_LIFETIME_MS = 30 * 60 * 1000;
+
+export const PayPalProposalCard: React.FC<{ proposals: PayPalProposal[]; createdAt?: number }> = ({ proposals, createdAt }) => {
+  const ended = typeof createdAt === 'number' && Date.now() - createdAt > PROPOSAL_LIFETIME_MS;
+  return (
+    <div className="w-full max-w-md space-y-2.5">
+      {proposals.map((p) => (
+        <ProposalItem key={p.id} proposal={p} ended={ended} />
+      ))}
+    </div>
+  );
+};

@@ -36,7 +36,7 @@ export const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
         <button
           onClick={onClose}
           type="button"
-          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-[#2C2C2E] hover:bg-[#3A3A3C] text-white flex items-center justify-center border border-white/20 shadow-xl transition-all cursor-pointer"
+          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-kova-raised hover:bg-kova-line text-white flex items-center justify-center border border-white/20 shadow-xl transition-all cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

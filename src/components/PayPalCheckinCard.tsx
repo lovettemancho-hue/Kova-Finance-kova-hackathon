@@ -12,6 +12,7 @@ import { useGoals } from '../context/GoalContext';
 import { isDebtGoal } from '../utils/goalKind';
 import { formatCurrency, convertCurrency } from '../utils/currency';
 import { goalImpact } from '../lib/paypalImport';
+import { PayPalCheckinRecord } from '../types';
 
 interface PayPalCheckinCardProps {
   userProfile?: {
@@ -21,6 +22,8 @@ interface PayPalCheckinCardProps {
     currency?: string;
   } | null;
   onClose: () => void;
+  /** Called with what was found and done, so the chat can keep it after a reload (read-only). */
+  onRecord?: (record: PayPalCheckinRecord) => void;
 }
 
 type FlagState =
@@ -43,7 +46,7 @@ const ACTION_NOTE: Record<string, string> = {
 
 // Runs a check-in when opened. Kova only PROPOSES; nothing happens until the user taps
 // the action button on a card (which calls the server's confirm-gated action route).
-export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfile, onClose }) => {
+export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfile, onClose, onRecord }) => {
   const { activeGoals } = useGoals();
   // The goal a freed-up subscription could go toward: the first savings goal with money left to reach.
   const goal = (activeGoals || []).find((g) => !isDebtGoal(g) && g.targetAmount > g.currentAmount);
@@ -88,6 +91,46 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
     cardRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' });
   }, [phase, flagStates]);
 
+  // Keep a read-only record in the chat: the summary, the figures, and what happened to each flag.
+  const checkedAtRef = useRef<string>('');
+  useEffect(() => {
+    if (phase !== 'ready' || !result || !onRecord) return;
+    if (!checkedAtRef.current) checkedAtRef.current = new Date().toISOString();
+    onRecord({
+      checkedAt: checkedAtRef.current,
+      mode: result.mode,
+      summary: result.summary,
+      facts: result.facts,
+      flags: result.flags.map((f) => {
+        const state = flagStates[f.id];
+        let outcome: PayPalCheckinRecord['flags'][number]['outcome'];
+        if (state?.status === 'done') {
+          const res = state.result;
+          outcome = res.draftMessage
+            ? { kind: 'draft', message: "Draft written. Kova didn't contact anyone." }
+            : {
+                kind: 'cancelled',
+                message: res.message || 'Cancelled.',
+                perYear: res.savings?.perYear,
+                currency: res.savings?.currency,
+              };
+        } else if (dismissed.has(f.id)) {
+          outcome = { kind: 'dismissed', message: 'Left as it is.' };
+        }
+        return {
+          id: f.id,
+          type: f.type,
+          title: f.title,
+          amountLabel: f.amountLabel,
+          gentleExplanation: f.gentleExplanation,
+          outcome,
+        };
+      }),
+    });
+    // onRecord is a fresh closure each render; the record only changes with these.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, result, flagStates, dismissed]);
+
   const handleAction = async (flag: PayPalFlag, action: PayPalSuggestedAction) => {
     setFlagStates((s) => ({ ...s, [flag.id]: { status: 'working', action } }));
     try {
@@ -123,7 +166,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
   return (
     <div
       ref={cardRef}
-      className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-4"
+      className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -133,7 +176,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-white">PayPal check-in</span>
             {result && (
-              <span className="text-[10px] text-[#8A8A8E]">{modeLabel(result.mode)}</span>
+              <span className="text-[10px] text-kova-muted">{modeLabel(result.mode)}</span>
             )}
           </div>
         </div>
@@ -141,7 +184,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
           type="button"
           onClick={onClose}
           aria-label="Close PayPal check-in"
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[#8A8A8E] hover:text-white hover:bg-white/10 transition-all"
+          className="w-7 h-7 rounded-full flex items-center justify-center text-kova-muted hover:text-white hover:bg-white/10 transition-all"
         >
           <X className="w-4 h-4" />
         </button>
@@ -156,7 +199,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
 
       {phase === 'error' && (
         <div className="space-y-3" role="alert">
-          <p className="text-xs text-[#FF6B6B] leading-relaxed">{errorMessage}</p>
+          <p className="text-xs text-kova-red-soft leading-relaxed">{errorMessage}</p>
           <button
             type="button"
             onClick={runCheckin}
@@ -173,19 +216,19 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="rounded-xl bg-black/40 border border-white/10 px-2 py-2">
                 <div className="text-sm font-semibold text-white">{fmt(result.facts.spentTotal, result.facts.currency)}</div>
-                <div className="text-[10px] text-[#8A8A8E]">
+                <div className="text-[10px] text-kova-muted">
                   {result.facts.paymentCount} payment{result.facts.paymentCount === 1 ? '' : 's'}, {result.facts.periodDays} days
                 </div>
               </div>
               <div className="rounded-xl bg-black/40 border border-white/10 px-2 py-2">
                 <div className="text-sm font-semibold text-white">{fmt(result.facts.subscriptionsPerMonth, result.facts.currency)}</div>
-                <div className="text-[10px] text-[#8A8A8E]">
+                <div className="text-[10px] text-kova-muted">
                   {result.facts.activeSubscriptions} subscription{result.facts.activeSubscriptions === 1 ? '' : 's'} a month
                 </div>
               </div>
               <div className="rounded-xl bg-black/40 border border-white/10 px-2 py-2">
                 <div className="text-sm font-semibold text-white">{result.facts.unfamiliarCount}</div>
-                <div className="text-[10px] text-[#8A8A8E]">unfamiliar name{result.facts.unfamiliarCount === 1 ? '' : 's'}</div>
+                <div className="text-[10px] text-kova-muted">unfamiliar name{result.facts.unfamiliarCount === 1 ? '' : 's'}</div>
               </div>
             </div>
           )}
@@ -193,7 +236,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
           <p className="text-sm text-white/95 leading-relaxed">{result.summary}</p>
 
           {visibleFlags.length === 0 ? (
-            <p className="text-xs text-[#8A8A8E] leading-relaxed">
+            <p className="text-xs text-kova-muted leading-relaxed">
               Nothing stood out in this check-in.
             </p>
           ) : (
@@ -255,12 +298,12 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
                       </div>
                     ) : hasAction ? (
                       <div className="space-y-2">
-                        <p className="text-[10px] text-[#8A8A8E]">
+                        <p className="text-[10px] text-kova-muted">
                           {ACTION_NOTE[flag.suggestedAction]}
                           {flag.secondaryAction === 'draft_dispute' ? " Or I can draft a message for you to send; I won't contact anyone." : ''}
                         </p>
                         {state.status === 'error' && (
-                          <p className="text-xs text-[#FF6B6B]" role="alert">
+                          <p className="text-xs text-kova-red-soft" role="alert">
                             {state.message}
                           </p>
                         )}
@@ -311,7 +354,7 @@ export const PayPalCheckinCard: React.FC<PayPalCheckinCardProps> = ({ userProfil
             </div>
           )}
 
-          <p className="text-[10px] text-[#8A8A8E] leading-relaxed">
+          <p className="text-[10px] text-kova-muted leading-relaxed">
             Kova only acts when you confirm. You can disconnect PayPal any time in Settings.
           </p>
         </div>

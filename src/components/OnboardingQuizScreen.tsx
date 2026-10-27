@@ -149,7 +149,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
           <h2 className="text-2xl font-serif-headline text-white font-normal transition-all duration-300">
             {setupStatus}
           </h2>
-          <p className="text-xs text-[#8A8A8E]">
+          <p className="text-xs text-kova-muted">
             Attuning Kova to your preferred tone and financial rhythm for {workingGoal || 'your goals'}.
           </p>
         </div>
@@ -160,13 +160,13 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
   return (
     <div className="min-h-screen bg-black text-white flex flex-col justify-between p-6 max-w-md mx-auto font-sans">
       {/* Header Step Counter */}
-      <div className="flex items-center justify-between border-b border-[#2C2C2E]/60 pb-4">
+      <div className="flex items-center justify-between border-b border-kova-raised/60 pb-4">
         <div className="flex items-center gap-2">
           <KovaAvatar size="sm" isPulsing={true} />
           <span className="text-xs font-bold text-white">Getting to know you</span>
         </div>
 
-        <div className="text-xs text-[#8A8A8E] font-medium">
+        <div className="text-xs text-kova-muted font-medium">
           Step {currentStep + 1} of {questions.length}
         </div>
       </div>
@@ -183,7 +183,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
 
         {/* Kova Speaking Bubble */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs text-[#8A8A8E]">
+          <div className="flex items-center gap-2 text-xs text-kova-muted">
             <Sparkles className="w-3.5 h-3.5 text-white/80" />
             <span>Kova asks:</span>
           </div>
@@ -201,12 +201,12 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
               value={workingGoal}
               onChange={(e) => setWorkingGoal(e.target.value)}
               placeholder="e.g. A trip to Japan, $5k emergency fund..."
-              className="w-full bg-[#161618] border border-white/20 rounded-2xl p-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/50"
+              className="w-full bg-kova-surface border border-white/20 rounded-2xl p-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/50"
               autoFocus
             />
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="text-[10px] text-[#8A8A8E] block w-full">Suggestions:</span>
+              <span className="text-[10px] text-kova-muted block w-full">Suggestions:</span>
               {currentQ.options.map((opt) => (
                 <button
                   key={opt}
@@ -215,7 +215,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
                   className={`text-xs px-3.5 py-1.5 rounded-full border transition-all ${
                     workingGoal === opt
                       ? 'bg-white text-black border-white font-semibold'
-                      : 'bg-white/5 text-[#8A8A8E] border-white/10 hover:text-white'
+                      : 'bg-white/5 text-kova-muted border-white/10 hover:text-white'
                   }`}
                 >
                   {opt}
@@ -225,8 +225,8 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
           </div>
         ) : (currentQ as any).isCountry ? (
           <div className="space-y-4">
-            <div className="bg-[#161618] border border-white/15 rounded-2xl p-4 space-y-3">
-              <div className="flex items-center gap-2 text-xs text-[#8A8A8E]">
+            <div className="bg-kova-surface border border-white/15 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center gap-2 text-xs text-kova-muted">
                 <Globe className="w-4 h-4 text-white/70" />
                 <span>Search & select your country (all 190+ ISO nations):</span>
               </div>
@@ -236,7 +236,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
                 onChange={(c) => setCountry(c.countryName)}
               />
 
-              <div className="pt-2 text-xs text-[#8A8A8E] flex items-center justify-between border-t border-white/5">
+              <div className="pt-2 text-xs text-kova-muted flex items-center justify-between border-t border-white/5">
                 <span>Active Currency:</span>
                 <span className="text-white font-mono font-semibold bg-white/10 px-2.5 py-1 rounded-lg">
                   {getCurrencyForCountry(country)} ({getCountryOption(country)?.symbol || '$'})
@@ -246,7 +246,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
 
             {/* Quick Suggested Country Chips */}
             <div className="space-y-1.5 pt-1">
-              <span className="text-[10px] text-[#8A8A8E] block">Quick suggestions:</span>
+              <span className="text-[10px] text-kova-muted block">Quick suggestions:</span>
               <div className="flex flex-wrap gap-2">
                 {['United States', 'United Kingdom', 'European Union (Eurozone)', 'Japan', 'Nigeria', 'Canada', 'Cameroon', 'Ghana', 'India', 'Australia'].map((cName) => {
                   const item = SUPPORTED_COUNTRIES.find((x) => x.countryName === cName);
@@ -260,7 +260,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
                       className={`text-xs px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
                         isSelected
                           ? 'bg-white text-black border-white font-semibold shadow-md'
-                          : 'bg-white/5 text-[#8A8A8E] border-white/10 hover:text-white hover:border-white/20'
+                          : 'bg-white/5 text-kova-muted border-white/10 hover:text-white hover:border-white/20'
                       }`}
                     >
                       <span>{item.flag}</span>
@@ -301,7 +301,7 @@ export const OnboardingQuizScreen: React.FC<OnboardingQuizScreenProps> = ({
         {currentStep > 0 ? (
           <button
             onClick={() => setCurrentStep((prev) => prev - 1)}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors"
+            className="text-xs text-kova-muted hover:text-white transition-colors"
           >
             Previous
           </button>

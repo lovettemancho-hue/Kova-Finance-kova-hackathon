@@ -4,7 +4,8 @@ import { getPayPalProvider, hasPayPalAccess } from './paypalService';
 import { computeFacts, factsSentence, finalizeFlags, gentleLine, subscriptionCost, MAX_FLAGS } from './checkin';
 import { resolveTone } from '../tone';
 import { looksCryptic } from '../../src/lib/paypalImport/analyze';
-import type { CheckinFlag, CheckinResult, PayPalSubscription, PayPalTransaction, SuggestedAction } from './types';
+import type { CheckinFlag, CheckinResult, SuggestedAction } from './types';
+import { createCheckinStore, type CheckinCacheEntry } from './checkinStore';
 import { ASK_DAYS, MAX_TOOL_ROUNDS, TOOL_DECLARATIONS, askIntent, autoProposals, basisLine, checkNumbers, createContext, dropLectures, finalAnswer, runTool, systemInstruction } from './agent';
 
 // Routes for the OPTIONAL "Kova Money Check-in" feature.
@@ -33,17 +34,8 @@ export interface PayPalRouteDeps {
   };
 }
 
-interface CheckinCacheEntry {
-  createdAt: number;
-  flags: CheckinFlag[];
-  transactions: PayPalTransaction[];
-  subscriptions: PayPalSubscription[];
-}
-
-const CACHE_TTL_MS = 30 * 60 * 1000;
 const CHECKIN_DAYS = 30;
 
-const checkinCache = new Map<string, CheckinCacheEntry>();
 const actionsInFlight = new Set<string>();
 
 function money(amount: number, currency: string): string {
@@ -64,19 +56,17 @@ export function registerPayPalRoutes(deps: PayPalRouteDeps) {
       const snap = await adminDb.collection('users').doc(uid).get();
       return !!(snap.exists && snap.data()?.paypalConnected === true);
     } catch (err) {
-      console.warn('[PayPal] Failed to check user connection status:', (err as any)?.message || err);
+      console.warn(`[PayPal] Failed to check user connection status: ${errSummary(err)}`);
       return false;
     }
   }
 
-  function getCache(uid: string): CheckinCacheEntry | null {
-    const entry = checkinCache.get(uid);
-    if (!entry) return null;
-    if (Date.now() - entry.createdAt > CACHE_TTL_MS) {
-      checkinCache.delete(uid);
-      return null;
-    }
-    return entry;
+  // Check-in flags survive across Cloud Run instances and restarts (server/paypal/checkinStore.ts).
+  const checkins = createCheckinStore(adminDb);
+
+  // Status and name only: error messages can carry PayPal or Firestore details (KOVA-014).
+  function errSummary(err: any): string {
+    return `status=${err?.status ?? err?.code ?? 'unknown'} name=${err?.name || 'Error'}`;
   }
 
   function fail(res: Response, status: number, message: string) {
@@ -96,7 +86,7 @@ export function registerPayPalRoutes(deps: PayPalRouteDeps) {
       const connected = await isConnected(req.user.uid);
       return res.json({ available: true, connected, mode: getPayPalProvider(req.user.uid).mode });
     } catch (error) {
-      console.error('[PayPal] status error:', error);
+      console.error(`[PayPal] status error: ${errSummary(error)}`);
       return fail(res, 500, 'Could not check PayPal connection.');
     }
   });
@@ -110,7 +100,7 @@ export function registerPayPalRoutes(deps: PayPalRouteDeps) {
         .set({ paypalConnected: true, paypalConnectedAt: new Date().toISOString() }, { merge: true });
       return res.json({ connected: true, mode: getPayPalProvider(req.user.uid).mode });
     } catch (error) {
-      console.error('[PayPal] connect error:', error);
+      console.error(`[PayPal] connect error: ${errSummary(error)}`);
       return fail(res, 500, 'Could not connect PayPal right now.');
     }
   });
@@ -122,10 +112,10 @@ export function registerPayPalRoutes(deps: PayPalRouteDeps) {
         .collection('users')
         .doc(req.user.uid)
         .set({ paypalConnected: false, paypalConnectedAt: null }, { merge: true });
-      checkinCache.delete(req.user.uid);
+      await checkins.remove(req.user.uid);
       return res.json({ connected: false });
     } catch (error) {
-      console.error('[PayPal] disconnect error:', error);
+      console.error(`[PayPal] disconnect error: ${errSummary(error)}`);
       return fail(res, 500, 'Could not disconnect PayPal right now.');
     }
   });
@@ -265,7 +255,7 @@ RULES:
       // ----- The server decides titles, numbers and allowed actions (server/paypal/checkin.ts) -----
       const flags: CheckinFlag[] = finalizeFlags(rawFlags, activeSubs, outgoing, money, undefined, toneKey);
 
-      checkinCache.set(uid, { createdAt: Date.now(), flags, transactions, subscriptions });
+      await checkins.set(uid, { createdAt: Date.now(), flags, transactions, subscriptions });
 
       const result: CheckinResult = {
         mode: provider.mode,
@@ -277,7 +267,7 @@ RULES:
       };
       return res.json(result);
     } catch (error) {
-      console.error('[PayPal] checkin error:', error);
+      console.error(`[PayPal] checkin error: ${errSummary(error)}`);
       if (deps.refundCheckin) await deps.refundCheckin(uid);
       return fail(res, 502, "I couldn't reach PayPal just now. Nothing was changed. Please try again in a moment.");
     }
@@ -380,7 +370,7 @@ RULES:
       if (intent === 'cancel') autoProposals(ctx);
 
       // Proposals become flags the existing confirm route can act on (same cache as the check-in).
-      const cached = getCache(uid);
+      const cached = await checkins.get(uid);
       const entry: CheckinCacheEntry = cached || { createdAt: Date.now(), flags: [], transactions: [], subscriptions };
       const known = new Map(entry.transactions.map((t) => [t.id, t]));
       for (const t of transactions) known.set(t.id, t);
@@ -400,7 +390,7 @@ RULES:
         entry.flags.push(flag);
         return flag;
       });
-      checkinCache.set(uid, entry);
+      await checkins.set(uid, entry);
 
       // Numbers must come from the tools; anything else is dropped (server/paypal/agent.ts).
       const cleaned = answer ? dropLectures(answer, resolveTone(profile.preferredTone, req.verifiedPlan)) : '';
@@ -433,7 +423,7 @@ RULES:
         return fail(res, 403, 'PayPal is not connected.');
       }
 
-      const entry = getCache(uid);
+      const entry = await checkins.get(uid);
       const flag = entry?.flags.find((f) => f.id === flagId);
       if (!entry || !flag) {
         return fail(res, 404, 'That check-in has expired. Please run a new check-in.');
@@ -461,7 +451,10 @@ RULES:
             flag.subscriptionId,
             'Cancelled by the user via Kova'
           );
-          if (result.ok) flag.resolved = true;
+          if (result.ok) {
+            flag.resolved = true;
+            await checkins.set(uid, entry); // so another instance doesn't offer it again
+          }
           const savings = result.ok && sub ? { ...subscriptionCost(sub), currency: sub.currency } : undefined;
           return res.json({ success: result.ok, message: result.message, mode: provider.mode, action, ...(savings ? { savings } : {}) });
         }
@@ -475,7 +468,10 @@ RULES:
             `I don't recognise this charge. Could you please review it and tell me what it was for? ` +
             `If it was made in error, I'd like it refunded.\n\nThank you.`;
           // A draft changes nothing, so the flag stays open (the user may still cancel).
-          if (flag.suggestedAction === 'draft_dispute') flag.resolved = true;
+          if (flag.suggestedAction === 'draft_dispute') {
+            flag.resolved = true;
+            await checkins.set(uid, entry);
+          }
           return res.json({
             success: true,
             message: 'Here is a draft you can send. Kova has not contacted anyone.',
@@ -490,7 +486,7 @@ RULES:
         actionsInFlight.delete(lockKey);
       }
     } catch (error) {
-      console.error('[PayPal] action error:', error);
+      console.error(`[PayPal] action error: ${errSummary(error)}`);
       return fail(res, 502, "That didn't go through, and nothing was changed. Please try again.");
     }
   });

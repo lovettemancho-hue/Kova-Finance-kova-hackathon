@@ -35,6 +35,10 @@ export interface UserDocument {
     monthlyLetter: boolean;
     dailyGrow: boolean;
   };
+  // Settings → Appearance (src/lib/theme.ts). Owner-writable; Premium themes are gated in the app.
+  appearance?: {
+    theme?: string;
+  };
   createdAt: string;
   updatedAt: string;
   // Written only by the server (Admin SDK); Firestore rules block client writes.
@@ -579,6 +583,25 @@ export async function updateUserNotifications(
       );
     } catch (err: any) {
       reportSaveError('your notification settings', err);
+    }
+  })();
+
+  trackPendingWrite(writePromise);
+  await writePromise;
+}
+
+/** Saves the chosen app theme to the account so it follows the user to other devices. */
+export async function updateUserAppearance(uid: string, theme: string): Promise<void> {
+  setLocalCache(uid, { appearance: { theme } });
+  const writePromise = (async () => {
+    try {
+      await setDoc(
+        doc(db, 'users', uid),
+        { appearance: { theme }, updatedAt: new Date().toISOString() },
+        { merge: true }
+      );
+    } catch (err: any) {
+      reportSaveError('your theme', err);
     }
   })();
 

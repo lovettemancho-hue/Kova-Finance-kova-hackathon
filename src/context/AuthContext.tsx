@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef, ReactNode } from 'react';
+import { setThemePremium } from '../lib/theme';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { 
@@ -134,6 +135,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       if (!res.ok) return;
       const data = await res.json();
       setEntitlementPlan(data.plan === 'premium' ? 'premium' : 'free');
+      setThemePremium(data.plan === 'premium'); // Premium themes follow the server's answer
       setCanManagePlans(data.canManagePlans === true);
       if (data.plans?.free?.quotas && data.plans?.premium?.quotas) setPlanLimits(data.plans);
       if (data.usage && typeof data.usage === 'object') setUsage(data.usage);
@@ -195,6 +197,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     // Plan from the stored entitlement right away, then confirm with the server.
     const storedPlan: Plan = userDoc?.entitlement?.plan === 'premium' ? 'premium' : 'free';
     setEntitlementPlan(storedPlan);
+    setThemePremium(storedPlan === 'premium');
     void refreshEntitlement();
 
     if (isReturning) {
@@ -296,6 +299,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setUserProfile(null);
         setTempAuthUser(null);
         setEntitlementPlan('free');
+        setThemePremium(null);
         setCanManagePlans(false);
         if (onUserLoggedOutRef.current) {
           onUserLoggedOutRef.current();
@@ -321,6 +325,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   // Analytic tone is premium-only: fall back to Warm when the plan drops to free.
   const applyPlanLocally = useCallback((newPlan: Plan) => {
     setEntitlementPlan(newPlan);
+    setThemePremium(newPlan === 'premium');
     if (newPlan === 'premium') return;
     setUserProfile((prev) => {
       const tone = prev?.preferredTone?.toLowerCase() || '';
@@ -483,7 +488,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       console.warn('[AuthContext] Native Firebase signOut warning:', nativeErr);
     }
 
-    // 3. Sign out of Web Firebase Auth
+    // 3. Forget this device's copy of the user's money data (profile, entries, letters, coaching), so the
+    //    next person on a shared browser or phone can't read it. Firestore still has everything.
+    const leavingUid = auth.currentUser?.uid;
+    if (leavingUid) clearLocalUserCache(leavingUid);
+
+    // 4. Sign out of Web Firebase Auth
     try {
       await signOut(auth);
     } catch (err) {
@@ -494,6 +504,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     setUserProfile(null);
     setTempAuthUser(null);
     setEntitlementPlan('free');
+    setThemePremium(null);
     setCanManagePlans(false);
     if (onUserLoggedOutRef.current) {
       onUserLoggedOutRef.current();
@@ -537,6 +548,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       setUserProfile(null);
       setTempAuthUser(null);
       setEntitlementPlan('free');
+      setThemePremium(null);
       setCanManagePlans(false);
       if (onUserLoggedOutRef.current) {
         onUserLoggedOutRef.current();

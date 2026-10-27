@@ -170,8 +170,39 @@ export interface ChatMessage {
   radarCard?: SubscriptionRadarCardData;
   paypalBasis?: string; // "Based on 12 PayPal payments, Sep 22 – Oct 22"
   paypalProposals?: PayPalProposal[];
+  // A finished PayPal check-in, kept in the chat so it survives a reload. Read-only: acting needs a new check-in.
+  paypalCheckin?: PayPalCheckinRecord;
   extractedExpense?: Partial<Expense>;
   isThinking?: boolean;
+}
+
+/** What one PayPal check-in found and what the user did about it. Figures as the server computed them. */
+export interface PayPalCheckinRecord {
+  checkedAt: string; // ISO
+  mode: 'mock' | 'real';
+  summary: string;
+  facts?: {
+    periodDays: number;
+    currency: string;
+    paymentCount: number;
+    spentTotal: number;
+    activeSubscriptions: number;
+    subscriptionsPerMonth: number;
+    unfamiliarCount: number;
+  };
+  flags: Array<{
+    id: string;
+    type: string;
+    title: string;
+    amountLabel?: string;
+    gentleExplanation: string;
+    outcome?: {
+      kind: 'cancelled' | 'draft' | 'dismissed';
+      message: string;
+      perYear?: number;
+      currency?: string;
+    };
+  }>;
 }
 
 export interface BookRecommendation {

@@ -15,7 +15,7 @@ export const ChatDayDivider: React.FC<ChatDayDividerProps> = ({ previous, curren
 
   return (
     <div role="separator" aria-label={label} className="self-stretch flex justify-center py-1">
-      <span className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-medium text-[#8A8A8E]">
+      <span className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-medium text-kova-muted">
         {label}
       </span>
     </div>

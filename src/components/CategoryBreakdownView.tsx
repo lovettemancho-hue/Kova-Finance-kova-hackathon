@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { themeOption, useTheme } from '../lib/theme';
 import {
   ResponsiveContainer,
   PieChart as RechartsPieChart,
@@ -86,6 +87,22 @@ const SLICE_COLORS = [
   '#8B5CF6',
 ];
 
+// Same idea for light themes (Settings → Appearance): dark greys first, deeper accents.
+const LIGHT_SLICE_COLORS = [
+  '#1F1E1B',
+  '#3F3D38',
+  '#5E5B54',
+  '#7D7A72',
+  '#9C988F',
+  '#B8B4AA',
+  '#B45309',
+  '#0F7A55',
+  '#4338CA',
+  '#BE185D',
+  '#0E7490',
+  '#6D28D9',
+];
+
 const PieComponent = Pie as any;
 const BarComponent = Bar as any;
 const BarChartComponent = RechartsBarChart as any;
@@ -128,6 +145,8 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
   filterType,
 }) => {
   const [chartType, setChartType] = useState<'donut' | 'bars'>('donut');
+  const isLightTheme = themeOption(useTheme().effective).mode === 'light';
+  const sliceColors = isLightTheme ? LIGHT_SLICE_COLORS : SLICE_COLORS;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const activeItem = useMemo(() => {
@@ -144,18 +163,18 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
       value: item.amount,
       percentage: item.percentage,
       count: item.count,
-      color: SLICE_COLORS[index % SLICE_COLORS.length],
+      color: sliceColors[index % sliceColors.length],
     }));
-  }, [items]);
+  }, [items, sliceColors]);
 
   if (items.length === 0) {
     return (
-      <div className="glass-card rounded-[24px] p-6 border border-white/10 text-center bg-[#161618]/80 my-4">
+      <div className="glass-card rounded-[24px] p-6 border border-white/10 text-center bg-kova-surface/80 my-4">
         <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3 text-white/40">
           <PieChart className="w-5 h-5" />
         </div>
         <p className="text-xs font-medium text-white/80">No {filterType} entries for {monthName}</p>
-        <p className="text-[11px] text-[#8A8A8E] mt-1">
+        <p className="text-[11px] text-kova-muted mt-1">
           Log an expense to see your categorical distribution chart.
         </p>
       </div>
@@ -163,7 +182,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
   }
 
   return (
-    <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618]/80 space-y-5">
+    <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface/80 space-y-5">
       {/* Header & Chart Type Selector */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -171,14 +190,14 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
           <span className="text-xs font-bold text-white tracking-tight">Categorical Distribution</span>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-[#121214] p-0.5 rounded-full border border-white/10">
+        <div className="flex items-center gap-1.5 bg-kova-surface-2 p-0.5 rounded-full border border-white/10">
           <button
             type="button"
             onClick={() => setChartType('donut')}
             className={`px-2.5 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
               chartType === 'donut'
                 ? 'bg-white text-black shadow-sm'
-                : 'text-[#8A8A8E] hover:text-white'
+                : 'text-kova-muted hover:text-white'
             }`}
           >
             <PieChart className="w-3 h-3" />
@@ -190,7 +209,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
             className={`px-2.5 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
               chartType === 'bars'
                 ? 'bg-white text-black shadow-sm'
-                : 'text-[#8A8A8E] hover:text-white'
+                : 'text-kova-muted hover:text-white'
             }`}
           >
             <BarChart3 className="w-3 h-3" />
@@ -200,7 +219,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
       </div>
 
       {/* Main Recharts Visualization Canvas */}
-      <div className="bg-[#121214]/90 rounded-2xl p-4 border border-white/5 relative flex flex-col items-center justify-center min-h-[220px]">
+      <div className="bg-kova-surface-2/90 rounded-2xl p-4 border border-white/5 relative flex flex-col items-center justify-center min-h-[220px]">
         {chartType === 'donut' ? (
           <div className="relative w-full h-52 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -210,12 +229,12 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-[#18181A]/95 border border-white/20 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-left z-50">
+                        <div className="bg-kova-surface/95 border border-white/20 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-left z-50">
                           <p className="text-xs font-bold text-white mb-0.5">{data.name}</p>
                           <p className="text-[11px] font-mono font-semibold text-white">
                             {formatCurrency(data.value, currency)} ({data.percentage}%)
                           </p>
-                          <p className="text-[10px] text-[#8A8A8E]">
+                          <p className="text-[10px] text-kova-muted">
                             {data.count} {data.count === 1 ? 'transaction' : 'transactions'}
                           </p>
                         </div>
@@ -252,7 +271,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
 
             {/* Centered Dynamic Readout inside Donut Hole */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4">
-              <span className="text-[10px] uppercase tracking-wider text-[#8A8A8E] font-medium truncate max-w-[110px]">
+              <span className="text-[10px] uppercase tracking-wider text-kova-muted font-medium truncate max-w-[110px]">
                 {activeItem ? activeItem.category : (filterType === 'outcome' ? 'Total Spent' : 'Total Income')}
               </span>
               <span className="text-sm sm:text-base font-extrabold text-white font-mono mt-0.5">
@@ -283,20 +302,20 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
                   axisLine={false}
                   tickLine={false}
                   width={90}
-                  tick={{ fill: '#A1A1AA', fontSize: 11, fontWeight: 500 }}
+                  tick={{ fill: isLightTheme ? '#6E6B64' : '#A1A1AA', fontSize: 11, fontWeight: 500 }}
                 />
                 <RechartsTooltip
-                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  cursor={{ fill: isLightTheme ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)' }}
                   content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-[#18181A]/95 border border-white/20 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-left z-50">
+                        <div className="bg-kova-surface/95 border border-white/20 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-left z-50">
                           <p className="text-xs font-bold text-white mb-0.5">{data.name}</p>
                           <p className="text-[11px] font-mono font-semibold text-white">
                             {formatCurrency(data.value, currency)} ({data.percentage}%)
                           </p>
-                          <p className="text-[10px] text-[#8A8A8E]">
+                          <p className="text-[10px] text-kova-muted">
                             {data.count} {data.count === 1 ? 'transaction' : 'transactions'}
                           </p>
                         </div>
@@ -328,7 +347,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
         )}
 
         {/* Chart Legend / Active summary note */}
-        <div className="w-full flex items-center justify-between pt-2 border-t border-white/5 text-[10px] text-[#8A8A8E]">
+        <div className="w-full flex items-center justify-between pt-2 border-t border-white/5 text-[10px] text-kova-muted">
           <span className="flex items-center gap-1.5">
             <Layers className="w-3 h-3 text-white/50" />
             <span>Interactive {chartType === 'donut' ? 'Donut' : 'Ranked Bars'}</span>
@@ -344,7 +363,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
         {items.map((item, idx) => {
           const isSelected = activeIndex === idx;
           const avgPerTransaction = item.count > 0 ? item.amount / item.count : item.amount;
-          const sliceColor = SLICE_COLORS[idx % SLICE_COLORS.length];
+          const sliceColor = sliceColors[idx % sliceColors.length];
 
           return (
             <div
@@ -377,7 +396,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
                         <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                       )}
                     </span>
-                    <span className="text-[10px] text-[#8A8A8E]">
+                    <span className="text-[10px] text-kova-muted">
                       {item.count} {item.count === 1 ? 'entry' : 'entries'}
                       {isSelected && ` • avg ${formatCurrency(avgPerTransaction, currency)}`}
                     </span>
@@ -392,7 +411,7 @@ export const CategoryBreakdownView: React.FC<CategoryBreakdownViewProps> = ({
                     className="text-[10px] font-semibold px-1.5 py-0.2 rounded font-mono"
                     style={{
                       backgroundColor: `${sliceColor}25`,
-                      color: sliceColor === '#FFFFFF' ? '#FFFFFF' : sliceColor,
+                      color: sliceColor,
                     }}
                   >
                     {item.percentage}%

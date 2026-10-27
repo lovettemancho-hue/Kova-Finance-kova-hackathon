@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -19,6 +20,7 @@ import { createUsageService, limitMessage } from './server/usage';
 import { AiRoute, budgetFor, isInvalidArgumentError, THINKING_LEVEL, usageLine } from './server/aiBudget';
 import { candidateUids, createBillingService, isPremiumEntitlement, webhookAuthorized } from './server/billing';
 import { aiReportRecord, deleteAccountEverywhere, isRecentSignIn } from './server/account';
+import { clipProfile, clipText, isAllowedOrigin } from './server/httpSafety';
 import { IMPORT_CATEGORIES, isImportCategory } from './src/lib/statementImport/categorize';
 
 dotenv.config();
@@ -134,14 +136,52 @@ const channel3 = createChannel3Client({ apiKey: process.env.CHANNEL3_API_KEY });
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+app.disable('x-powered-by');
+
+// Basic security headers on every response. No full CSP yet: the web app loads Google Fonts and
+// Firebase Auth popups, so a CSP needs its own tested pass (see docs/STATUS.md).
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Permissions-Policy', 'camera=(), geolocation=(), payment=(), microphone=(self)');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
+// CORS (KOVA-024). Was `origin: true` (any site). The API authenticates with a Bearer token, not
+// cookies, so CORS is defence in depth. Allowed: the server's own origin (whichever Cloud Run URL the
+// browser used), the Android app's WebView (https://localhost), local development, and CORS_ORIGINS.
+const EXTRA_CORS_ORIGINS = new Set((process.env.CORS_ORIGINS || '').split(/[\s,]+/).filter(Boolean));
 app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-cron-secret', 'x-cron-key'],
+  cors((req, cb) => {
+    cb(null, {
+      origin: isAllowedOrigin(req.headers.origin, req.headers.host, EXTRA_CORS_ORIGINS),
+      credentials: false,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      maxAge: 600,
+    });
   })
 );
-app.use(express.json());
+// Chat sends the user's entries for the server-computed snapshot. 100 KB (Express's default) was hit
+// by users with a few hundred entries (one statement import), which broke chat with an HTML 413.
+app.use(express.json({ limit: '2mb' }));
+// Body errors as JSON, never Express's HTML page (KOVA-023). No body content is logged.
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (!err) return next();
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'That was too much to send at once. Try a smaller file or fewer rows.' });
+  }
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'The request could not be read.' });
+  }
+  return next(err);
+});
+
+// ---- Prompt input caps (KOVA-013) ------------------------------------------------------------
+// Everything the app sends lands in a Gemini prompt. Caps bound cost and limit prompt-injection room.
+const MAX_MESSAGE_CHARS = 2000;
+const MAX_HISTORY_TEXT_CHARS = 2000;
 
 // 2. Authentication Middleware
 export interface AuthenticatedRequest extends Request {
@@ -344,7 +384,7 @@ function formatChatHistoryToContents(
   const validHistory = Array.isArray(history) ? history.slice(-maxTurns) : [];
 
   for (const item of validHistory) {
-    let rawText = (item.text || '').trim();
+    let rawText = (typeof item?.text === 'string' ? item.text : '').trim().slice(0, MAX_HISTORY_TEXT_CHARS);
     if (!rawText) continue;
 
     // Strip any raw markdown json codeblocks from stored model messages if present
@@ -365,7 +405,7 @@ function formatChatHistoryToContents(
     }
   }
 
-  const trimmedLatest = (latestUserMessage || '').trim();
+  const trimmedLatest = (typeof latestUserMessage === 'string' ? latestUserMessage : '').trim().slice(0, MAX_MESSAGE_CHARS);
 
   // If latestUserMessage was provided, check if it needs to be appended as a user turn
   if (trimmedLatest) {
@@ -1141,11 +1181,11 @@ app.post('/api/ai-report', requireAuth, async (req: AuthenticatedRequest, res) =
 });
 
 app.post('/api/chat', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const message = typeof req.body?.message === 'string' ? req.body.message.slice(0, MAX_MESSAGE_CHARS) : '';
+  const userProfile = clipProfile(req.body?.userProfile);
   const {
-    message,
     history,
     expenses,
-    userProfile,
     savingsGoal,
     savingsGoals,
     currency: propCurrency,
@@ -1156,7 +1196,7 @@ app.post('/api/chat', requireAuth, async (req: AuthenticatedRequest, res) => {
   } = req.body;
   const isStreaming = Boolean(stream);
   const isExploreQuery = type === 'explore_query';
-  const queryContext = context ? `\n- Topic Context: ${context}` : '';
+  const queryContext = context ? `\n- Topic Context: ${clipText(context, 200)}` : '';
   let chatQuotaTaken = false; // so a failed AI call can give the reply back (KOVA-072)
 
   try {
@@ -1168,8 +1208,8 @@ app.post('/api/chat', requireAuth, async (req: AuthenticatedRequest, res) => {
       plan: verifiedPlan,
     };
 
-    const currency = (propCurrency || effectiveProfile?.currency || 'USD').toUpperCase();
-    const currencySymbol = propCurrencySymbol || effectiveProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
+    const currency = (clipText(propCurrency, 3) || effectiveProfile?.currency || 'USD').toUpperCase();
+    const currencySymbol = clipText(propCurrencySymbol, 5) || effectiveProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
 
     const userName = effectiveProfile?.firstName ? effectiveProfile.firstName : 'Friend';
     let preferredTone = effectiveProfile?.preferredTone || 'Gently, ease me in';
@@ -1533,7 +1573,8 @@ app.post('/api/parse-csv', requireAuth, usage.guard('csvImport'), async (req: Au
   const decision = (req as any).quota?.decision;
   const csvUsage = decision ? { used: decision.used, limit: decision.limit, resetsAt: decision.resetsAt } : undefined;
   try {
-    const { csvContent } = req.body;
+    // The phone reads statements itself (KOVA-081); this is the fallback for small odd files only.
+    const csvContent = typeof req.body?.csvContent === 'string' ? req.body.csvContent.slice(0, 100_000) : '';
     const ai = getGeminiClient();
 
     if (!ai) {
@@ -1878,7 +1919,10 @@ Return a valid JSON object matching this schema:
 // Free: 1 letter a month; Premium: 1 + 3 regenerations (KOVA-072).
 app.post('/api/monthly-letter', requireAuth, usage.guard('letter'), async (req: AuthenticatedRequest, res) => {
   try {
-    const { expenses, savingsGoal, savingsGoals, userProfile, month, year, currency, currencySymbol } = req.body;
+    const { expenses, savingsGoal, savingsGoals, month, year } = req.body;
+    const userProfile = clipProfile(req.body?.userProfile);
+    const currency = clipText(req.body?.currency, 3) || undefined;
+    const currencySymbol = clipText(req.body?.currencySymbol, 5) || undefined;
     const verifiedPlan = req.verifiedPlan || 'free';
     const effectiveProfile = {
       ...userProfile,
@@ -1919,11 +1963,7 @@ app.post('/api/monthly-letter', requireAuth, usage.guard('letter'), async (req: 
 // Protected Monthly-Letters Cron Trigger for Cloud Scheduler
 // Called daily by Cloud Scheduler to automatically generate letters for all active users at month-end.
 app.post('/api/cron/monthly-letters', async (req, res) => {
-  // Security verification
-  const cronSecret = process.env.CRON_SECRET;
-  const providedSecret = req.headers['x-cron-secret'] || req.headers['x-cron-key'];
-
-  if (!cronSecret || providedSecret !== cronSecret) {
+  if (!isCronAuthorized(req)) {
     return res.status(401).json({
       error: 'Unauthorized: missing or invalid x-cron-secret header',
     });
@@ -1953,8 +1993,7 @@ app.post('/api/cron/monthly-letters', async (req, res) => {
 
     let generatedCount = 0;
     let skippedCount = 0;
-    const errors: Array<{ uid: string; error: string }> = [];
-    const details: Array<{ uid: string; status: string; reason?: string; headline?: string }> = [];
+    let errorCount = 0;
 
     for (const userDoc of usersSnap.docs) {
       const uid = userDoc.id;
@@ -2009,7 +2048,6 @@ app.post('/api/cron/monthly-letters', async (req, res) => {
         // Skip users with zero activity that month rather than generating a letter from nothing
         if (totalMonthActivity === 0) {
           skippedCount++;
-          details.push({ uid, status: 'skipped', reason: 'zero activity in month' });
           continue;
         }
 
@@ -2053,12 +2091,10 @@ app.post('/api/cron/monthly-letters', async (req, res) => {
         }
 
         generatedCount++;
-        details.push({ uid, status: 'generated', headline: letter.headline });
       } catch (userErr: any) {
         const summary = geminiErrorSummary(userErr);
-        console.error(`[Monthly Letters Cron] Error generating letter for user ${uid}: ${summary}`);
-        errors.push({ uid, error: summary });
-        details.push({ uid, status: 'error', reason: summary });
+        console.error(`[Monthly Letters Cron] Error generating a letter: ${summary}`);
+        errorCount++;
       }
     }
 
@@ -2069,9 +2105,7 @@ app.post('/api/cron/monthly-letters', async (req, res) => {
       totalUsersEvaluated: usersSnap.docs.length,
       generatedCount,
       skippedCount,
-      errorsCount: errors.length,
-      errors: errors.length > 0 ? errors : undefined,
-      details,
+      errorsCount: errorCount, // counts only: no UIDs or letter text in the response (KOVA-021)
     });
   } catch (cronErr: any) {
     console.error(`[Monthly Letters Cron] Global error during batch execution: ${geminiErrorSummary(cronErr)}`);
@@ -2129,10 +2163,14 @@ async function sendPushToUser(
   }
 }
 
+/** Constant-time check of the Cloud Scheduler secret header (KOVA-021). */
 function isCronAuthorized(req: Request): boolean {
   const cronSecret = process.env.CRON_SECRET;
   const provided = req.headers['x-cron-secret'] || req.headers['x-cron-key'];
-  return Boolean(cronSecret) && typeof provided === 'string' && provided === cronSecret;
+  if (!cronSecret || typeof provided !== 'string') return false;
+  const a = crypto.createHash('sha256').update(provided).digest();
+  const b = crypto.createHash('sha256').update(cronSecret).digest();
+  return crypto.timingSafeEqual(a, b);
 }
 
 // Calm, rotating daily copy. No figures, no streaks, no guilt.
@@ -2190,15 +2228,17 @@ app.post('/api/cron/daily-grow', async (req, res) => {
 // Premium only, 20 messages a day (KOVA-072).
 app.post('/api/goal-coach', requireAuth, usage.guard('coach'), async (req: AuthenticatedRequest, res) => {
   try {
-    const { userProfile, goal, message, messageHistory, isInitialOpening, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const { goal, messageHistory, isInitialOpening, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const userProfile = clipProfile(req.body?.userProfile);
+    const message = clipText(req.body?.message, MAX_MESSAGE_CHARS);
     const ai = getGeminiClient();
 
-    const currency = (propCurrency || userProfile?.currency || 'USD').toUpperCase();
+    const currency = (clipText(propCurrency, 3) || userProfile?.currency || 'USD').toUpperCase();
     const currencySymbol = propCurrencySymbol || userProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
 
     const userName = userProfile?.firstName || 'Friend';
     const tone = userProfile?.preferredTone || 'Gently, ease me in'; // was the mentor tone, which pushed lectures (KOVA-100)
-    const goalTitle = goal?.title || 'Savings Goal';
+    const goalTitle = clipText(goal?.title, 80) || 'Savings Goal';
     const target = serverConvertCurrency(Number(goal?.targetAmount || 0), goal?.nativeCurrency || 'USD', currency);
     const current = serverConvertCurrency(Number(goal?.currentAmount || 0), goal?.nativeCurrency || 'USD', currency);
     const percentage = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
@@ -2309,10 +2349,11 @@ Format your response as a JSON object with keys "response" (string) and "quickRe
 // Micro-lesson for Grow screen endpoint
 app.post('/api/grow-lesson', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const { userProfile, expenses, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const { expenses, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const userProfile = clipProfile(req.body?.userProfile);
     const ai = getGeminiClient();
 
-    const currency = (propCurrency || userProfile?.currency || 'USD').toUpperCase();
+    const currency = (clipText(propCurrency, 3) || userProfile?.currency || 'USD').toUpperCase();
     const currencySymbol = propCurrencySymbol || userProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
 
     // One lesson per user per UTC day (KOVA-074). The app asks on every Grow visit and new expense;
@@ -2320,10 +2361,17 @@ app.post('/api/grow-lesson', requireAuth, async (req: AuthenticatedRequest, res)
     const growPlan: 'free' | 'premium' = req.verifiedPlan === 'premium' ? 'premium' : 'free';
     const growDay = periodKey('day', new Date());
     const growCacheRef = adminDb.collection('usage').doc(req.user!.uid);
+    // Changing currency regenerates the lesson, but at most 3 lessons a day per user: without this cap,
+    // a request that changed the currency each time skipped the cache on every call.
+    const MAX_GROW_LESSONS_PER_DAY = 3;
+    let generationsToday = 0;
     try {
       const cached = (await growCacheRef.get()).data()?.growLesson;
-      if (cached?.day === growDay && cached?.currency === currency && cached?.lesson?.content) {
-        return res.json({ lesson: cached.lesson, cached: true });
+      if (cached?.day === growDay && cached?.lesson?.content) {
+        generationsToday = Number(cached.generations) || 1;
+        if (cached.currency === currency || generationsToday >= MAX_GROW_LESSONS_PER_DAY) {
+          return res.json({ lesson: cached.lesson, cached: true });
+        }
       }
     } catch (cacheErr: any) {
       console.warn(`[Grow] Cache read failed: code=${cacheErr?.code || 'unknown'}`);
@@ -2339,7 +2387,7 @@ app.post('/api/grow-lesson', requireAuth, async (req: AuthenticatedRequest, res)
       ? expenses.slice(0, 7).map((e: any) => {
           const convertedAmt = serverConvertCurrency(e.amount, e.nativeCurrency || 'USD', currency);
           const formattedAmt = Number.isInteger(convertedAmt) ? convertedAmt.toLocaleString('en-US') : convertedAmt.toFixed(2);
-          return `${e.label} (${currencySymbol}${formattedAmt})`;
+          return `${clipText(e?.label, 60)} (${currencySymbol}${formattedAmt})`;
         }).join(', ')
       : 'routine groceries and dining';
 
@@ -2424,7 +2472,7 @@ Return a valid JSON object matching this schema:
     if (lesson?.title && lesson?.content) {
       // Only real lessons are cached; fallbacks are retried on the next visit.
       growCacheRef
-        .set({ growLesson: { day: growDay, currency, plan: growPlan, lesson } }, { merge: true })
+        .set({ growLesson: { day: growDay, currency, plan: growPlan, lesson, generations: generationsToday + 1 } }, { merge: true })
         .catch((err: any) => console.warn(`[Grow] Cache write failed: code=${err?.code || 'unknown'}`));
     }
     return res.json({ lesson });
@@ -2446,14 +2494,17 @@ Return a valid JSON object matching this schema:
 app.post('/api/topic-opener', requireAuth, async (req: AuthenticatedRequest, res) => {
   let topicQuotaTaken = false;
   try {
-    const { topic, category, userProfile, expenses, savingsGoal, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const { expenses, savingsGoal, currency: propCurrency, currencySymbol: propCurrencySymbol } = req.body;
+    const topic = clipText(req.body?.topic, 80) || 'this topic';
+    const category = clipText(req.body?.category, 60) || 'money basics';
+    const userProfile = clipProfile(req.body?.userProfile);
     const ai = getGeminiClient();
 
     const currency = (propCurrency || userProfile?.currency || 'USD').toUpperCase();
     const currencySymbol = propCurrencySymbol || userProfile?.currencySymbol || (currency === 'USD' ? '$' : currency);
 
     const userName = userProfile?.firstName || 'Friend';
-    const goal = savingsGoal?.title || userProfile?.workingGoal || 'financial clarity';
+    const goal = clipText(savingsGoal?.title, 80) || userProfile?.workingGoal || 'financial clarity';
     const tone = userProfile?.preferredTone || 'Gently, ease me in';
     const feeling = userProfile?.financialFeeling || 'looking for balance';
     const trigger = userProfile?.overspendTrigger || 'impulse';
@@ -2462,7 +2513,7 @@ app.post('/api/topic-opener', requireAuth, async (req: AuthenticatedRequest, res
       ? expenses.slice(0, 5).map((e: any) => {
           const convertedAmt = serverConvertCurrency(e.amount, e.nativeCurrency || 'USD', currency);
           const formattedAmt = Number.isInteger(convertedAmt) ? convertedAmt.toLocaleString('en-US') : convertedAmt.toFixed(2);
-          return `${e.label} (${currencySymbol}${formattedAmt})`;
+          return `${clipText(e?.label, 60)} (${currencySymbol}${formattedAmt})`;
         }).join(', ')
       : 'recent intentional tracking';
 
@@ -2954,6 +3005,11 @@ registerPayPalRoutes({
     refund: (uid: string) => usage.refund(uid, 'chat'),
     limitMessage: (plan: 'free' | 'premium', decision: any) => limitMessage('chat', plan, decision),
   },
+});
+
+// Unknown API paths answer JSON 404 instead of falling through to the web app's index.html.
+app.all('/api/*', (_req, res) => {
+  res.status(404).json({ error: 'Not found.' });
 });
 
 async function startServer() {

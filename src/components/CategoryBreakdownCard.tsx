@@ -15,10 +15,10 @@ export const CategoryBreakdownCard: React.FC<{ data: CategoryBreakdownCardData }
   const hidden = data.rows.length - rows.length;
 
   return (
-    <div className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-3.5">
+    <div className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-3.5">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-semibold text-[#8A8A8E]">Where {data.monthLabel} went</span>
-        <span className="text-sm font-semibold text-[#8A8A8E]">{money(data.total)}</span>
+        <span className="text-sm font-semibold text-kova-muted">Where {data.monthLabel} went</span>
+        <span className="text-sm font-semibold text-kova-muted">{money(data.total)}</span>
       </div>
 
       <ul className="grid grid-cols-[minmax(0,7.5rem)_1fr_auto] gap-x-3 gap-y-3" aria-label={`Spending by category in ${data.monthLabel}`}>
@@ -46,7 +46,7 @@ export const CategoryBreakdownCard: React.FC<{ data: CategoryBreakdownCardData }
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="text-xs text-[#8A8A8E] hover:text-white underline underline-offset-2 cursor-pointer"
+          className="text-xs text-kova-muted hover:text-white underline underline-offset-2 cursor-pointer"
         >
           {expanded ? 'Show less' : `Show ${hidden} more`}
         </button>

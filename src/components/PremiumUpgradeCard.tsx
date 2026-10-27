@@ -69,6 +69,7 @@ export const PremiumUpgradeCard: React.FC<PremiumUpgradeCardProps> = ({ onUpgrad
     `Import statements from your bank or wallet: ${premium.csvImport} a month (Free: ${free.csvImport})`,
     'Your full monthly letter, 3 book picks and the whole archive',
     "All 200+ money topics, plus Kova's Analytic tone",
+    'Five extra themes: Solarized Light, Solarized Dark, Solarized Gold, Forest and Nord Night',
   ];
 
   const handleRestore = async () => {
@@ -104,7 +105,7 @@ export const PremiumUpgradeCard: React.FC<PremiumUpgradeCardProps> = ({ onUpgrad
         <div className="text-xs text-white/80 mt-0.5">
           {p === 'annual' ? (
             <>
-              {annualPrice}/year{annualPerMonth ? <span className="text-[#8A8A8E]"> · about {annualPerMonth}/mo</span> : null}
+              {annualPrice}/year{annualPerMonth ? <span className="text-kova-muted"> · about {annualPerMonth}/mo</span> : null}
             </>
           ) : (
             <>{monthlyPrice}/month</>
@@ -115,11 +116,11 @@ export const PremiumUpgradeCard: React.FC<PremiumUpgradeCardProps> = ({ onUpgrad
   };
 
   return (
-    <div className="glass-card rounded-[28px] p-6 sm:p-8 border border-amber-500/20 bg-[#161618] shadow-2xl space-y-6 relative overflow-hidden text-left font-sans">
+    <div className="glass-card rounded-[28px] p-6 sm:p-8 border border-amber-500/20 bg-kova-surface shadow-2xl space-y-6 relative overflow-hidden text-left font-sans">
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold text-[#8A8A8E] uppercase tracking-widest flex items-center gap-1.5">
+        <span className="text-[10px] font-semibold text-kova-muted uppercase tracking-widest flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-amber-400" />
           <span>PREMIUM</span>
         </span>
@@ -187,17 +188,17 @@ export const PremiumUpgradeCard: React.FC<PremiumUpgradeCardProps> = ({ onUpgrad
           </button>
 
           {native ? (
-            <p className="text-[10px] text-[#8A8A8E] text-center leading-relaxed">
+            <p className="text-[10px] text-kova-muted text-center leading-relaxed">
               Billed through Google Play. {selectedPrice} renews automatically until you cancel.{' '}
               <button type="button" onClick={handleRestore} disabled={restoring} className="underline underline-offset-2 hover:text-white cursor-pointer">
                 {restoring ? 'Restoring...' : 'Restore purchase'}
               </button>
             </p>
           ) : (
-            <p className="text-[10px] text-[#8A8A8E] text-center">{unavailableMessage()} Prices shown in USD; your local price may differ.</p>
+            <p className="text-[10px] text-kova-muted text-center">{unavailableMessage()} Prices shown in USD; your local price may differ.</p>
           )}
 
-          <p className="text-[11px] text-[#8A8A8E] text-center font-normal">Logging and your daily lesson stay free, always.</p>
+          <p className="text-[11px] text-kova-muted text-center font-normal">Logging and your daily lesson stay free, always.</p>
         </div>
       )}
     </div>

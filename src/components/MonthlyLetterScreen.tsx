@@ -113,11 +113,11 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
     return (
       <div className="flex flex-col min-h-app max-w-2xl mx-auto w-full px-4 pb-20 pt-4 animate-in fade-in duration-300 space-y-6 font-sans">
         {/* Archive Header */}
-        <div className="flex items-center justify-between py-3 border-b border-[#2C2C2E]/50">
+        <div className="flex items-center justify-between py-3 border-b border-kova-raised/50">
           <button
             type="button"
             onClick={() => setIsViewingArchive(false)}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
+            className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Letter</span>
@@ -128,7 +128,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
               <Archive className="w-3.5 h-3.5 text-amber-300" />
               <span>Letter Archive</span>
             </div>
-            <div className="text-[10px] text-[#8A8A8E]">
+            <div className="text-[10px] text-kova-muted">
               {isPremium ? 'All Monthly Briefings Unlocked' : 'Free Plan · Latest Month Only'}
             </div>
           </div>
@@ -136,7 +136,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
           <button
             type="button"
             onClick={() => onSelectView('chat')}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
+            className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
           >
             <span>Chat</span>
           </button>
@@ -144,16 +144,16 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
 
         {/* Loading State */}
         {isLoadingArchive ? (
-          <div className="text-center py-12 text-xs text-[#8A8A8E] animate-pulse">
+          <div className="text-center py-12 text-xs text-kova-muted animate-pulse">
             Loading stored letters...
           </div>
         ) : archiveLetters.length === 0 ? (
           /* Empty Archive State - Premium user with zero archived letters yet */
-          <div className="glass-card rounded-[28px] p-8 sm:p-10 border border-white/10 bg-[#161618]/90 text-center space-y-4 my-6 flex flex-col items-center justify-center">
+          <div className="glass-card rounded-[28px] p-8 sm:p-10 border border-white/10 bg-kova-surface/90 text-center space-y-4 my-6 flex flex-col items-center justify-center">
             <KovaAvatar size="lg" isPulsing={true} />
             <div className="space-y-1.5 max-w-sm mx-auto">
               <h3 className="text-base font-bold text-white tracking-tight">Your Letter Archive</h3>
-              <p className="text-xs text-[#8A8A8E] leading-relaxed">
+              <p className="text-xs text-kova-muted leading-relaxed">
                 As soon as your first letter arrives, you'll find it here.
               </p>
             </div>
@@ -170,7 +170,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
         ) : (
           /* List of Stored Letters */
           <div className="space-y-4">
-            <div className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider px-1">
+            <div className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider px-1">
               {archiveLetters.length} {archiveLetters.length === 1 ? 'Letter' : 'Letters'} Stored
             </div>
 
@@ -192,8 +192,8 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
                     }}
                     className={`glass-card rounded-[22px] p-4 border transition-all ${
                       isUnlocked
-                        ? 'border-white/10 bg-[#161618]/90 hover:border-white/20 hover:bg-[#1C1C1E] cursor-pointer'
-                        : 'border-white/5 bg-[#121214]/60 cursor-pointer hover:border-amber-400/20'
+                        ? 'border-white/10 bg-kova-surface/90 hover:border-white/20 hover:bg-kova-surface cursor-pointer'
+                        : 'border-white/5 bg-kova-surface-2/60 cursor-pointer hover:border-amber-400/20'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -266,11 +266,11 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
     const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long' });
     return (
       <div className="flex flex-col min-h-app max-w-2xl mx-auto w-full px-4 pb-20 pt-4 animate-in fade-in duration-300 space-y-6 font-sans">
-        <div className="flex items-center justify-between py-3 border-b border-[#2C2C2E]/50">
+        <div className="flex items-center justify-between py-3 border-b border-kova-raised/50">
           <button
             type="button"
             onClick={() => onSelectView('chat')}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
+            className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Chat</span>
@@ -287,13 +287,13 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
           </button>
         </div>
 
-        <div className="glass-card rounded-[28px] p-8 border border-white/10 bg-[#161618]/90 text-center space-y-4">
+        <div className="glass-card rounded-[28px] p-8 border border-white/10 bg-kova-surface/90 text-center space-y-4">
           <BookOpen className="w-8 h-8 text-white/60 mx-auto" />
           <div className="space-y-1">
             <h3 className="text-xl font-serif-headline text-white font-normal">
               No letter generated yet for {currentMonth}
             </h3>
-            <p className="text-xs text-[#8A8A8E] max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-kova-muted max-w-sm mx-auto leading-relaxed">
               Kova compiles your personal briefing on the last day of each month based on your real activity — no static templates or sample content.
             </p>
           </div>
@@ -323,12 +323,12 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
   return (
     <div className="flex flex-col min-h-app max-w-2xl mx-auto w-full px-4 pb-20 pt-2 animate-in fade-in duration-300">
       {/* Top Header Bar */}
-      <div className="flex items-center justify-between gap-2 py-3 mb-4 border-b border-[#2C2C2E]/50">
+      <div className="flex items-center justify-between gap-2 py-3 mb-4 border-b border-kova-raised/50">
         <button
           type="button"
           onClick={() => onSelectView('chat')}
           aria-label="Back to chat"
-          className="shrink-0 text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
+          className="shrink-0 text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Chat</span>
@@ -340,7 +340,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
             <div className="text-xs font-bold text-white tracking-tight truncate">
               Your {displayLetter.month} letter
             </div>
-            <div className="text-[10px] text-[#8A8A8E] truncate">
+            <div className="text-[10px] text-kova-muted truncate">
               from Kova · month-end
             </div>
           </div>
@@ -362,7 +362,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
           <button
             type="button"
             onClick={handleDownload}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
+            className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
             title="Download Report PDF"
             aria-label="Download report PDF"
           >
@@ -373,11 +373,11 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
           <button
             type="button"
             onClick={handleShare}
-            className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
+            className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 w-9 h-9 sm:w-auto sm:h-auto justify-center sm:px-3 sm:py-1.5 rounded-full border border-white/10 cursor-pointer"
             title="Share Letter"
             aria-label={copied ? 'Copied' : 'Share letter'}
           >
-            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-[#30D158]" /> : <Share2 className="w-3.5 h-3.5" />}
+            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-kova-green" /> : <Share2 className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">{copied ? 'Copied' : 'Share'}</span>
           </button>
         </div>
@@ -387,7 +387,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
       <div className="space-y-6">
         {/* Section 1: One-Line Headline Summary */}
         <div className="space-y-2">
-          <span className="text-[10px] uppercase font-semibold text-[#8A8A8E] tracking-widest block">
+          <span className="text-[10px] uppercase font-semibold text-kova-muted tracking-widest block">
             Monthly Summary
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif-headline font-normal leading-snug text-white tracking-tight">
@@ -396,7 +396,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
         </div>
 
         {/* Section 2: "Three things I noticed" Glass Card */}
-        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4">
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-kova-surface/90 space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-white/80" />
             <span>Three things I noticed</span>
@@ -416,7 +416,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
 
         {/* Section 3: One Small Suggested Shift (Plain Text Block) */}
         <div className="py-2 px-1 space-y-1.5 border-l-2 border-white/20 pl-4">
-          <span className="text-[10px] uppercase font-semibold text-[#8A8A8E] tracking-widest block">
+          <span className="text-[10px] uppercase font-semibold text-kova-muted tracking-widest block">
             A small shift for next month
           </span>
           <p className="text-sm text-white/90 leading-relaxed font-normal">
@@ -463,7 +463,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
           return (
             <div className="space-y-3">
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#8A8A8E] uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-xs font-bold text-kova-muted uppercase tracking-wider">
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>{isPremium ? 'Recommended Reading · 3 Picks' : 'Recommended Reading'}</span>
                 </div>
@@ -473,7 +473,7 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
                     Premium · 3 Book Picks
                   </span>
                 ) : (
-                  <span className="text-[10px] text-[#8A8A8E]">
+                  <span className="text-[10px] text-kova-muted">
                     1 of 3 Picks Unlocked
                   </span>
                 )}
@@ -488,13 +488,13 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
                       key={`book-pick-${idx}`}
                       className={`glass-card rounded-[24px] p-5 border transition-all ${
                         isPickUnlocked
-                          ? 'border-white/10 bg-[#1A1A1C]/90'
-                          : 'border-white/5 bg-[#141416]/60 relative overflow-hidden'
+                          ? 'border-white/10 bg-kova-surface/90'
+                          : 'border-white/5 bg-kova-surface-2/60 relative overflow-hidden'
                       }`}
                     >
                       <div className="flex items-start gap-4">
                         {/* Book Cover Swatch */}
-                        <div className={`w-16 h-22 rounded-xl bg-gradient-to-br ${pick.coverGradient || 'from-[#1c1917] to-[#0c0a09]'} border border-white/20 flex flex-col justify-between p-2.5 shrink-0 shadow-xl relative overflow-hidden`}>
+                        <div className={`w-16 h-22 rounded-xl kova-keep-dark bg-gradient-to-br ${pick.coverGradient || 'from-[#1c1917] to-[#0c0a09]'} border border-white/20 flex flex-col justify-between p-2.5 shrink-0 shadow-xl relative overflow-hidden`}>
                           <div className="w-4 h-0.5 bg-white/40 rounded-full" />
                           <div className="text-[9px] font-bold text-white leading-tight font-serif-headline line-clamp-2">
                             {pick.title}
@@ -511,12 +511,12 @@ export const MonthlyLetterScreen: React.FC<MonthlyLetterScreenProps> = ({
                               <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
                                 <span>{pick.title}</span>
                                 {isPremium && (
-                                  <span className="text-[10px] text-[#8A8A8E] font-normal">
+                                  <span className="text-[10px] text-kova-muted font-normal">
                                     Pick 0{idx + 1}
                                   </span>
                                 )}
                               </h4>
-                              <p className="text-xs text-[#8A8A8E]">
+                              <p className="text-xs text-kova-muted">
                                 by {pick.author}
                               </p>
                             </div>

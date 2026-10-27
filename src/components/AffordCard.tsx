@@ -47,7 +47,7 @@ export const AffordCard: React.FC<{ data: AffordCardData }> = ({ data }) => {
   }
 
   return (
-    <div className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-3.5">
+    <div className="w-full max-w-md glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-3.5">
       {src ? (
         // A product Kova priced (KOVA-103): photo, today's price, where, and on a drop the earlier price.
         <div className="space-y-3">
@@ -56,10 +56,10 @@ export const AffordCard: React.FC<{ data: AffordCardData }> = ({ data }) => {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white leading-snug line-clamp-2">{data.item}</p>
               <div className="flex items-baseline gap-2 mt-1">
-                {before !== null && <span className="text-sm text-[#8A8A8E] line-through tabular-nums">{money(before)}</span>}
-                <span className={`text-lg font-semibold tabular-nums ${before !== null ? 'text-[#30D158]' : 'text-white'}`}>{money(data.price)}</span>
+                {before !== null && <span className="text-sm text-kova-muted line-through tabular-nums">{money(before)}</span>}
+                <span className={`text-lg font-semibold tabular-nums ${before !== null ? 'text-kova-green' : 'text-white'}`}>{money(data.price)}</span>
               </div>
-              <p className="text-xs text-[#8A8A8E] truncate">
+              <p className="text-xs text-kova-muted truncate">
                 at {src.domain}
                 {src.stores > 1 ? ` · lowest of ${src.stores} stores` : ''}
               </p>
@@ -68,7 +68,7 @@ export const AffordCard: React.FC<{ data: AffordCardData }> = ({ data }) => {
           {(before !== null || src.lowestIn30Days) && (
             <div className="flex flex-wrap gap-1.5">
               {before !== null && before > data.price && (
-                <span className="text-[11px] font-semibold text-[#30D158] bg-[#30D158]/10 border border-[#30D158]/25 rounded-full px-2.5 py-1">
+                <span className="text-[11px] font-semibold text-kova-green bg-kova-green/10 border border-kova-green/25 rounded-full px-2.5 py-1">
                   ↓ {money(before - data.price)} since you asked
                 </span>
               )}
@@ -91,17 +91,17 @@ export const AffordCard: React.FC<{ data: AffordCardData }> = ({ data }) => {
         {rows.map((row) => (
           <div key={row.label} className="space-y-0.5">
             <div className="flex items-baseline justify-between gap-3">
-              <dt className="text-sm text-[#8A8A8E] truncate">{row.label}</dt>
+              <dt className="text-sm text-kova-muted truncate">{row.label}</dt>
               <dd className={`text-sm font-semibold tabular-nums text-right shrink-0 ${row.accent ? 'text-amber-300' : 'text-white'}`}>
                 {row.value}
               </dd>
             </div>
-            {row.note && <p className="text-xs text-[#8A8A8E]/80 leading-relaxed">{row.note}</p>}
+            {row.note && <p className="text-xs text-kova-muted/80 leading-relaxed">{row.note}</p>}
           </div>
         ))}
       </dl>
 
-      <p className="text-[11px] text-[#8A8A8E] pt-1 border-t border-white/5 leading-relaxed">
+      <p className="text-[11px] text-kova-muted pt-1 border-t border-white/5 leading-relaxed">
         {src ? 'Price via Channel3. The rest is from your own logs. The choice is yours.' : 'From your own logs. The choice is yours.'}
       </p>
     </div>

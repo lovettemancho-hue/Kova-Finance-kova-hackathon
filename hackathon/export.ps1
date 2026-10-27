@@ -34,7 +34,8 @@ $private = @(
   '.github\workflows\deploy.yml',   # deploys to Kova's Google Cloud project
   'CLAUDE.md',                      # internal working notes
   'metadata.json',                  # AI Studio leftover
-  'docs\audits'                     # internal security audit
+  'docs\audits',                    # internal security audit
+  '.harness'                         # local visual test page, if present
 )
 foreach ($p in $private) {
   $full = Join-Path $dest $p

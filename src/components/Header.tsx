@@ -29,7 +29,7 @@ const ViewTabs: React.FC<{ currentView: ViewMode; onSelectView: (v: ViewMode) =>
 }) => (
   <nav
     aria-label="Main"
-    className={`flex items-center gap-1 bg-[#1A1A1C]/90 p-1 rounded-full border border-[#2C2C2E]/80 backdrop-blur-md shadow-lg ${compact ? '' : 'w-full'}`}
+    className={`flex items-center gap-1 bg-kova-surface/90 p-1 rounded-full border border-kova-raised/80 backdrop-blur-md shadow-lg ${compact ? '' : 'w-full'}`}
   >
     {TABS.map((tab) => {
       const active = currentView === tab.view;
@@ -41,7 +41,7 @@ const ViewTabs: React.FC<{ currentView: ViewMode; onSelectView: (v: ViewMode) =>
           aria-current={active ? 'page' : undefined}
           className={`rounded-full font-medium transition-all duration-200 flex items-center justify-center gap-1.5 ${
             compact ? 'px-3 py-1.5 text-xs' : 'flex-1 py-2 text-sm'
-          } ${active ? 'bg-white text-black font-semibold shadow-sm' : 'text-[#8A8A8E] hover:text-white'}`}
+          } ${active ? 'bg-white text-black font-semibold shadow-sm' : 'text-kova-muted hover:text-white'}`}
         >
           {tab.icon && <Sparkles className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} />}
           <span>{tab.label}</span>
@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 w-full bg-black/85 backdrop-blur-xl border-b border-[#2C2C2E]/60 px-3 sm:px-4 pt-safe transition-all">
+    <header ref={headerRef} className="sticky top-0 z-40 w-full bg-black/85 backdrop-blur-xl border-b border-kova-raised/60 px-3 sm:px-4 pt-safe transition-all">
       <div className="flex items-center justify-between gap-2 py-2.5 sm:py-3">
         {/* Left: Kova brand */}
         <button
@@ -98,9 +98,9 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="min-w-0">
             <span className="flex items-center gap-2">
               <span className="text-base font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">Kova</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#30D158] inline-block shadow-[0_0_6px_#30D158]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-kova-green inline-block shadow-[0_0_6px_#30D158]" />
             </span>
-            <span className="block text-[11px] sm:text-xs text-[#8A8A8E] font-normal tracking-tight truncate max-w-[9rem] sm:max-w-[14rem]">
+            <span className="block text-[11px] sm:text-xs text-kova-muted font-normal tracking-tight truncate max-w-[9rem] sm:max-w-[14rem]">
               {effectiveUserName ? `companion for ${effectiveUserName}` : 'here since this morning'}
             </span>
           </span>
@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center transition-all shrink-0 ${
               currentView === 'settings'
                 ? 'bg-white text-black border-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
-                : 'bg-[#1A1A1C] text-[#8A8A8E] border-[#2C2C2E] hover:text-white hover:border-white/30'
+                : 'bg-kova-surface text-kova-muted border-kova-raised hover:text-white hover:border-white/30'
             }`}
             title="Settings & Account"
             aria-label="Settings"
@@ -134,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border transition-all shrink-0 relative ${
               notificationActive
                 ? 'bg-white text-black border-white shadow-[0_0_12px_rgba(255,255,255,0.4)]'
-                : 'bg-[#1A1A1C] text-[#8A8A8E] border-[#2C2C2E] hover:text-white'
+                : 'bg-kova-surface text-kova-muted border-kova-raised hover:text-white'
             }`}
             title="Notifications"
             aria-label="Notifications"

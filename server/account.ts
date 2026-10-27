@@ -4,7 +4,8 @@
 // when their parent document is deleted, so expenses, chats, goals, letters and push tokens stayed
 // behind. The server now deletes everything with the Admin SDK, in this order:
 //   1. users/{uid} and every subcollection (expenses, messages, goals + coachingThread, letters, devices…)
-//   2. usage/{uid} (quota counters and the Grow lesson cache), the user's aiReports and priceWatches
+//   2. usage/{uid} (quota counters and the Grow lesson cache), paypalCheckins/{uid}, the user's aiReports
+//      and priceWatches
 //   3. the RevenueCat customer record, when billing is configured (best effort)
 //   4. the Firebase Auth user, last, so a failure above can be retried by deleting again
 // Pure helpers are unit-tested in server/account.test.ts.
@@ -38,6 +39,7 @@ export async function deleteAccountEverywhere(uid: string, deps: DeleteAccountDe
 
   await deps.db.recursiveDelete(deps.db.collection('users').doc(uid));
   await deps.db.recursiveDelete(deps.db.collection('usage').doc(uid));
+  await deps.db.recursiveDelete(deps.db.collection('paypalCheckins').doc(uid)); // open check-in flags
   const reports = await deps.db.collection('aiReports').where('uid', '==', uid).get();
   await Promise.all(reports.docs.map((d) => d.ref.delete()));
   const watches = await deps.db.collection('priceWatches').where('uid', '==', uid).get(); // KOVA-102

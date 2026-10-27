@@ -80,13 +80,13 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
   return (
     <div className="kova-modal kova-sheet fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-card rounded-[28px] p-6 max-w-md w-full border border-white/15 bg-[#18181A]/95 shadow-2xl relative">
+      <div className="glass-card rounded-[28px] p-6 max-w-md w-full border border-white/15 bg-kova-surface/95 shadow-2xl relative">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#2C2C2E]">
+        <div className="flex items-center justify-between pb-4 border-b border-kova-raised">
           <h3 className="text-base font-bold text-white tracking-tight">Log an Entry</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-[#8A8A8E] hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-kova-muted hover:text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -96,12 +96,12 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           {/* Income vs Outcome Switch */}
           <div className="flex justify-center">
-            <div className="bg-[#121214] p-1 rounded-full border border-white/10 flex items-center gap-1">
+            <div className="bg-kova-surface-2 p-1 rounded-full border border-white/10 flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setType('outcome')}
                 className={`px-5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  type === 'outcome' ? 'bg-white text-black shadow-md' : 'text-[#8A8A8E]'
+                  type === 'outcome' ? 'bg-white text-black shadow-md' : 'text-kova-muted'
                 }`}
               >
                 Outcome (Expense)
@@ -110,7 +110,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 type="button"
                 onClick={() => setType('income')}
                 className={`px-5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  type === 'income' ? 'bg-white text-black shadow-md' : 'text-[#8A8A8E]'
+                  type === 'income' ? 'bg-white text-black shadow-md' : 'text-kova-muted'
                 }`}
               >
                 Income
@@ -120,7 +120,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
           {/* Amount Input */}
           <div>
-            <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block mb-1">
+            <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block mb-1">
               Amount ({currencySymbol})
             </label>
             <div className="relative">
@@ -134,14 +134,14 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full bg-[#121214] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-white text-lg font-bold placeholder-[#8A8A8E] focus:outline-none focus:border-white/30"
+                className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-white text-lg font-bold placeholder-kova-muted focus:outline-none focus:border-white/30"
               />
             </div>
           </div>
 
           {/* Label / Description Input */}
           <div>
-            <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block mb-1">
+            <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block mb-1">
               Description
             </label>
             <input
@@ -150,23 +150,23 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="e.g. Artisanal Coffee, Winter coat, Market..."
-              className="w-full bg-[#121214] border border-white/10 rounded-2xl py-2.5 px-4 text-sm text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30"
+              className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-2.5 px-4 text-sm text-white placeholder-kova-muted focus:outline-none focus:border-white/30"
             />
           </div>
 
           {/* Category Dropdown (if outcome) */}
           {type === 'outcome' && (
             <div>
-              <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block mb-1">
+              <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block mb-1">
                 Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-                className="w-full bg-[#121214] border border-white/10 rounded-2xl py-2.5 px-4 text-sm text-white focus:outline-none focus:border-white/30"
+                className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-2.5 px-4 text-sm text-white focus:outline-none focus:border-white/30"
               >
                 {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} className="bg-[#18181A] text-white">
+                  <option key={cat} value={cat} className="bg-kova-surface text-white">
                     {cat}
                   </option>
                 ))}
@@ -176,7 +176,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
           {/* Optional Note */}
           <div>
-            <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider block mb-1">
+            <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider block mb-1">
               Optional Note for Kova
             </label>
             <input
@@ -184,7 +184,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g., Weekly routine purchase"
-              className="w-full bg-[#121214] border border-white/10 rounded-2xl py-2 px-4 text-xs text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white/30"
+              className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl py-2 px-4 text-xs text-white placeholder-kova-muted focus:outline-none focus:border-white/30"
             />
           </div>
 
@@ -193,7 +193,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white"
+              className="px-4 py-2 rounded-full text-xs font-medium text-kova-muted hover:text-white"
             >
               Cancel
             </button>

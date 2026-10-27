@@ -107,7 +107,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-[#8A8A8E] hover:text-white transition-all cursor-pointer"
+            className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-kova-muted hover:text-white transition-all cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -149,7 +149,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
 
   return (
     <div className="kova-modal kova-sheet fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="glass-card rounded-[28px] p-6 border border-white/20 bg-[#161618] max-w-sm w-full space-y-5 shadow-2xl relative sm:max-h-[90vh] sm:overflow-y-auto no-scrollbar">
+      <div className="glass-card rounded-[28px] p-6 border border-white/20 bg-kova-surface max-w-sm w-full space-y-5 shadow-2xl relative sm:max-h-[90vh] sm:overflow-y-auto no-scrollbar">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2">
@@ -160,7 +160,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
               <h3 className="text-sm font-bold text-white tracking-tight">
                 {isCreatingNew ? 'Create New Goal' : 'Edit Savings Goal'}
               </h3>
-              <p className="text-[10px] text-[#8A8A8E]">
+              <p className="text-[10px] text-kova-muted">
                 {isCreatingNew
                   ? 'Track an additional savings target'
                   : 'Adjust your target, balance, or start fresh'}
@@ -171,7 +171,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-[#8A8A8E] hover:text-white transition-all cursor-pointer"
+            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-kova-muted hover:text-white transition-all cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -180,7 +180,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Goal Title */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block">
+            <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block">
               Goal Name
             </label>
             <input
@@ -189,14 +189,14 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Trip to Tokyo, Emergency Reserve"
-              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white transition-all"
+              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-kova-muted focus:outline-none focus:border-white transition-all"
               required
             />
           </div>
 
           {/* Target Amount */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block">
+            <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block">
               Target Amount ({currencySymbol})
             </label>
             <input
@@ -206,14 +206,14 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
               value={targetAmount}
               onChange={(e) => setTargetAmount(e.target.value)}
               placeholder="e.g., 1500"
-              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white transition-all font-mono"
+              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-kova-muted focus:outline-none focus:border-white transition-all font-mono"
               required
             />
           </div>
 
           {/* Current Saved Amount */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider block">
+            <label className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider block">
               Current Saved Balance ({currencySymbol})
             </label>
             <input
@@ -222,7 +222,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
               value={currentAmount}
               onChange={(e) => setCurrentAmount(e.target.value)}
               placeholder="e.g., 250"
-              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-[#8A8A8E] focus:outline-none focus:border-white transition-all font-mono"
+              className="w-full bg-black/50 border border-white/15 rounded-2xl px-4 py-3 text-xs text-white placeholder-kova-muted focus:outline-none focus:border-white transition-all font-mono"
             />
           </div>
 
@@ -243,7 +243,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({
                   onArchiveGoal();
                   onClose();
                 }}
-                className="w-full py-2.5 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF6B6B] border border-[#FF3B30]/20 font-medium text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                className="w-full py-2.5 rounded-full bg-kova-red/10 hover:bg-kova-red/20 text-kova-red-soft border border-kova-red/20 font-medium text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Archive Goal & Start Fresh</span>

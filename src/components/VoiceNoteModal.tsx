@@ -144,7 +144,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({
 
   return (
     <div className="kova-modal kova-sheet fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-card rounded-[28px] p-6 max-w-sm w-full border border-white/15 bg-[#18181A]/95 shadow-2xl relative text-center space-y-5">
+      <div className="glass-card rounded-[28px] p-6 max-w-sm w-full border border-white/15 bg-kova-surface/95 shadow-2xl relative text-center space-y-5">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <KovaAvatar size="sm" isPulsing={isListening} />
@@ -152,7 +152,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({
           </div>
           <button
             onClick={handleClose}
-            className="w-8 h-8 rounded-full bg-white/5 text-[#8A8A8E] hover:text-white flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-white/5 text-kova-muted hover:text-white flex items-center justify-center"
           >
             <X className="w-4 h-4" />
           </button>
@@ -175,20 +175,20 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({
             )}
           </button>
 
-          <span className="text-xs text-[#8A8A8E] mt-3 font-medium">
+          <span className="text-xs text-kova-muted mt-3 font-medium">
             {isListening ? 'Listening to your voice...' : 'Tap microphone to speak to Kova'}
           </span>
         </div>
 
         {/* Transcript Box */}
-        <div className="bg-[#121214] border border-white/10 rounded-2xl p-4 text-left min-h-[80px]">
-          <div className="text-[10px] text-[#8A8A8E] uppercase tracking-wider mb-1 flex items-center gap-1">
+        <div className="bg-kova-surface-2 border border-white/10 rounded-2xl p-4 text-left min-h-[80px]">
+          <div className="text-[10px] text-kova-muted uppercase tracking-wider mb-1 flex items-center gap-1">
             <Volume2 className="w-3 h-3 text-white/60" />
             <span>Spoken Transcript</span>
           </div>
           <p className="text-xs text-white leading-relaxed font-normal">
             {transcript || (
-              <span className="text-[#8A8A8E] italic">
+              <span className="text-kova-muted italic">
                 e.g. "I spent $24 on sushi lunch with Sarah"
               </span>
             )}
@@ -218,7 +218,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({
         <div className="flex items-center justify-end gap-2 pt-2">
           <button
             onClick={handleClose}
-            className="px-4 py-2 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white"
+            className="px-4 py-2 rounded-full text-xs font-medium text-kova-muted hover:text-white"
           >
             Cancel
           </button>

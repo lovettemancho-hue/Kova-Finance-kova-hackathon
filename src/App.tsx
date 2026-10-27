@@ -32,7 +32,8 @@ import {
   GrowthMark,
   SendMessageOptions,
   ExpenseCategory,
-  SubscriptionNote
+  SubscriptionNote,
+  PayPalCheckinRecord
 } from './types';
 import { 
   INITIAL_MONTHLY_LETTER, 
@@ -62,6 +63,7 @@ import { EditGoalModal } from './components/EditGoalModal';
 import { PremiumUpgradeModal } from './components/PremiumUpgradeModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { adoptAccountTheme } from './lib/theme';
 import { ExpenseProvider, useExpenses, sanitizeExpensesList } from './context/ExpenseContext';
 import { GoalProvider, useGoals } from './context/GoalContext';
 import { ModalProvider, useModal } from './context/ModalContext';
@@ -426,6 +428,29 @@ function AppContent({
     });
   };
 
+  // A finished PayPal check-in stays in the chat (read-only after it's closed or the page reloads).
+  // One message per check-in, updated as the user acts on its flags.
+  const handleSavePayPalCheckin = (messageId: string, record: PayPalCheckinRecord) => {
+    setMessages((prev) => {
+      const existing = prev.find((m) => m.id === messageId);
+      const next = existing
+        ? prev.map((m) => (m.id === messageId ? { ...m, paypalCheckin: record } : m))
+        : [
+            ...prev,
+            {
+              id: messageId,
+              sender: 'kova' as const,
+              text: 'PayPal check-in',
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              createdAt: Date.now(),
+              paypalCheckin: record,
+            },
+          ];
+      if (auth.currentUser) updateUserMessages(auth.currentUser.uid, next);
+      return next;
+    });
+  };
+
   // Subscription radar choices (KOVA-086): merged into the saved map on the user doc.
   const saveSubscriptionNote = (key: string, patch: SubscriptionNote) => {
     setSubscriptionNotes((prev) => {
@@ -733,7 +758,8 @@ function AppContent({
         if (lastAsk && src?.productId) {
           const watched = await watchPrice({ productId: src.productId, title: src.title || lastAsk.item, price: src.quotedPrice, currency: src.quotedCurrency, domain: src.domain, imageUrl: src.imageUrl });
           if (watched === 'ok') {
-            text = `Okay. I'll keep an eye on the price of the ${lastAsk.item} and tell you here if it drops. A day or two often makes the choice clearer.`;
+            // The card below names the product, so the sentence stays short (KOVA-103).
+            text = "Okay. I'll keep an eye on the price for you and tell you here if it drops. A day or two often makes the choice clearer.";
             watchCard = {
               title: lastAsk.item,
               price: src.quotedPrice,
@@ -1371,14 +1397,14 @@ function AppContent({
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 font-sans select-none">
         <KovaAvatar size="lg" isPulsing={true} />
-        <div className="mt-4 flex items-center gap-2 text-xs text-[#8A8A8E] font-medium tracking-tight">
+        <div className="mt-4 flex items-center gap-2 text-xs text-kova-muted font-medium tracking-tight">
           <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
           <span>Connecting to Kova...</span>
         </div>
         <button
           type="button"
           onClick={() => setCurrentView('landing')}
-          className="mt-6 text-[11px] text-[#8A8A8E] hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+          className="mt-6 text-[11px] text-kova-muted hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
         >
           Taking longer than usual? Continue to app →
         </button>
@@ -1510,6 +1536,7 @@ function AppContent({
               onEditGoal={handleOpenEditGoal}
               onAddNewGoal={handleOpenAddNewGoal}
               onOpenCoach={handleOpenCoach}
+              onSavePayPalCheckin={handleSavePayPalCheckin}
             />
           </ErrorBoundary>
         )}
@@ -1684,6 +1711,7 @@ export default function App() {
   const [subscriptionNotes, setSubscriptionNotes] = useState<Record<string, SubscriptionNote>>({});
 
   const handleUserDataLoaded = useCallback(async (userDoc: UserDocument, isReturning: boolean) => {
+    adoptAccountTheme(userDoc.appearance?.theme); // Settings → Appearance, saved on the account
     if (isReturning && userDoc.profile) {
       const rawExpenses = userDoc.expenses || [];
       const sanitizedExpenses = rawExpenses.filter(

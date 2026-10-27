@@ -58,9 +58,14 @@ export function isSpecificItem(item: string): boolean {
 
 const squash = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-/** Every specific word appears in the title, ignoring spaces and dashes ("wh1000xm5" matches "WH-1000XM5"). */
+/**
+ * Every specific word appears in the product's own name, ignoring spaces and dashes ("wh1000xm5" matches
+ * "WH-1000XM5"). Only the part before "for", "compatible with", "fits" or "replacement" counts, so an
+ * accessory ("Case for Sony WH-1000XM5") never stands in for the product itself (KOVA-105).
+ */
 export function titleMatches(title: string, query: string): boolean {
-  const t = squash(title);
+  const head = title.split(/\b(?:for|compatible with|fits|replacement)\b/i)[0];
+  const t = squash(head);
   const words = specificWords(query);
   return words.length > 0 && words.every((w) => t.includes(squash(w)));
 }

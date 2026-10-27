@@ -13,7 +13,7 @@ interface WelcomeScreenProps {
 }
 
 // Colours follow the app: green = saved or on track, amber = worth a look. Never alarm red here.
-const GREEN = 'text-[#30D158]';
+const GREEN = 'text-kova-green';
 const AMBER = 'text-[#FFD60A]';
 
 const Row: React.FC<{ label: string; value: React.ReactNode; note?: string; strong?: boolean; tone?: string; noteTone?: string }> = ({
@@ -27,7 +27,7 @@ const Row: React.FC<{ label: string; value: React.ReactNode; note?: string; stro
   <div className="flex items-baseline justify-between gap-3">
     <div className="min-w-0">
       <div className="text-[13px] text-white/85">{label}</div>
-      {note && <div className={`text-[11px] ${noteTone || 'text-[#8A8A8E]'}`}>{note}</div>}
+      {note && <div className={`text-[11px] ${noteTone || 'text-kova-muted'}`}>{note}</div>}
     </div>
     <div className={`text-[13px] shrink-0 ${strong ? 'font-semibold' : ''} ${tone || (strong ? 'text-white' : 'text-white/85')}`}>{value}</div>
   </div>
@@ -56,9 +56,9 @@ const TalkPreview = () => (
     <KovaSays>
       Logged it. You're still <span className={GREEN}>under your usual week</span>, so lunch out is fine.
     </KovaSays>
-    <div className="w-fit flex items-center gap-2.5 rounded-xl border border-white/15 bg-[#18181B] px-3 py-2">
+    <div className="w-fit flex items-center gap-2.5 rounded-xl border border-white/15 bg-kova-surface px-3 py-2">
       <span className="text-[12px] text-white">Lunch</span>
-      <span className="text-[11px] text-[#8A8A8E]">Dining · Added to Log</span>
+      <span className="text-[11px] text-kova-muted">Dining · Added to Log</span>
       <span className={`text-[12px] font-semibold ${AMBER}`}>−$12</span>
     </div>
   </div>
@@ -67,11 +67,11 @@ const TalkPreview = () => (
 // 2. Statement import + subscription radar: import once, Kova finds what repeats.
 const ImportPreview = () => (
   <div className="flex flex-col gap-2.5">
-    <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-[#18181B] px-3 py-2.5">
-      <div className="w-8 h-9 rounded-md bg-[#30D158]/10 border border-[#30D158]/30 flex items-center justify-center text-[9px] font-semibold text-[#30D158]">CSV</div>
+    <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-kova-surface px-3 py-2.5">
+      <div className="w-8 h-9 rounded-md bg-kova-green/10 border border-kova-green/30 flex items-center justify-center text-[9px] font-semibold text-kova-green">CSV</div>
       <div className="min-w-0">
         <div className="text-[12px] text-white truncate">bank-statement.csv</div>
-        <div className="text-[11px] text-[#8A8A8E]">98 transactions · read on your phone</div>
+        <div className="text-[11px] text-kova-muted">98 transactions · read on your phone</div>
       </div>
     </div>
     <Panel>
@@ -89,8 +89,8 @@ const LearnPreview = () => (
   <div className="flex flex-col gap-2.5">
     <Panel>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider text-[#8A8A8E] font-semibold">Grow · 2 min</span>
-        <span className="text-[10px] text-[#8A8A8E]">Lesson</span>
+        <span className="text-[10px] uppercase tracking-wider text-kova-muted font-semibold">Grow · 2 min</span>
+        <span className="text-[10px] text-kova-muted">Lesson</span>
       </div>
       <div className="text-[14px] font-semibold text-white">Why small amounts add up</div>
       <p className="text-[12px] text-white/75 leading-snug">
@@ -105,7 +105,7 @@ const LearnPreview = () => (
         </span>
       </div>
       <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-        <div className="h-full w-[38%] rounded-full bg-[#30D158]" />
+        <div className="h-full w-[38%] rounded-full bg-kova-green" />
       </div>
     </Panel>
   </div>
@@ -122,7 +122,7 @@ const AffordPreview = () => (
         </div>
         <div className="min-w-0">
           <div className="text-[13px] font-semibold text-white truncate">Sony WH-1000XM6</div>
-          <div className="text-[11px] text-[#8A8A8E]">
+          <div className="text-[11px] text-kova-muted">
             <span className="text-white font-semibold">$449</span> at a store · lowest of 3
           </div>
         </div>
@@ -139,7 +139,7 @@ const AffordPreview = () => (
       />
       <Row label="Emergency fund" value="about 12 days later" strong tone={AMBER} />
     </Panel>
-    <div className="w-fit flex items-center gap-2 rounded-full border border-[#30D158]/30 bg-[#30D158]/10 px-3 py-1.5">
+    <div className="w-fit flex items-center gap-2 rounded-full border border-kova-green/30 bg-kova-green/10 px-3 py-1.5">
       <Eye className={`w-3.5 h-3.5 ${GREEN}`} />
       <span className={`text-[11px] font-semibold ${GREEN}`}>I'll wait · Kova watches the price</span>
     </div>
@@ -182,7 +182,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted, onLo
             <br />
             <span className="italic text-white/90">for your money.</span>
           </h1>
-          <p className="mt-3 text-sm text-[#8A8A8E] leading-relaxed max-w-xs [@media(max-height:720px)]:hidden">
+          <p className="mt-3 text-sm text-kova-muted leading-relaxed max-w-xs [@media(max-height:720px)]:hidden">
             Tell Kova what you spend, or import a statement. It explains, without judging.
           </p>
         </div>
@@ -202,11 +202,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted, onLo
                 aria-roledescription="slide"
                 aria-label={`${i + 1} of ${SLIDES.length}: ${s.title}`}
               >
-                <div className="glass-card rounded-[24px] border border-white/10 bg-[#121214] p-4 flex-1 flex flex-col justify-between gap-4">
+                <div className="glass-card rounded-[24px] border border-white/10 bg-kova-surface-2 p-4 flex-1 flex flex-col justify-between gap-4">
                   <div className="flex flex-col">{s.preview}</div>
                   <div className="pt-1">
                     <h2 className="text-base font-semibold text-white">{s.title}</h2>
-                    <p className="text-[13px] text-[#8A8A8E] leading-relaxed mt-0.5 [@media(max-height:720px)]:hidden">{s.body}</p>
+                    <p className="text-[13px] text-kova-muted leading-relaxed mt-0.5 [@media(max-height:720px)]:hidden">{s.body}</p>
                     <p className="text-[10px] text-white/30 mt-2 [@media(max-height:720px)]:mt-1">Example</p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted, onLo
           >
             I already have an account
           </button>
-          <p className="text-center text-[11px] text-[#8A8A8E] pt-1 [@media(max-height:720px)]:hidden">No ads. Your data stays yours.</p>
+          <p className="text-center text-[11px] text-kova-muted pt-1 [@media(max-height:720px)]:hidden">No ads. Your data stays yours.</p>
         </div>
       </div>
     </div>

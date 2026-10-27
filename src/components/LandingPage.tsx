@@ -14,7 +14,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black overflow-x-hidden font-sans pb-20">
       {/* Top Floating Navigation Header */}
-      <header className="sticky top-0 z-40 w-full bg-black/80 backdrop-blur-xl border-b border-[#2C2C2E]/60 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full bg-black/80 backdrop-blur-xl border-b border-kova-raised/60 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <KovaAvatar size="sm" isPulsing={true} />
           <span className="text-base font-bold tracking-tight text-white">Kova</span>
@@ -24,7 +24,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
           {onOpenAbout && (
             <button
               onClick={onOpenAbout}
-              className="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full text-xs font-medium text-kova-muted hover:text-white transition-colors cursor-pointer"
             >
               About
             </button>
@@ -59,7 +59,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
         </h1>
 
         {/* Subheadline */}
-        <p className="text-sm sm:text-base text-[#8A8A8E] font-normal leading-relaxed max-w-lg mb-6">
+        <p className="text-sm sm:text-base text-kova-muted font-normal leading-relaxed max-w-lg mb-6">
           Kova talks with you about your money, remembers how it feels, and teaches you how wealth actually works — one conversation at a time.
         </p>
 
@@ -69,10 +69,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             {/* Rotated Back Card: Saved Goal Preview */}
             <div className="w-full glass-card rounded-[24px] p-5 border border-white/10 shadow-2xl transform -rotate-3 translate-y-3 opacity-80 hover:rotate-0 hover:opacity-100 transition-all duration-500 cursor-pointer">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] text-[#8A8A8E] uppercase tracking-wider font-semibold">
+                <span className="text-[10px] text-kova-muted uppercase tracking-wider font-semibold">
                   Saved This Month
                 </span>
-                <span className="text-xs font-bold text-[#30D158] bg-[#30D158]/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-bold text-kova-green bg-kova-green/10 px-2 py-0.5 rounded-full">
                   75% Completed
                 </span>
               </div>
@@ -80,18 +80,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
               {/* Mini SVG line */}
               <div className="h-10 w-full mt-2">
                 <svg viewBox="0 0 300 40" className="w-full h-full">
-                  <path d="M 0 35 Q 75 10, 150 25 T 300 5" fill="none" stroke="#FFFFFF" strokeWidth="2" />
+                  <path d="M 0 35 Q 75 10, 150 25 T 300 5" fill="none" style={{ stroke: 'var(--color-white)' }} strokeWidth="2" />
                 </svg>
               </div>
             </div>
 
             {/* Rotated Foreground Card: Chat & Log snippet */}
-            <div className="w-full glass-card rounded-[24px] p-5 border border-white/20 shadow-2xl transform rotate-2 -translate-y-4 hover:rotate-0 transition-all duration-500 bg-[#1A1A1D]/95 relative z-10">
+            <div className="w-full glass-card rounded-[24px] p-5 border border-white/20 shadow-2xl transform rotate-2 -translate-y-4 hover:rotate-0 transition-all duration-500 bg-kova-surface/95 relative z-10">
               <div className="flex items-center gap-2.5 mb-3">
                 <KovaAvatar size="sm" />
                 <div>
                   <span className="text-xs font-bold text-white block leading-none">Kova</span>
-                  <span className="text-[10px] text-[#8A8A8E]">here since this morning</span>
+                  <span className="text-[10px] text-kova-muted">here since this morning</span>
                 </div>
               </div>
 
@@ -99,12 +99,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 "Good evening. You logged $45 for groceries earlier — right on pace with your gentle weekly target."
               </p>
 
-              <div className="flex items-center justify-between text-xs text-[#8A8A8E] border-t border-white/5 pt-2">
+              <div className="flex items-center justify-between text-xs text-kova-muted border-t border-white/5 pt-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#30D158]" />
+                  <div className="w-2 h-2 rounded-full bg-kova-green" />
                   <span className="text-white font-medium">Winter coat ($300.00)</span>
                 </div>
-                <span className="text-[#FF6B6B] text-[10px] bg-[#FF3B30]/10 px-2 py-0.5 rounded-full">
+                <span className="text-kova-red-soft text-[10px] bg-kova-red/10 px-2 py-0.5 rounded-full">
                   higher than usual
                 </span>
               </div>
@@ -135,13 +135,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
       <section className="px-6 py-12 max-w-2xl mx-auto border-t border-white/10 my-4 space-y-8">
         {/* Copy */}
         <div className="space-y-3 text-center md:text-left max-w-xl mx-auto">
-          <span className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-widest block">
+          <span className="text-[11px] font-semibold text-kova-muted uppercase tracking-widest block">
             More than budgeting
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif-headline font-normal text-white leading-snug">
             This isn't another budgeting app.
           </h2>
-          <p className="text-sm sm:text-base text-[#8A8A8E] leading-relaxed font-normal">
+          <p className="text-sm sm:text-base text-kova-muted leading-relaxed font-normal">
             Kova teaches the mental models that financially free people actually use — how compounding works, the difference between assets and liabilities, how credit and inflation really function. Not generic tips. Real financial literacy, shaped around your life.
           </p>
         </div>
@@ -155,7 +155,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
       {/* How It Works Pillar Section */}
       <section className="px-6 py-12 max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-8">
-          <span className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-widest block mb-1">
+          <span className="text-[11px] font-semibold text-kova-muted uppercase tracking-widest block mb-1">
             How Kova Works
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif-headline font-normal text-white">
@@ -164,46 +164,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
         </div>
 
         {/* Pillar 1: Conversational Log */}
-        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4 hover:border-white/20 transition-all">
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-kova-surface/90 space-y-4 hover:border-white/20 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
               <MessageSquare className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-tight">1. Speak naturally</h3>
-              <p className="text-xs text-[#8A8A8E]">
+              <p className="text-xs text-kova-muted">
                 Enter expenses conversationally, by voice note, or bank CSV import.
               </p>
             </div>
           </div>
 
-          <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/5 flex items-center justify-between text-xs">
+          <div className="bg-kova-surface-2 p-3.5 rounded-2xl border border-white/5 flex items-center justify-between text-xs">
             <span className="text-white/80">"Spent $14.50 on latte and almond milk"</span>
-            <span className="text-[#30D158] font-bold shrink-0">Logged -$14.50</span>
+            <span className="text-kova-green font-bold shrink-0">Logged -$14.50</span>
           </div>
         </div>
 
         {/* Pillar 2: Grow, Daily */}
-        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4 hover:border-white/20 transition-all">
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-kova-surface/90 space-y-4 hover:border-white/20 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
               <BarChart3 className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-tight">2. Grow, daily</h3>
-              <p className="text-xs text-[#8A8A8E]">
+              <p className="text-xs text-kova-muted">
                 Kova tracks your rhythm gently — never a streak to break — and teaches you one real financial concept a day, chosen for where you are.
               </p>
             </div>
           </div>
 
-          <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/5 space-y-1 text-xs">
-            <div className="flex items-center justify-between text-[10px] text-[#8A8A8E] font-bold uppercase tracking-wider">
+          <div className="bg-kova-surface-2 p-3.5 rounded-2xl border border-white/5 space-y-1 text-xs">
+            <div className="flex items-center justify-between text-[10px] text-kova-muted font-bold uppercase tracking-wider">
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-3 h-3 text-white/80" />
                 <span>Today's Lesson</span>
               </div>
-              <span className="text-[#30D158]">60 sec read</span>
+              <span className="text-kova-green">60 sec read</span>
             </div>
             <p className="text-white/90 font-medium truncate">
               The Silent Buffer: Aligning short-term cash flow with long-term assets...
@@ -212,56 +212,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
         </div>
 
         {/* Pillar 3: Monthly Letter */}
-        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4 hover:border-white/20 transition-all">
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-kova-surface/90 space-y-4 hover:border-white/20 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
               <Mail className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-tight">3. A letter, every month</h3>
-              <p className="text-xs text-[#8A8A8E]">
+              <p className="text-xs text-kova-muted">
                 Once a month Kova writes a personal letter with observations and a tailored book pick.
               </p>
             </div>
           </div>
 
-          <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/5 space-y-1.5 text-xs">
+          <div className="bg-kova-surface-2 p-3.5 rounded-2xl border border-white/5 space-y-1.5 text-xs">
             <div className="flex items-center gap-3">
               <BookOpen className="w-4 h-4 text-white/70 shrink-0" />
               <div className="min-w-0">
                 <span className="text-white font-medium block">March Letter + "Die With Zero" recommendation</span>
-                <span className="text-[10px] text-[#8A8A8E]">Tailored to your current savings pace</span>
+                <span className="text-[10px] text-kova-muted">Tailored to your current savings pace</span>
               </div>
             </div>
-            <div className="text-[10px] text-[#8A8A8E] border-t border-white/5 pt-1.5 text-right italic">
+            <div className="text-[10px] text-kova-muted border-t border-white/5 pt-1.5 text-right italic">
               Also available as a downloadable PDF report.
             </div>
           </div>
         </div>
 
         {/* Pillar 4: Ask before you buy (KOVA-104) */}
-        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-[#161618]/90 space-y-4 hover:border-white/20 transition-all">
+        <div className="glass-card rounded-[24px] p-6 border border-white/10 bg-kova-surface/90 space-y-4 hover:border-white/20 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
               <ShoppingBag className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-tight">4. Ask before you buy</h3>
-              <p className="text-xs text-[#8A8A8E]">
+              <p className="text-xs text-kova-muted">
                 Ask about any product. Kova finds today's price across stores, shows how it fits your month and goals, and watches the price if you decide to wait.
               </p>
             </div>
           </div>
 
-          <div className="bg-[#101012] p-3.5 rounded-2xl border border-white/5 flex items-center gap-3 text-xs">
+          <div className="bg-kova-surface-2 p-3.5 rounded-2xl border border-white/5 flex items-center gap-3 text-xs">
             <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0" aria-hidden="true">
               <Headphones className="w-5 h-5 text-black" />
             </div>
             <div className="min-w-0 flex-1">
               <span className="text-white font-medium block truncate">"Can I afford the Sony WH-1000XM6?"</span>
-              <span className="text-[10px] text-[#8A8A8E]">Example · prices via Channel3</span>
+              <span className="text-[10px] text-kova-muted">Example · prices via Channel3</span>
             </div>
-            <span className="text-[#30D158] font-bold shrink-0 flex items-center gap-1">
+            <span className="text-kova-green font-bold shrink-0 flex items-center gap-1">
               <Eye className="w-3.5 h-3.5" /> Watching
             </span>
           </div>
@@ -270,7 +270,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
 
       {/* 4. New Section: "What you'll actually learn" */}
       <section className="px-6 py-10 max-w-2xl mx-auto text-center space-y-6">
-        <span className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-widest block">
+        <span className="text-[11px] font-semibold text-kova-muted uppercase tracking-widest block">
           Financial literacy pillars Kova teaches over time
         </span>
 
@@ -296,7 +296,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
 
       {/* Meet Kova Section */}
       <section className="px-6 py-12 max-w-2xl mx-auto">
-        <div className="glass-card rounded-[28px] p-8 border border-white/15 bg-gradient-to-b from-[#1C1C1F] to-[#121214] text-center space-y-5 relative overflow-hidden shadow-2xl">
+        <div className="glass-card rounded-[28px] p-8 border border-white/15 bg-gradient-to-b from-kova-surface to-kova-surface-2 text-center space-y-5 relative overflow-hidden shadow-2xl">
           <div className="flex justify-center items-center gap-3">
             <KovaAvatar size="lg" isPulsing={true} />
             {/* Subtle line-art phone/chat-bubble motif near avatar */}
@@ -309,12 +309,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             Meet Kova
           </h3>
 
-          <p className="text-sm text-[#8A8A8E] leading-relaxed max-w-lg mx-auto font-normal">
+          <p className="text-sm text-kova-muted leading-relaxed max-w-lg mx-auto font-normal">
             Kova is designed to sit quietly in your pocket. Not like a bank demanding attention or sending anxious alerts, but like a thoughtful friend who understands that money is deeply tied to mood, stress, and life goals.
           </p>
 
           {/* Animated Typing Indicator */}
-          <div className="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10 text-xs text-[#8A8A8E]">
+          <div className="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10 text-xs text-kova-muted">
             <span className="text-white font-medium">Kova is reflecting</span>
             <div className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -339,7 +339,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
           <ArrowRight className="w-4 h-4 stroke-[2.5]" />
         </button>
 
-        <p className="text-xs text-[#8A8A8E] flex items-center justify-center gap-1.5">
+        <p className="text-xs text-kova-muted flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-white/70" />
           <span>No shame, no spreadsheets — just a conversation.</span>
         </p>
@@ -348,7 +348,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
           <div className="pt-4">
             <button
               onClick={onOpenAbout}
-              className="text-xs text-[#8A8A8E] hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+              className="text-xs text-kova-muted hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
             >
               Why Kova exists · Mission & Architecture →
             </button>

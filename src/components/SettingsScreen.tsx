@@ -24,6 +24,7 @@ import {
 import { UserProfile, Expense, ChatMessage, MonthlyLetter } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useExpenses } from '../context/ExpenseContext';
+import { useGoals } from '../context/GoalContext';
 import { useModal } from '../context/ModalContext';
 import { useToast } from '../context/ToastContext';
 import { PremiumUpgradeCard } from './PremiumUpgradeCard';
@@ -32,6 +33,7 @@ import { CountrySearchSelect } from './CountrySearchSelect';
 import { AboutBankScene } from './AboutBankScene';
 import { PayPalSettingsCard } from './PayPalSettingsCard';
 import { useEscapeKey } from '../utils/useEscapeKey';
+import { AppearanceSettings } from './AppearanceSettings';
 
 interface SettingsScreenProps {
   userProfile?: UserProfile | null;
@@ -112,6 +114,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const toast = useToast();
 
   const expenseCtx = useExpenses();
+  const goalCtx = useGoals();
   const expenses = propExpenses || expenseCtx.expenses;
 
   const userProfile = propUserProfile !== undefined ? propUserProfile : authUserProfile;
@@ -178,6 +181,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   };
 
   const handleExportData = () => {
+    // Everything the privacy policy says the export contains: profile, entries, goals, chats, letter.
     const exportData = {
       exportDate: new Date().toISOString(),
       user: {
@@ -186,7 +190,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         profile: userProfile,
       },
       expenses,
-      chatMessagesCount: messages.length,
+      savingsGoals: goalCtx.savingsGoals,
+      growthMarks: goalCtx.growthMarks,
+      chatMessages: messages.map((m) => ({ sender: m.sender, text: m.text, timestamp: m.timestamp, createdAt: (m as any).createdAt })),
       monthlyLetter,
     };
 
@@ -222,7 +228,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       <div className="flex items-center justify-between pb-2 border-b border-white/10">
         <button
           onClick={onBack}
-          className="text-xs text-[#8A8A8E] hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"
+          className="text-xs text-kova-muted hover:text-white transition-colors flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back</span>
@@ -234,8 +240,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       </div>
 
       {/* 1. Account Section */}
-      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-4">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-4">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
           <User className="w-4 h-4 text-white/60" />
           <span>Account</span>
         </div>
@@ -245,13 +251,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <div className="text-sm font-bold text-white">
               {userProfile?.firstName || currentUser?.displayName || 'Kova User'}
             </div>
-            <div className="text-xs text-[#8A8A8E]">
+            <div className="text-xs text-kova-muted">
               {userProfile?.email || currentUser?.email || 'No email associated'}
             </div>
           </div>
 
           {isGoogleAccount ? (
-            <span className="text-[11px] font-medium text-[#30D158] bg-[#30D158]/10 px-3 py-1 rounded-full border border-[#30D158]/20 flex items-center gap-1.5">
+            <span className="text-[11px] font-medium text-kova-green bg-kova-green/10 px-3 py-1 rounded-full border border-kova-green/20 flex items-center gap-1.5">
               <Check className="w-3 h-3" />
               <span>Managed by Google</span>
             </span>
@@ -268,21 +274,21 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         </div>
 
         {resetMessage && (
-          <div className="text-xs text-[#30D158] bg-[#30D158]/10 p-2.5 rounded-xl border border-[#30D158]/20 text-center">
+          <div className="text-xs text-kova-green bg-kova-green/10 p-2.5 rounded-xl border border-kova-green/20 text-center">
             {resetMessage}
           </div>
         )}
         {resetError && (
-          <div className="text-xs text-[#FF6B6B] bg-[#FF3B30]/10 p-2.5 rounded-xl border border-[#FF3B30]/20 text-center">
+          <div className="text-xs text-kova-red-soft bg-kova-red/10 p-2.5 rounded-xl border border-kova-red/20 text-center">
             {resetError}
           </div>
         )}
       </section>
 
       {/* 2. Country & Currency Localization Section */}
-      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-4">
+      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
             <Globe className="w-4 h-4 text-white/60" />
             <span>Country & Currency</span>
           </div>
@@ -291,7 +297,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </span>
         </div>
 
-        <p className="text-xs text-[#8A8A8E] leading-relaxed">
+        <p className="text-xs text-kova-muted leading-relaxed">
           Choose your local region from all 190+ ISO countries. All transaction amounts, savings goals, and budget insights will be formatted with your local currency.
         </p>
 
@@ -308,19 +314,19 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           />
 
           <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs">
-            <span className="text-[#8A8A8E]">Active Currency:</span>
+            <span className="text-kova-muted">Active Currency:</span>
             <span className="text-white font-semibold flex items-center gap-1.5">
               <span>{getCountryOption(userProfile?.country || 'United States')?.flag || '🇺🇸'}</span>
               <span>{userProfile?.currency || 'USD'}</span>
-              <span className="text-[#8A8A8E]">({getCountryOption(userProfile?.country || 'United States')?.symbol || '$'})</span>
+              <span className="text-kova-muted">({getCountryOption(userProfile?.country || 'United States')?.symbol || '$'})</span>
             </span>
           </div>
         </div>
       </section>
 
       {/* 3. Notifications Section */}
-      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-4">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-4">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
           <Bell className="w-4 h-4 text-white/60" />
           <span>Notifications</span>
         </div>
@@ -329,7 +335,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <div className="flex items-center justify-between p-3 rounded-2xl bg-black/40 border border-white/5">
             <div>
               <div className="text-xs font-semibold text-white">Monthly Letter Briefing</div>
-              <div className="text-[11px] text-[#8A8A8E]">Receive an alert when your month-end financial letter is ready</div>
+              <div className="text-[11px] text-kova-muted">Receive an alert when your month-end financial letter is ready</div>
             </div>
             <button
               onClick={() => onToggleNotification('monthlyLetter')}
@@ -348,7 +354,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <div className="flex items-center justify-between p-3 rounded-2xl bg-black/40 border border-white/5">
             <div>
               <div className="text-xs font-semibold text-white">Daily Grow Micro-Lessons</div>
-              <div className="text-[11px] text-[#8A8A8E]">Daily bite-sized insights to build financial literacy</div>
+              <div className="text-[11px] text-kova-muted">Daily bite-sized insights to build financial literacy</div>
             </div>
             <button
               onClick={() => onToggleNotification('dailyGrow')}
@@ -367,16 +373,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       </section>
 
       {/* 3. Tone Preference Section */}
-      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-3">
+      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
             <Sparkles className="w-4 h-4 text-white/60" />
             <span>Kova's Speaking Tone</span>
           </div>
-          <span className="text-[10px] text-[#8A8A8E]">Affects next chat response</span>
+          <span className="text-[10px] text-kova-muted">Affects next chat response</span>
         </div>
 
-        <p className="text-xs text-[#8A8A8E]">
+        <p className="text-xs text-kova-muted">
           How do you want Kova to talk to you about your money?
         </p>
 
@@ -402,8 +408,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   isSelected
                     ? 'bg-white/15 border-white text-white shadow-lg'
                     : isLocked
-                    ? 'bg-black/30 border-amber-500/20 text-[#8A8A8E] opacity-75 hover:border-amber-500/40 hover:opacity-100'
-                    : 'bg-black/40 border-white/5 text-[#8A8A8E] hover:border-white/20 hover:text-white'
+                    ? 'bg-black/30 border-amber-500/20 text-kova-muted opacity-75 hover:border-amber-500/40 hover:opacity-100'
+                    : 'bg-black/40 border-white/5 text-kova-muted hover:border-white/20 hover:text-white'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
@@ -421,16 +427,26 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                     <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                   ) : null}
                 </div>
-                <p className="text-[10px] text-[#8A8A8E] leading-relaxed">{opt.desc}</p>
+                <p className="text-[10px] text-kova-muted leading-relaxed">{opt.desc}</p>
               </button>
             );
           })}
         </div>
       </section>
 
+      {/* Appearance: themes (src/lib/theme.ts). Premium themes open the Premium card for free users. */}
+      <AppearanceSettings
+        isPremium={currentPlan === 'premium'}
+        onLocked={(theme) => {
+          openPremiumUpgrade();
+          showToast(`${theme.name} is a Premium theme.`);
+        }}
+        onChanged={(theme) => showToast(`Theme set to ${theme.name}`)}
+      />
+
       {/* 4. Data & Privacy Section */}
-      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-3">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+      <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-3">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
           <Shield className="w-4 h-4 text-white/60" />
           <span>Data & Privacy</span>
         </div>
@@ -446,9 +462,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
           <button
             onClick={openDeleteAccount}
-            className="p-3 rounded-2xl bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 border border-[#FF3B30]/20 text-xs text-[#FF6B6B] font-medium transition-all flex items-center justify-center gap-2"
+            className="p-3 rounded-2xl bg-kova-red/10 hover:bg-kova-red/20 border border-kova-red/20 text-xs text-kova-red-soft font-medium transition-all flex items-center justify-center gap-2"
           >
-            <Trash2 className="w-3.5 h-3.5 text-[#FF6B6B]" />
+            <Trash2 className="w-3.5 h-3.5 text-kova-red-soft" />
             <span>Delete account</span>
           </button>
         </div>
@@ -457,7 +473,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           href={`${import.meta.env.VITE_API_URL || ''}/privacy`}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-[11px] text-[#8A8A8E] hover:text-white underline underline-offset-2 transition-colors"
+          className="block text-[11px] text-kova-muted hover:text-white underline underline-offset-2 transition-colors"
         >
           Privacy policy
         </a>
@@ -468,7 +484,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
       {/* 5. Plan Section */}
       <section className="space-y-3">
-        <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] flex items-center justify-between">
+        <div className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-full flex items-center justify-center border ${
               currentPlan === 'premium' ? 'bg-amber-400/20 text-amber-300 border-amber-400/30' : 'bg-white/10 text-white border-white/10'
@@ -486,7 +502,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   Active
                 </span>
               </div>
-              <div className="text-[11px] text-[#8A8A8E]">
+              <div className="text-[11px] text-kova-muted">
                 {currentPlan === 'premium'
                   ? `Up to ${planLimits.premium.quotas.chat} replies a day, all goals, statement imports & letter archive`
                   : `Unlimited logging, ${planLimits.free.quotas.chat} Kova replies a day`}
@@ -558,7 +574,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               currentPlan === 'free'
                 ? 'bg-white text-black border-white shadow-md'
-                : 'bg-black/40 text-[#8A8A8E] border-white/10 hover:border-white/20 hover:text-white'
+                : 'bg-black/40 text-kova-muted border-white/10 hover:border-white/20 hover:text-white'
             }`}
           >
             <span>Free Plan</span>
@@ -603,7 +619,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               type="button"
               disabled={isUpdatingPlan || !adminTargetEmail.trim()}
               onClick={() => runAdminPlanChange('free', adminTargetEmail.trim())}
-              className="flex-1 py-2 px-3 rounded-xl text-xs font-semibold border bg-black/40 text-[#8A8A8E] border-white/10 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+              className="flex-1 py-2 px-3 rounded-xl text-xs font-semibold border bg-black/40 text-kova-muted border-white/10 hover:text-white transition-all cursor-pointer disabled:opacity-50"
             >
               Set Free
             </button>
@@ -644,7 +660,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         <button
           type="button"
           onClick={onNavigateToGuide}
-          className="w-full glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] hover:bg-[#1C1C1F] hover:border-white/20 transition-all active:scale-[0.99] flex items-center justify-between text-left cursor-pointer group shadow-sm"
+          className="w-full glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface hover:bg-kova-surface hover:border-white/20 transition-all active:scale-[0.99] flex items-center justify-between text-left cursor-pointer group shadow-sm"
         >
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform shrink-0">
@@ -655,17 +671,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 <span className="text-sm font-semibold text-white group-hover:text-amber-200 transition-colors">
                   How to use Kova
                 </span>
-                <span className="text-[10px] font-mono text-[#8A8A8E] bg-black/40 px-2 py-0.5 rounded-full border border-white/5">
+                <span className="text-[10px] font-mono text-kova-muted bg-black/40 px-2 py-0.5 rounded-full border border-white/5">
                   Guide
                 </span>
               </div>
-              <p className="text-xs text-[#8A8A8E] mt-0.5">
+              <p className="text-xs text-kova-muted mt-0.5">
                 Quick-reference tour of all features & tips
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-[#8A8A8E] group-hover:text-white group-hover:translate-x-0.5 transition-all">
+          <div className="flex items-center gap-1 text-kova-muted group-hover:text-white group-hover:translate-x-0.5 transition-all">
             <ChevronRight className="w-5 h-5" />
           </div>
         </button>
@@ -674,7 +690,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         <button
           type="button"
           onClick={onNavigateToAbout}
-          className="w-full glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] hover:bg-[#1C1C1F] hover:border-white/20 transition-all active:scale-[0.99] flex items-center justify-between text-left cursor-pointer group shadow-sm"
+          className="w-full glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface hover:bg-kova-surface hover:border-white/20 transition-all active:scale-[0.99] flex items-center justify-between text-left cursor-pointer group shadow-sm"
         >
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 group-hover:scale-105 transition-transform shrink-0">
@@ -685,17 +701,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 <span className="text-sm font-semibold text-white group-hover:text-amber-200 transition-colors">
                   About Kova
                 </span>
-                <span className="text-[10px] font-mono text-[#8A8A8E] bg-black/40 px-2 py-0.5 rounded-full border border-white/5">
+                <span className="text-[10px] font-mono text-kova-muted bg-black/40 px-2 py-0.5 rounded-full border border-white/5">
                   v1.2.0
                 </span>
               </div>
-              <p className="text-xs text-[#8A8A8E] mt-0.5">
+              <p className="text-xs text-kova-muted mt-0.5">
                 Why Kova exists and how it works
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-[#8A8A8E] group-hover:text-white group-hover:translate-x-0.5 transition-all">
+          <div className="flex items-center gap-1 text-kova-muted group-hover:text-white group-hover:translate-x-0.5 transition-all">
             <ChevronRight className="w-5 h-5" />
           </div>
         </button>
@@ -706,7 +722,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         <p className="text-[11px] font-semibold text-white/90">
           Educational Financial Companion
         </p>
-        <p className="text-[10px] text-[#8A8A8E] leading-relaxed">
+        <p className="text-[10px] text-kova-muted leading-relaxed">
           Kova provides automated conversational guidance and literacy frameworks. Kova is not a licensed financial advisory service or broker. Always verify critical decisions with certified professionals.
         </p>
       </div>
@@ -715,7 +731,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       <div className="pt-2">
         <button
           onClick={onLogout}
-          className="w-full py-3.5 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF6B6B] border border-[#FF3B30]/30 font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+          className="w-full py-3.5 rounded-full bg-kova-red/10 hover:bg-kova-red/20 text-kova-red-soft border border-kova-red/30 font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg"
         >
           <LogOut className="w-4 h-4" />
           <span>Log out</span>
@@ -725,15 +741,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       {/* Delete Account Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="kova-modal kova-sheet fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="glass-card rounded-[28px] p-6 border border-white/20 bg-[#18181A] max-w-sm w-full space-y-4 shadow-2xl">
-            <div className="flex items-center gap-3 text-[#FF6B6B]">
-              <div className="w-10 h-10 rounded-full bg-[#FF3B30]/10 border border-[#FF3B30]/20 flex items-center justify-center shrink-0">
+          <div className="glass-card rounded-[28px] p-6 border border-white/20 bg-kova-surface max-w-sm w-full space-y-4 shadow-2xl">
+            <div className="flex items-center gap-3 text-kova-red-soft">
+              <div className="w-10 h-10 rounded-full bg-kova-red/10 border border-kova-red/20 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-white">Permanently Delete Account?</h3>
             </div>
 
-            <p className="text-xs text-[#8A8A8E] leading-relaxed">
+            <p className="text-xs text-kova-muted leading-relaxed">
               This is permanent. Your expenses, goals, chats, letters and settings are erased from Kova's servers, and your sign-in is removed.
             </p>
             {currentPlan === 'premium' && (
@@ -754,7 +770,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 type="button"
                 onClick={handleConfirmDeleteAccount}
                 disabled={isDeleting}
-                className="flex-1 py-3 rounded-full bg-[#FF3B30] hover:bg-[#FF3B30]/90 text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="flex-1 py-3 rounded-full bg-kova-red hover:bg-kova-red/90 text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>

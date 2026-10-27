@@ -40,29 +40,29 @@ export const PayPalSettingsCard: React.FC = () => {
   if (!available) return null;
 
   return (
-    <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-[#161618] space-y-3">
+    <section className="glass-card rounded-[24px] p-5 border border-white/10 bg-kova-surface space-y-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#8A8A8E] uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-xs font-semibold text-kova-muted uppercase tracking-wider">
           <Wallet className="w-4 h-4 text-white/60" />
           <span>PayPal check-in</span>
         </div>
-        <span className="text-[10px] text-[#8A8A8E]">Optional</span>
+        <span className="text-[10px] text-kova-muted">Optional</span>
       </div>
 
-      <p className="text-xs text-[#8A8A8E] leading-relaxed">
+      <p className="text-xs text-kova-muted leading-relaxed">
         Let Kova look at your recent PayPal activity and explain it kindly. Kova can point out
         charges and subscriptions worth a second look, and only acts when you confirm. You can
         disconnect at any time.
       </p>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-xs text-[#8A8A8E]" role="status">
+        <div className="flex items-center gap-2 text-xs text-kova-muted" role="status">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
           <span>Checking PayPal connection...</span>
         </div>
       ) : error ? (
         <div className="flex items-center justify-between gap-3">
-          <span className="text-xs text-[#FF6B6B]">{error}</span>
+          <span className="text-xs text-kova-red-soft">{error}</span>
           <button
             type="button"
             onClick={refresh}
@@ -75,7 +75,7 @@ export const PayPalSettingsCard: React.FC = () => {
         <div className="flex items-center justify-between gap-3 pt-1">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-white">Connected</span>
-            <span className="text-[10px] text-[#8A8A8E]">{modeLabel(mode)}</span>
+            <span className="text-[10px] text-kova-muted">{modeLabel(mode)}</span>
           </div>
           <button
             type="button"
@@ -88,7 +88,7 @@ export const PayPalSettingsCard: React.FC = () => {
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3 pt-1">
-          <span className="text-[10px] text-[#8A8A8E]">Not connected</span>
+          <span className="text-[10px] text-kova-muted">Not connected</span>
           <button
             type="button"
             onClick={handleConnect}

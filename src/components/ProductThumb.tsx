@@ -8,7 +8,7 @@ export const ProductThumb: React.FC<{ url?: string; alt: string; size?: 'md' | '
   const box = size === 'md' ? 'w-16 h-16 rounded-2xl' : 'w-11 h-11 rounded-xl';
   if (!url || failed) {
     return (
-      <div className={`${box} shrink-0 bg-white/5 border border-white/10 flex items-center justify-center text-[#8A8A8E]`} aria-hidden="true">
+      <div className={`${box} shrink-0 bg-white/5 border border-white/10 flex items-center justify-center text-kova-muted`} aria-hidden="true">
         <ShoppingBag className={size === 'md' ? 'w-6 h-6' : 'w-5 h-5'} />
       </div>
     );

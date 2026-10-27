@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { ChatMessage, Expense, ViewMode, SavingsGoal, GoalCardData, SendMessageOptions } from '../types';
+import { ChatMessage, Expense, ViewMode, SavingsGoal, GoalCardData, SendMessageOptions, PayPalCheckinRecord } from '../types';
 import { KovaAvatar } from './KovaAvatar';
 import { GoalCard } from './GoalCard';
 import { CategoryBreakdownCard } from './CategoryBreakdownCard';
@@ -14,6 +14,8 @@ import { useModal } from '../context/ModalContext';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/currency';
 import { PayPalCheckinCard } from './PayPalCheckinCard';
+import { PayPalCheckinSummary } from './PayPalCheckinSummary';
+import { generateUniqueId } from '../utils/id';
 import { ChatDayDivider } from './ChatDayDivider';
 import { LongPressBubble, ReplyActionsSheet, ReplyMoreButton } from './ReplyActions';
 import { usePayPalStatus } from '../utils/paypalClient';
@@ -30,6 +32,8 @@ interface ChatScreenProps {
   onEditGoal?: (goal?: SavingsGoal) => void;
   onAddNewGoal?: () => void;
   onOpenCoach?: (goal: SavingsGoal) => void;
+  /** Saves (or updates) the chat message that keeps a finished PayPal check-in. */
+  onSavePayPalCheckin?: (messageId: string, record: PayPalCheckinRecord) => void;
 }
 
 export const ChatScreen: React.FC<ChatScreenProps> = ({
@@ -44,6 +48,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   onEditGoal: propOnEditGoal,
   onAddNewGoal: propOnAddNewGoal,
   onOpenCoach: propOnOpenCoach,
+  onSavePayPalCheckin,
 }) => {
   const { userProfile, currency: authCurrency, plan, usage } = useAuth();
   const currency = userProfile?.currency || authCurrency || 'USD';
@@ -72,6 +77,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     : null;
   const paypal = usePayPalStatus();
   const [showPayPalCheckin, setShowPayPalCheckin] = useState(false);
+  // The chat message that keeps the open check-in. Hidden while the live card is open, shown read-only after.
+  const [liveCheckinId, setLiveCheckinId] = useState<string | null>(null);
   // Copy / Report reply sheet (KOVA-093) and the replies reported this session.
   const [actionMessage, setActionMessage] = useState<ChatMessage | null>(null);
   const [reportedIds, setReportedIds] = useState<Set<string>>(() => new Set());
@@ -106,10 +113,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   return (
     <div className="flex flex-col h-app max-w-2xl mx-auto w-full px-4 relative">
       {/* Top Bar Quick Log Switcher */}
-      <div className="hidden sm:flex pt-3 pb-2 items-center justify-between border-b border-[#2C2C2E]/40 mb-2">
+      <div className="hidden sm:flex pt-3 pb-2 items-center justify-between border-b border-kova-raised/40 mb-2">
         <div className="flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-white/70" />
-          <span className="text-xs font-medium text-[#8A8A8E]">Conversational Money Companion</span>
+          <span className="text-xs font-medium text-kova-muted">Conversational Money Companion</span>
         </div>
         <button
           onClick={() => onSelectView('log')}
@@ -126,7 +133,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         {activeGoals.length > 0 && (
           <div className="w-full mb-4 space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[11px] font-semibold text-[#8A8A8E] uppercase tracking-wider">
+              <span className="text-[11px] font-semibold text-kova-muted uppercase tracking-wider">
                 {activeGoals.length > 1 ? `Savings Goals (${activeGoals.length})` : 'Savings Goal'}
               </span>
               <button
@@ -169,7 +176,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           </div>
         )}
 
-        {messages.filter((msg) => msg.text && msg.text.trim().length > 0).map((msg, index, visible) => (
+        {messages
+          .filter((msg) => msg.text && msg.text.trim().length > 0)
+          .filter((msg) => !(showPayPalCheckin && msg.paypalCheckin && msg.id === liveCheckinId))
+          .map((msg, index, visible) => (
           <div
             key={msg.id ? `msg-${msg.id}-${index}` : `msg-${index}`}
             className={`group/reply flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} space-y-2`}
@@ -177,7 +187,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             <ChatDayDivider previous={visible[index - 1]} current={msg} />
 
             {/* Sender Label & Timestamp */}
-            <div className={`flex items-center gap-2 text-[10px] text-[#8A8A8E] px-1 w-full ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex items-center gap-2 text-[10px] text-kova-muted px-1 w-full ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                     {msg.sender === 'kova' ? (
                       <>
                         <KovaAvatar size="sm" />
@@ -197,7 +207,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
                   </div>
 
                   {/* Bubble Content */}
-                  {msg.sender === 'kova' ? (
+                  {msg.paypalCheckin ? (
+                    <PayPalCheckinSummary record={msg.paypalCheckin} />
+                  ) : msg.sender === 'kova' ? (
                     <LongPressBubble
                       onLongPress={() => setActionMessage(msg)}
                       className="max-w-[85%] text-sm leading-relaxed glass-card text-white/95 p-4 rounded-[22px] rounded-tl-sm border border-white/10"
@@ -212,7 +224,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
                   {/* Extracted Expense Tag if present */}
                   {msg.extractedExpense && msg.extractedExpense.amount && (
-                    <div className="glass-card rounded-2xl p-3 border border-white/15 bg-[#18181B]/90 flex items-center justify-between gap-4 max-w-[85%]">
+                    <div className="glass-card rounded-2xl p-3 border border-white/15 bg-kova-surface/90 flex items-center justify-between gap-4 max-w-[85%]">
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white">
                           <Plus className="w-3.5 h-3.5" />
@@ -221,7 +233,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
                           <div className="text-xs font-semibold text-white">
                             {msg.extractedExpense.label || 'New Entry'}
                           </div>
-                          <div className="text-[10px] text-[#8A8A8E]">
+                          <div className="text-[10px] text-kova-muted">
                             {msg.extractedExpense.category || 'Logged'} • Added to Log
                           </div>
                         </div>
@@ -244,8 +256,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
                   {msg.radarCard && msg.radarCard.rows.length > 0 && <SubscriptionRadarCard data={msg.radarCard} />}
 
                   {/* "Ask Kova about your PayPal" (KOVA-087): what the answer is based on, and actions to confirm */}
-                  {msg.paypalBasis && <p className="text-[11px] text-[#8A8A8E] px-1">{msg.paypalBasis}</p>}
-                  {msg.paypalProposals && msg.paypalProposals.length > 0 && <PayPalProposalCard proposals={msg.paypalProposals} />}
+                  {msg.paypalBasis && <p className="text-[11px] text-kova-muted px-1">{msg.paypalBasis}</p>}
+                  {msg.paypalProposals && msg.paypalProposals.length > 0 && <PayPalProposalCard proposals={msg.paypalProposals} createdAt={msg.createdAt} />}
 
                   {/* Inline Goal Card if attached to message */}
                   {msg.inlineGoalCard && (
@@ -286,7 +298,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
         {/* Loading / Thinking Indicator (shows immediately when isSending is true) */}
         {isSending && (messages.length === 0 || messages[messages.length - 1].sender === 'user' || !messages[messages.length - 1].text || messages[messages.length - 1].isThinking) && (
-          <div className="flex items-start gap-2 text-xs text-[#8A8A8E] animate-in fade-in duration-200">
+          <div className="flex items-start gap-2 text-xs text-kova-muted animate-in fade-in duration-200">
             <KovaAvatar size="sm" isPulsing={true} />
             <div className="glass-card px-4 py-3 rounded-[22px] rounded-tl-sm text-white/80 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
@@ -299,6 +311,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           <PayPalCheckinCard
             userProfile={userProfile}
             onClose={() => setShowPayPalCheckin(false)}
+            onRecord={(record) => liveCheckinId && onSavePayPalCheckin?.(liveCheckinId, record)}
           />
         )}
 
@@ -311,7 +324,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         <div className="flex flex-wrap items-center gap-2 px-1">
           <button
             onClick={onOpenCsvImport}
-            className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
+            className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-kova-muted hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-white/70" />
             <span>Import CSV</span>
@@ -321,7 +334,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           {!Capacitor.isNativePlatform() && (
           <button
             onClick={onOpenVoiceNote}
-            className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
+            className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-kova-muted hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
           >
             <Mic className="w-3.5 h-3.5 text-white/70" />
             <span>Voice note</span>
@@ -331,8 +344,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           {paypal.available && paypal.connected && (
             <button
               type="button"
-              onClick={() => setShowPayPalCheckin(true)}
-              className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
+              onClick={() => {
+                // A new check-in gets a new message; the previous one stays in the chat, read-only.
+                setLiveCheckinId(generateUniqueId('msg-paypal'));
+                setShowPayPalCheckin(true);
+              }}
+              className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-kova-muted hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10"
             >
               <Wallet className="w-3.5 h-3.5 text-white/70" />
               <span>PayPal check-in</span>
@@ -345,7 +362,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               type="button"
               onClick={() => onSendMessage('What did I pay for on PayPal this month?')}
               disabled={isSending}
-              className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10 disabled:opacity-50"
+              className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-kova-muted hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5 border border-white/10 disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5 text-white/70" />
               <span>Ask about PayPal</span>
@@ -354,7 +371,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         </div>
 
         {repliesLeft !== null && repliesLeft <= 2 && (
-          <div className="px-2 text-[11px] text-[#8A8A8E] flex flex-wrap items-center gap-x-1.5 gap-y-0.5" aria-live="polite">
+          <div className="px-2 text-[11px] text-kova-muted flex flex-wrap items-center gap-x-1.5 gap-y-0.5" aria-live="polite">
             {repliesLeft > 0 ? (
               <span>
                 {repliesLeft} {repliesLeft === 1 ? 'reply' : 'replies'} with Kova left today · logging is always free
@@ -379,14 +396,14 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         {/* Input Form Bar */}
         <form
           onSubmit={handleSubmit}
-          className="glass-card rounded-full p-1.5 pl-4 border border-white/15 bg-[#161618]/90 flex items-center gap-2 shadow-2xl focus-within:border-white/30 transition-all"
+          className="glass-card rounded-full p-1.5 pl-4 border border-white/15 bg-kova-surface/90 flex items-center gap-2 shadow-2xl focus-within:border-white/30 transition-all"
         >
           <input
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Talk to Kova or log an expense..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-[#8A8A8E] focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-white placeholder-kova-muted focus:outline-none"
             disabled={isSending}
           />
 

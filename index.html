@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
+    <script>
+      // Saved theme before the CSS paints, so light-theme users don't see a black flash (src/lib/theme.ts).
+      (function () {
+        try {
+          var t = localStorage.getItem('kova_theme');
+          var light = { daylight: '#f2efe8', 'solarized-light': '#fdf6e3', 'solarized-gold': '#f2e3bc' };
+          var dark = { midnight: '#000000', dusk: '#14161b', 'solarized-dark': '#002b36', forest: '#0d1511', nord: '#242933' };
+          var color = light[t] || dark[t];
+          if (!color) return;
+          var root = document.documentElement;
+          root.setAttribute('data-theme', t);
+          if (light[t]) { root.classList.remove('dark'); root.classList.add('light'); }
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
+        } catch (e) {}
+      })();
+    </script>
     <title>Kova — Financial Companion</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

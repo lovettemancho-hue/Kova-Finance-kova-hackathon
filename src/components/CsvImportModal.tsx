@@ -99,7 +99,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
           <button
             onClick={onClose}
             type="button"
-            className="absolute -top-3 -right-3 z-20 w-9 h-9 rounded-full bg-[#2C2C2E] hover:bg-[#3A3A3C] text-white flex items-center justify-center border border-white/20 shadow-xl transition-all cursor-pointer"
+            className="absolute -top-3 -right-3 z-20 w-9 h-9 rounded-full bg-kova-raised hover:bg-kova-line text-white flex items-center justify-center border border-white/20 shadow-xl transition-all cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -338,9 +338,9 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
 
   return (
     <div className="kova-modal kova-sheet fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
-      <div className="glass-card rounded-[28px] p-5 sm:p-6 max-w-xl w-full border border-white/15 bg-[#18181A]/95 shadow-2xl relative my-auto">
+      <div className="glass-card rounded-[28px] p-5 sm:p-6 max-w-xl w-full border border-white/15 bg-kova-surface/95 shadow-2xl relative my-auto">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-[#2C2C2E]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-kova-raised">
           <div className="flex items-center gap-2.5">
             {step === 'review' && (
               <button
@@ -356,7 +356,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
               <h3 className="text-base font-bold text-white tracking-tight">
                 {step === 'upload' ? 'Import a statement' : 'Review transactions'}
               </h3>
-              <p className="text-[11px] text-[#8A8A8E]">
+              <p className="text-[11px] text-kova-muted">
                 {step === 'upload'
                   ? 'PayPal, bank or mobile-wallet CSV'
                   : `${parsedRows.length} transactions found · ${malformedCount > 0 ? `${malformedCount} flagged for review` : 'All rows valid'}`}
@@ -365,7 +365,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
           </div>
           <button
             onClick={handleResetAndClose}
-            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-[#8A8A8E] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-kova-muted hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -374,7 +374,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
         {/* STEP 1: UPLOAD SCREEN */}
         {step === 'upload' && (
           <div className="space-y-4 pt-4">
-            <p className="text-xs text-[#8A8A8E] leading-relaxed">
+            <p className="text-xs text-kova-muted leading-relaxed">
               Upload a CSV from PayPal, your bank or a mobile wallet. Kova reads it on your phone: dates, names and amounts in any common format. Only names it can't sort are sent to suggest a category.
             </p>
             {plan !== 'premium' && importsLeft > 0 && (
@@ -384,7 +384,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             )}
 
             {/* File Upload Drag & Drop Zone */}
-            <div className="border border-dashed border-white/20 rounded-2xl p-5 text-center hover:bg-white/5 transition-all cursor-pointer relative bg-[#121214]/60">
+            <div className="border border-dashed border-white/20 rounded-2xl p-5 text-center hover:bg-white/5 transition-all cursor-pointer relative bg-kova-surface-2/60">
               <input
                 type="file"
                 accept=".csv,.txt"
@@ -395,7 +395,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
               <span className="text-xs font-semibold text-white block">
                 {fileName ? fileName : 'Click to select .CSV file'}
               </span>
-              <span className="text-[10px] text-[#8A8A8E] block mt-0.5">
+              <span className="text-[10px] text-kova-muted block mt-0.5">
                 or drag and drop your bank export here
               </span>
             </div>
@@ -403,7 +403,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             {/* Textarea Paste Option */}
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-[11px] font-medium text-[#8A8A8E] uppercase tracking-wider">
+                <label className="text-[11px] font-medium text-kova-muted uppercase tracking-wider">
                   Or Paste Statement Lines
                 </label>
                 <button
@@ -423,7 +423,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
                 placeholder="Date, Description, Amount..."
-                className="w-full bg-[#121214] border border-white/10 rounded-2xl p-3 text-xs text-white placeholder-[#8A8A8E] font-mono focus:outline-none focus:border-white/30"
+                className="w-full bg-kova-surface-2 border border-white/10 rounded-2xl p-3 text-xs text-white placeholder-kova-muted font-mono focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -434,11 +434,11 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2C2C2E]">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-kova-raised">
               <button
                 type="button"
                 onClick={handleResetAndClose}
-                className="px-4 py-2 rounded-full text-xs font-medium text-[#8A8A8E] hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full text-xs font-medium text-kova-muted hover:text-white transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -476,7 +476,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                   <p key={w} className="text-[11px] text-amber-200/90 leading-relaxed">{w}</p>
                 ))}
                 {importInfo.onPhone && (
-                  <p className="text-[10px] text-[#8A8A8E]">
+                  <p className="text-[10px] text-kova-muted">
                     Read on your {importInfo.source === 'paypal' ? 'phone as a PayPal statement' : 'phone'}. Rows already in your log are unticked.
                   </p>
                 )}
@@ -508,7 +508,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleToggleAll(false)}
-                  className="text-[11px] text-[#8A8A8E] hover:text-white hover:underline cursor-pointer"
+                  className="text-[11px] text-kova-muted hover:text-white hover:underline cursor-pointer"
                 >
                   Deselect All
                 </button>
@@ -524,8 +524,8 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                     row.hasError
                       ? 'border-amber-400/40 bg-amber-500/10'
                       : row.included
-                      ? 'border-white/15 bg-[#121214]'
-                      : 'border-white/5 bg-[#121214]/40 opacity-60'
+                      ? 'border-white/15 bg-kova-surface-2'
+                      : 'border-white/5 bg-kova-surface-2/40 opacity-60'
                   }`}
                 >
                   {/* Row Top Bar: Checkbox, Index, Error badge, Delete */}
@@ -537,10 +537,10 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                         onChange={(e) => handleRowChange(row.id, 'included', e.target.checked)}
                         className="w-4 h-4 rounded border-white/20 bg-black/40 text-amber-400 focus:ring-0 cursor-pointer shrink-0"
                       />
-                      <span className="text-[10px] font-mono text-[#8A8A8E]">#{idx + 1}</span>
+                      <span className="text-[10px] font-mono text-kova-muted">#{idx + 1}</span>
 
                       {row.duplicate && !row.hasError && (
-                        <span className="text-[10px] text-[#8A8A8E] bg-white/5 border border-white/10 px-2 py-0.5 rounded-full shrink-0">
+                        <span className="text-[10px] text-kova-muted bg-white/5 border border-white/10 px-2 py-0.5 rounded-full shrink-0">
                           Already in your log
                         </span>
                       )}
@@ -555,7 +555,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveRow(row.id)}
-                      className="text-[#8A8A8E] hover:text-red-400 p-1 rounded-lg transition-colors cursor-pointer"
+                      className="text-kova-muted hover:text-red-400 p-1 rounded-lg transition-colors cursor-pointer"
                       title="Remove row"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -566,7 +566,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {/* Description */}
                     <div>
-                      <label className="text-[10px] text-[#8A8A8E] block mb-0.5">Description</label>
+                      <label className="text-[10px] text-kova-muted block mb-0.5">Description</label>
                       <input
                         type="text"
                         value={row.label}
@@ -578,9 +578,9 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
 
                     {/* Amount */}
                     <div>
-                      <label className="text-[10px] text-[#8A8A8E] block mb-0.5">Amount ({currencySymbol})</label>
+                      <label className="text-[10px] text-kova-muted block mb-0.5">Amount ({currencySymbol})</label>
                       <div className="relative">
-                        <span className="absolute left-2.5 top-1.5 text-xs text-[#8A8A8E]">{currencySymbol}</span>
+                        <span className="absolute left-2.5 top-1.5 text-xs text-kova-muted">{currencySymbol}</span>
                         <input
                           type="number"
                           step="0.01"
@@ -598,7 +598,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
 
                     {/* Date */}
                     <div>
-                      <label className="text-[10px] text-[#8A8A8E] block mb-0.5">Date</label>
+                      <label className="text-[10px] text-kova-muted block mb-0.5">Date</label>
                       <input
                         type="text"
                         value={row.rawDate}
@@ -611,14 +611,14 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                     {/* Category & Type */}
                     <div className="flex gap-1.5 items-end">
                       <div className="flex-1 min-w-0">
-                        <label className="text-[10px] text-[#8A8A8E] block mb-0.5">Category</label>
+                        <label className="text-[10px] text-kova-muted block mb-0.5">Category</label>
                         <select
                           value={row.category}
                           onChange={(e) => handleRowChange(row.id, 'category', e.target.value)}
                           className="w-full bg-black/40 border border-white/10 rounded-xl px-2 py-1.5 text-white focus:outline-none focus:border-amber-400/50 text-xs"
                         >
                           {CATEGORIES.map((cat) => (
-                            <option key={cat} value={cat} className="bg-[#1C1C1E] text-white">
+                            <option key={cat} value={cat} className="bg-kova-surface text-white">
                               {cat}
                             </option>
                           ))}
@@ -633,7 +633,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                           }
                           className={`px-2.5 py-1.5 rounded-xl text-[10px] font-semibold transition-colors ${
                             row.type === 'income'
-                              ? 'bg-[#30D158]/20 text-[#30D158] border border-[#30D158]/30'
+                              ? 'bg-kova-green/20 text-kova-green border border-kova-green/30'
                               : 'bg-white/10 text-white border border-white/10'
                           }`}
                         >
@@ -647,11 +647,11 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
             </div>
 
             {/* Bottom Confirm Bar */}
-            <div className="flex items-center justify-between pt-3 border-t border-[#2C2C2E]">
+            <div className="flex items-center justify-between pt-3 border-t border-kova-raised">
               <button
                 type="button"
                 onClick={() => setStep('upload')}
-                className="text-xs text-[#8A8A8E] hover:text-white transition-colors cursor-pointer"
+                className="text-xs text-kova-muted hover:text-white transition-colors cursor-pointer"
               >
                 ← Back to Upload
               </button>

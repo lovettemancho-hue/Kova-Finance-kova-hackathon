@@ -11,18 +11,18 @@ interface MonthlyPacingCardProps {
 export const MonthlyPacingCard: React.FC<MonthlyPacingCardProps> = ({ pacing, currency }) => {
   if (!pacing.hasEnoughHistory) {
     return (
-      <div className="glass-card rounded-2xl p-4 border border-dashed border-white/10 bg-[#161618]/50 my-3 flex items-start gap-3">
+      <div className="glass-card rounded-2xl p-4 border border-dashed border-white/10 bg-kova-surface/50 my-3 flex items-start gap-3">
         <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5 text-white/50">
           <Compass className="w-4 h-4" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-white/80">Monthly Spending Pace</span>
-            <span className="text-[9px] text-[#8A8A8E] bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+            <span className="text-[9px] text-kova-muted bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
               History Baseline
             </span>
           </div>
-          <p className="text-[11px] leading-relaxed text-[#8A8A8E] mt-1">
+          <p className="text-[11px] leading-relaxed text-kova-muted mt-1">
             {pacing.subtext}
           </p>
         </div>
@@ -41,7 +41,7 @@ export const MonthlyPacingCard: React.FC<MonthlyPacingCardProps> = ({ pacing, cu
     : 'bg-white/10 text-white border-white/20';
 
   return (
-    <div className="glass-card rounded-[22px] p-4 border border-white/10 bg-[#161618]/80 my-3 space-y-2.5">
+    <div className="glass-card rounded-[22px] p-4 border border-white/10 bg-kova-surface/80 my-3 space-y-2.5">
       {/* Header Row */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export const MonthlyPacingCard: React.FC<MonthlyPacingCardProps> = ({ pacing, cu
 
       {/* Visual Pace Comparison Bar */}
       <div className="space-y-1 pt-1">
-        <div className="flex items-center justify-between text-[10px] text-[#8A8A8E] font-mono">
+        <div className="flex items-center justify-between text-[10px] text-kova-muted font-mono">
           <span>This month: {formatWholeCurrency(pacing.currentSpend, currency)}</span>
           <span>Avg baseline: {formatWholeCurrency(pacing.historicalAvg, currency)}</span>
         </div>
@@ -85,7 +85,7 @@ export const MonthlyPacingCard: React.FC<MonthlyPacingCardProps> = ({ pacing, cu
       </div>
 
       {/* Detail Subtext */}
-      <p className="text-[10px] text-[#8A8A8E] leading-relaxed pt-0.5">
+      <p className="text-[10px] text-kova-muted leading-relaxed pt-0.5">
         {pacing.subtext}
       </p>
     </div>

@@ -95,3 +95,15 @@ test('delays read naturally', () => {
   assert.equal(describeDelay(21), 'about 3 weeks');
   assert.equal(describeDelay(95), 'about 3 months');
 });
+
+test('model numbers stay in the item; only standalone numbers are prices (KOVA-105)', () => {
+  const a = parseAffordRequest('can i afford sony WH-1000XM5 headphones?');
+  assert.equal(a!.item, 'sony wh-1000xm5 headphones');
+  assert.equal(a!.price, null);
+  const b = parseAffordRequest('Can I afford an iPhone 16 Pro for $999?');
+  assert.equal(b!.price!.amount, 999);
+  assert.match(b!.item, /iphone/);
+  const c = parseAffordRequest('can i afford headphones for 120');
+  assert.equal(c!.price!.amount, 120);
+  assert.equal(c!.item, 'headphones');
+});
