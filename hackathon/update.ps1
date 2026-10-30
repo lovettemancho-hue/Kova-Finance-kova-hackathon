@@ -3,11 +3,17 @@
 # Run from kova_codebase, on main, after `git pull`:
 #   powershell -ExecutionPolicy Bypass -File hackathon\update.ps1 -Message "Short description of what changed"
 #
+# Both of us get credit on the public repo: the names in hackathon\co-authors.txt are added to the commit
+# as "Co-authored-by" lines, so GitHub shows every author on the commit. -Author makes someone else the
+# main author (they then appear in the repo's Contributors list), e.g.
+#   -Author "Favour N. Emmanuel <12345678+favour@users.noreply.github.com>"
+#
 # Same rules as export.ps1: only committed files, private files removed, a secret check, then ONE new
 # commit in the public repo. It does NOT push: check the files, then `git push` from ..\kova-hackathon.
 
 param(
-  [Parameter(Mandatory = $true)][string]$Message
+  [Parameter(Mandatory = $true)][string]$Message,
+  [string]$Author = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -58,7 +64,13 @@ if (-not (git status --porcelain)) {
   Write-Host 'The public repo already matches main. Nothing to commit.'
   exit 0
 }
-git commit -m $Message | Out-Null
+$trailers = @()
+$coAuthorsFile = Join-Path $src 'hackathon\co-authors.txt'
+if (Test-Path $coAuthorsFile) {
+  $trailers = Get-Content $coAuthorsFile | Where-Object { $_ -match '<.+@.+>' -and $_ -notmatch '^\s*#' } | ForEach-Object { "Co-authored-by: $($_.Trim())" }
+}
+$full = if ($trailers.Count) { "$Message`n`n$($trailers -join "`n")" } else { $Message }
+if ($Author) { git commit -m $full --author=$Author | Out-Null } else { git commit -m $full | Out-Null }
 git --no-pager show --stat --oneline HEAD | Select-Object -First 40
 Write-Host ''
 Write-Host "Done. One new commit in $dest (not pushed)."

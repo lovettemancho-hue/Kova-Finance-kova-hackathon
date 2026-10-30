@@ -1,0 +1,4 @@
+# One person per line: Name <email GitHub knows for them>. Lines starting with # are ignored.
+# Use each person's GitHub no-reply address (GitHub > Settings > Emails > "Keep my email addresses private").
+Favour N. Emmanuel <42846650+F-Emm@users.noreply.github.com>
+Mancho Lovette Feseng <326258587+lovettemancho-hue@users.noreply.github.com>

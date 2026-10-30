@@ -4,7 +4,8 @@ Kova is an AI money companion that explains your money in plain words and helps 
 
 - **Live demo:** https://kova-gkgwmqurbq-ew.a.run.app (judges: sign-in details are in the Devpost testing instructions)
 - **Platforms:** web and Android (Capacitor)
-- **License:** MIT
+- **Team:** Mancho Lovette Feseng (product, design, frontend) and Favour N. Emmanuel (backend, authentication, Firebase, data), Ambora Labs
+- **License:** [GNU AGPL-3.0](LICENSE)
 
 ## What it does
 
@@ -137,4 +138,6 @@ See [`docs/ANDROID.md`](docs/ANDROID.md): `npm run build:android`, then build in
 
 ## License
 
-[MIT](LICENSE) © 2026 Ambora Labs
+Copyright © 2026 Mancho Lovette Feseng and Favour N. Emmanuel (Ambora Labs).
+
+Kova is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only). You may use, study, change and share it under the AGPL's terms: if you run a modified version as a service or distribute it, you must publish your full source under the same licence. Versions published before 30 October 2026 were released under the MIT License. For other licensing, contact support.amboralabs@gmail.com.
